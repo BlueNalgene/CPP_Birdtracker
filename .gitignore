@@ -34,3 +34,5 @@
 # User defined
 *.png
 test.cpp
+*.log
+

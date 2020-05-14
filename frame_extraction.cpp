@@ -262,7 +262,10 @@ static void show_usage(string name) {
 
 int main(int argc, char* argv[]) {
 	// Capture interrupt signals so we don't create zombie processes
+	// FIXME This doesn't work right with all the forks.
 	signal(SIGINT, signal_callback_handler);
+	
+	// Arg Handler --------------------------------------------------------------------------------
 	
 	// Handle arguments
 	if (argc < 3) {
@@ -284,11 +287,12 @@ int main(int argc, char* argv[]) {
 		} else if ((arg == "-df") || (arg == "--debug-frames")) {
 			DEBUG_FRAMES = true;
 		} else if ((arg == "-i") || (arg == "--input")) {
-			if (i + 1 < argc) { // Make sure we aren't at the end of argv!
-				input_file = argv[++i]; // Increment 'i' so we don't get the argument as the next argv[i].
+			// Make sure we aren't at the end of argv!
+			if (i + 1 < argc) {
+				// Increment 'i' so we don't get the argument as the next argv[i].
+				input_file = argv[++i];
 			} else {
 				std::cerr << "--input option requires one argument." << std::endl;
-				
 				return 1;
 			}
 		} else {
@@ -296,90 +300,118 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
+	if (DEBUG_COUT) {
+		std::cout << "Using input file: " << input_file << std::endl;
+	}
 	
+	// Instance and Assign ------------------------------------------------------------------------
 	// Memory map variables we want to share across forks
 	// mm_killcode is a generic "kill this fork" code
 	// mm_gotframe reports that the frame acquisition was completed
 	// mm_gotconts reports that video processing was completed
 	// mm_ranprocs reports that the contours were recorded
-	auto *mm_killcode = static_cast <bool *>(mmap(NULL, sizeof(bool), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
-	auto *mm_gotframe = static_cast <bool *>(mmap(NULL, sizeof(bool), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
-	auto *mm_gotconts = static_cast <bool *>(mmap(NULL, sizeof(bool), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
-	auto *mm_ranprocs = static_cast <bool *>(mmap(NULL, sizeof(bool), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_killcode = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_gotframe = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_gotconts = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_localfrm = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_ranprocs = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	
+	// OpenCV specific variables
+	Ptr <BackgroundSubtractor> pMOG = createBackgroundSubtractorMOG2(100, 16, true);
+	Mat fg_mask;
+	Mat frame;
+	
+	// Memory and fork management inits
+	pthread_mutex_t mutex;
+	pthread_mutex_init(&mutex, NULL);
+	int frame_fd = open("/tmp/file", O_CREAT|O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+	
+	// Other local variables
+	// TODO the count needs to be in mm
+	int count = -1;
+	int thresh = 0;
 	
 	
-	
-	if (DEBUG_COUT) {
-		std::cout << "Using input file: " << input_file << std::endl;
-	}
-	
+	// Tell OpenCV to open our video and fetch the first frame ------------------------------------
 	VideoCapture cap(input_file); // open the default camera
 	if (!cap.isOpened())  // check if we succeeded
 		return -1;
-
-	Ptr <BackgroundSubtractor> pMOG = createBackgroundSubtractorMOG2(100, 16, true);
-	Ptr <BackgroundSubtractor> pMOG_post = createBackgroundSubtractorMOG2(100, 16, true);
-
-	Mat fg_mask;
-	Mat frame;
-	int count = -1;
-	int thresh = 0;
-
-
 	// Get the first frame
 	cap >> frame;
 	
 	
+	// Memory management init continued -----------------------------------------------------------
 	// Memory map slot for video frame
 	// This must be called after the first test frame so we have the correct size info
 	// e.g. we expect 6220800 bytes for a 3 channel 1920x1080 image
 	const size_t shmem_size = frame.total() * frame.elemSize();
-	pthread_mutex_t mutex;
 	
 	if (DEBUG_COUT) {
-		std::cout << "frame dimensions: " << frame.size().width << " x " << frame.size().height << " x " << frame.elemSize() << " = " << shmem_size << std::endl;
+		std::cout
+		<< "frame dimensions: "
+		<< frame.size().width
+		<< " x "
+		<< frame.size().height
+		<< " x "
+		<< frame.elemSize()
+		<< " = "
+		<< shmem_size
+		<< std::endl
+		<< "frame_fd: "
+		<< frame_fd
+		<< std::endl;
 	}
 	
-	pthread_mutex_init(&mutex, NULL);
-
-	int frame_fd = open("/tmp/file", O_CREAT|O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
-	if (DEBUG_COUT) {
-		std::cout << "frame_fd: " << frame_fd << std::endl;
-	}
-	
+	// Resize the frame_fd to fit the frame size we are using
 	if (ftruncate(frame_fd, shmem_size) != 0) {
 		std::cout << "failed to truncate resize file descriptor" << std::endl;
+		return -1;
 	}
-
+	
 	unsigned char *buf = static_cast <unsigned char*>(mmap(NULL, shmem_size, PROT_READ|PROT_WRITE, MAP_SHARED, frame_fd, 0));
 	if (DEBUG_COUT) {
 		std::cout << "buf size: " << sizeof(*buf) << std::endl;
 	}
-
-	pthread_mutex_lock(&mutex);
-	if (DEBUG_COUT) {
-		std::cout << "mutex locked" << std::endl;
-	}
+	
+// 	pthread_mutex_lock(&mutex);
+// 	if (DEBUG_COUT) {
+// 		std::cout << "mutex locked" << std::endl;
+// 	}
 
 	memcpy(buf, frame.ptr(), shmem_size);
 	if (DEBUG_COUT) {
 		std::cout << "memcpy'd" << std::endl;
 	}
 
-	pthread_mutex_unlock(&mutex);
-	if (DEBUG_COUT) {
-		std::cout << "mutex unlocked, buf size: " << sizeof(*buf) << std::endl;
-	}
+// 	pthread_mutex_unlock(&mutex);
+// 	if (DEBUG_COUT) {
+// 		std::cout << "mutex unlocked, buf size: " << sizeof(*buf) << std::endl;
+// 	}
 	
+	
+	// Thresh detect ------------------------------------------------------------------------------
 	// Determine the optimal threshold from the first frame
 	thresh = thresh_detect(frame);
 	std::time_t result = std::time(nullptr);
 	if (DEBUG_COUT) {
-		std::cout << "filesize: " << shmem_size << std::endl;
-		std::cout << "thresh: " << thresh << std::endl;
-		std::cout << "-------------------------\nexiting thresh detect mode\n-------------------------" << std::endl;
+		std::cout
+		<< "filesize: "
+		<< shmem_size
+		<< std::endl
+		<< "thresh: "
+		<< thresh
+		<< std::endl
+		<< "exiting thresh detect mode"
+		<< std::endl;
 	}
 	usleep(500);
+	
+	// Main Loop ----------------------------------------------------------------------------------
 	
 	while (1) {
 		
@@ -387,6 +419,7 @@ int main(int argc, char* argv[]) {
 		*mm_killcode = false;
 		*mm_gotframe = false;
 		*mm_gotconts = false;
+		*mm_localfrm = false;
 		*mm_ranprocs = false;
 		
 		std::cout << "starting new forks\n\n\n" << std::endl;
@@ -395,6 +428,8 @@ int main(int argc, char* argv[]) {
 		int pid2 = fork();
 		
 		if ((pid1 > 0) && (pid2 > 0)) {
+			// FORK 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			// This fork is the main coordinating fork.
 			if (SIG_ALERT != 0) {
 				usleep(1000);
 				break;
@@ -404,42 +439,58 @@ int main(int argc, char* argv[]) {
 			while((*mm_gotframe != true) && (*mm_gotconts != true) && (*mm_ranprocs != true)) {
 				usleep(50);
 			}
-			std::cout << "gotframe code: " << *mm_gotframe <<
-			", gotconts code: " << *mm_gotconts <<
-			", ranprocs code: " << *mm_ranprocs << std::endl;
+			std::cout
+			<< "gotframe code: "
+			<< *mm_gotframe
+			<< ", gotconts code: "
+			<< *mm_gotconts
+			<< ", ranprocs code: "
+			<< *mm_ranprocs
+			<< std::endl;
 			//sleep(3);
 			if (DEBUG_COUT) {
 				std::cout << "sending kill code" << std::endl;
 			}
+			// Set the local "done" code for this fork in the mm
 			*mm_killcode = true;
-			
-			
 		} else if ((pid1 == 0) && (pid2 > 0)) {
-			
+			// FORK 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			// This fork gets the next frame
+			// TODO this waits for local_frame to be captured in FORK 2, may be not needed with mutex
+			while (*mm_localfrm == false) {
+				usleep(50);
+			}
 			if ((SIG_ALERT == 0) && (*mm_gotframe == false)) {
 				cap >> frame;
 				++count;
+				// NOTE do I need the mutex here?  Does it do anything within a fork?
 				pthread_mutex_lock(&mutex);
 				memcpy(buf, frame.ptr(), shmem_size);
 				pthread_mutex_unlock(&mutex);
 				if (DEBUG_COUT) {
 					std::cout << "FRAME Number: " << count << std::endl;
-					std::cout << "gotframe_TRUE" << std::endl;
 				}
+				// Set the local "done" code for this fork in the mm
 				*mm_gotframe = true;
+				// Wait for sync
 				while(*mm_killcode != true) {
 					usleep(50);
 				}
 			}
+			// This fork dies with dignity
  			exit(0);
 			
 		} else if ((pid1 > 0) && (pid2 == 0)) {
+			// FORK 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			// This fork performs image processing on the current frame
 			if ((SIG_ALERT == 0) && (*mm_gotconts == false)) {
 
 				Mat working_frame;
 				pthread_mutex_lock(&mutex);
 				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), 16, buf, frame.elemSize() * frame.size().width);
 				pthread_mutex_unlock(&mutex);
+				// TODO May be redundant with mutex
+				*mm_localfrm = true;
 
 				cvtColor(local_frame, working_frame, COLOR_BGR2GRAY);
 				working_frame = halo_noise_and_center(working_frame);
@@ -457,27 +508,37 @@ int main(int argc, char* argv[]) {
 				if (DEBUG_COUT) {
 					std::cout << "gotconts_TRUE" << std::endl;
 				}
+				// Set the local "done" code for this fork in the mm
 				*mm_gotconts = true;
+				// Wait for sync
 				while(*mm_killcode != true) {
 					usleep(50);
 				}
 			}
+			// This fork dies with dignity
  			exit(0);
 			
 		} else {
+			// FORK 3 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			// This fork processes data collected from previous images
+			// TODO port data procs from Python
 			if ((SIG_ALERT == 0) && (*mm_ranprocs == false)) {
 				if (DEBUG_COUT) {
 					std::cout << "running procs" << std::endl;
-					std::cout << "ranprocs_TRUE" << std::endl;
 				}
+				// Set the local "done" code for this fork in the mm
 				*mm_ranprocs = true;
+				// Wait for sync
 				while(*mm_killcode != true) {
 					usleep(50);
 				}
 			}
+			// This fork dies with dignity
  			exit(0);
 		}
+		// END of forks ---------------------------------------------------------------------------
 	}
+	// END of main loop ---------------------------------------------------------------------------
 				
 
 // 	//while (std::time(nullptr) < (result + 60)) {
@@ -506,8 +567,6 @@ int main(int argc, char* argv[]) {
 // 		
 // 		// Background subtraction
 // 		pMOG->apply(working_frame.clone(), working_frame, 0.05);
-// 		
-// 		//pMOG_post->apply(working_frame.clone(), working_frame, 0.05);
 // 
 // 		if (DEBUG_FRAMES) {
 // 			//imshow("frame", frame);
