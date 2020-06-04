@@ -10,6 +10,7 @@
 #include <ctime>                         // for NULL
 //#include <exception>
 #include <fcntl.h>
+#include <fstream>
 #include <iostream>
 #include <pthread.h>
 #include <signal.h>
@@ -19,6 +20,7 @@ using std::string;
 #include <sys/ipc.h>                     // for IPC_CREAT, key_t
 #include <sys/shm.h>                     // for shmat
 #include <sys/mman.h>                    // for MAP_ANONYMOUS, MAP_SHARED
+#include <sys/wait.h>
 #include <unistd.h>                      // for fork, sleep, usleep
 #include <vector>                        // for vector
 using std::vector;
@@ -46,7 +48,8 @@ static Mat canny_convert(Mat in_frame, int in_thresh);
 static vector <vector<Point>> contours_only(Mat in_frame);
 static int thresh_detect(Mat frame);
 
-static Mat halo_noise_and_center(Mat in_frame) {
+static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
+	std::ofstream outell;
 	RotatedRect box = ellipse_finder(in_frame);
 	
 	int cols = in_frame.size().width;
@@ -82,6 +85,23 @@ static Mat halo_noise_and_center(Mat in_frame) {
 	
 	// Put it back to our inframe
 	in_frame = zero_mat.clone();
+	
+	// Open the outfile to append list of major ellipses
+	outell.open("./data/ellipses.csv", std::ios_base::app);
+	outell
+	<< framecnt
+	<< ","
+	<< box.center.x
+	<< ","
+	<< box.center.y
+	<< ","
+	<< box.size.width
+	<< ","
+	<< box.size.height
+	<< ","
+	<< box.angle
+	<< std::endl;
+	outell.close();
 	
 	return in_frame;
 }
@@ -158,15 +178,11 @@ static RotatedRect ellipse_finder(Mat in_frame) {
 	vector <vector<Point>> contours = contours_only(in_frame);
 	
 	if (DEBUG_COUT) {
-		std::cout << "Number of detected contours in frame: " << contours.size() << std::endl;
+		std::cout << "Number of detected contours in ellipse frame: " << contours.size() << std::endl;
 	}
-
+	
 	int largest_contour_index = largest_contour(contours);
 	
-// 	if (DEBUG_COUT) {
-// 		std::cout << "largest contour: " << contours[largest_contour_index] << std::endl;
-// 	}
-
 	// Fit the largest contour to an ellipse
 	RotatedRect box = fitEllipse(contours[largest_contour_index]);
 	
@@ -215,7 +231,7 @@ static void halo_startup(Mat in_frame, int in_thresh) {
 	// Check masked image for contours
 	vector <vector<Point>> contours = contours_only(zero_mat);
 	STARTUP_CONTOURS = contours.size();
-	std::cout << "\n\n\n\ncontours: " << STARTUP_CONTOURS << std::endl;
+	std::cout << "contours: " << STARTUP_CONTOURS << "\n\n\n\n" << std::endl;
 	
 	int keyboard = waitKey(1);
 	if (keyboard == 'q' || keyboard == 27) {
@@ -232,7 +248,7 @@ static int thresh_detect(Mat in_frame) {
 		for (thresh_i = 0; thresh_i <256; ++thresh_i) {
 			halo_startup(in_frame, thresh_i);
 			// if we get to no contours besides the mask, that is the optimal threshold
-			if (STARTUP_CONTOURS == 0) {
+			if (STARTUP_CONTOURS < 5) {
 				out_thresh = thresh_i;
 				break;
 			}
@@ -259,6 +275,9 @@ static void show_usage(string name) {
 			<< std::endl;
 }
 
+void childcheck(int signum) {
+	wait(NULL);
+}
 
 int main(int argc, char* argv[]) {
 	// Capture interrupt signals so we don't create zombie processes
@@ -304,14 +323,23 @@ int main(int argc, char* argv[]) {
 		std::cout << "Using input file: " << input_file << std::endl;
 	}
 	
+	// Touch the output file
+	std::ofstream outfile;
+	outfile.open("test.csv");
+// 	outfile << "Data" << std::endl;
+	outfile.close();
+	// Touch output ellipse file
+	std::ofstream outell;
+	outell.open("./data/ellipses.csv");
+	outell.close();
+	
 	// Instance and Assign ------------------------------------------------------------------------
 	// Memory map variables we want to share across forks
-	// mm_killcode is a generic "kill this fork" code
 	// mm_gotframe reports that the frame acquisition was completed
 	// mm_gotconts reports that video processing was completed
+	// mm_localfrm reports that the current frame was grabbed, proceed getting next frame
 	// mm_ranprocs reports that the contours were recorded
-	auto *mm_killcode = static_cast <bool *>(mmap(NULL, sizeof(bool), \
-		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	// mm_frmcount stores the frame counter
 	auto *mm_gotframe = static_cast <bool *>(mmap(NULL, sizeof(bool), \
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
 	auto *mm_gotconts = static_cast <bool *>(mmap(NULL, sizeof(bool), \
@@ -320,6 +348,11 @@ int main(int argc, char* argv[]) {
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
 	auto *mm_ranprocs = static_cast <bool *>(mmap(NULL, sizeof(bool), \
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_frmcount = static_cast <int *>(mmap(NULL, sizeof(int), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	*mm_frmcount = -1;
+// 	auto *mm_vec1 = static_cast <vector <vector float>>(mmap(NULL, 524288000, \
+ 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
 	
 	// OpenCV specific variables
 	Ptr <BackgroundSubtractor> pMOG = createBackgroundSubtractorMOG2(100, 16, true);
@@ -332,8 +365,6 @@ int main(int argc, char* argv[]) {
 	int frame_fd = open("/tmp/file", O_CREAT|O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	
 	// Other local variables
-	// TODO the count needs to be in mm
-	int count = -1;
 	int thresh = 0;
 	
 	
@@ -377,22 +408,11 @@ int main(int argc, char* argv[]) {
 	if (DEBUG_COUT) {
 		std::cout << "buf size: " << sizeof(*buf) << std::endl;
 	}
-	
-// 	pthread_mutex_lock(&mutex);
-// 	if (DEBUG_COUT) {
-// 		std::cout << "mutex locked" << std::endl;
-// 	}
 
 	memcpy(buf, frame.ptr(), shmem_size);
 	if (DEBUG_COUT) {
 		std::cout << "memcpy'd" << std::endl;
 	}
-
-// 	pthread_mutex_unlock(&mutex);
-// 	if (DEBUG_COUT) {
-// 		std::cout << "mutex unlocked, buf size: " << sizeof(*buf) << std::endl;
-// 	}
-	
 	
 	// Thresh detect ------------------------------------------------------------------------------
 	// Determine the optimal threshold from the first frame
@@ -414,130 +434,227 @@ int main(int argc, char* argv[]) {
 	// Main Loop ----------------------------------------------------------------------------------
 	
 	while (1) {
+		// Delared PID here so we can stash the fork in an if statement.
+		int pid1;
+		//int pid2;
 		
 		// Define all the mm_ codes as false
-		*mm_killcode = false;
 		*mm_gotframe = false;
 		*mm_gotconts = false;
 		*mm_localfrm = false;
 		*mm_ranprocs = false;
 		
-		std::cout << "starting new forks\n\n\n" << std::endl;
+// 		std::cout << "starting new fork\n\n\n" << std::endl;
 		
-		int pid1 = fork();
-		int pid2 = fork();
-		
-		if ((pid1 > 0) && (pid2 > 0)) {
-			// FORK 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-			// This fork is the main coordinating fork.
-			if (SIG_ALERT != 0) {
-				usleep(1000);
-				break;
-			}
-			
-			std::cout << "---------divider----------" << std::endl;
-			while((*mm_gotframe != true) && (*mm_gotconts != true) && (*mm_ranprocs != true)) {
-				usleep(50);
-			}
-			std::cout
-			<< "gotframe code: "
-			<< *mm_gotframe
-			<< ", gotconts code: "
-			<< *mm_gotconts
-			<< ", ranprocs code: "
-			<< *mm_ranprocs
-			<< std::endl;
-			//sleep(3);
-			if (DEBUG_COUT) {
-				std::cout << "sending kill code" << std::endl;
-			}
-			// Set the local "done" code for this fork in the mm
-			*mm_killcode = true;
-		} else if ((pid1 == 0) && (pid2 > 0)) {
-			// FORK 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-			// This fork gets the next frame
-			// TODO this waits for local_frame to be captured in FORK 2, may be not needed with mutex
-			while (*mm_localfrm == false) {
-				usleep(50);
-			}
-			if ((SIG_ALERT == 0) && (*mm_gotframe == false)) {
-				cap >> frame;
-				++count;
-				// NOTE do I need the mutex here?  Does it do anything within a fork?
-				pthread_mutex_lock(&mutex);
-				memcpy(buf, frame.ptr(), shmem_size);
-				pthread_mutex_unlock(&mutex);
-				if (DEBUG_COUT) {
-					std::cout << "FRAME Number: " << count << std::endl;
-				}
-				// Set the local "done" code for this fork in the mm
-				*mm_gotframe = true;
-				// Wait for sync
-				while(*mm_killcode != true) {
-					usleep(50);
-				}
-			}
-			// This fork dies with dignity
- 			exit(0);
-			
-		} else if ((pid1 > 0) && (pid2 == 0)) {
-			// FORK 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-			// This fork performs image processing on the current frame
-			if ((SIG_ALERT == 0) && (*mm_gotconts == false)) {
-
-				Mat working_frame;
-				pthread_mutex_lock(&mutex);
-				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), 16, buf, frame.elemSize() * frame.size().width);
-				pthread_mutex_unlock(&mutex);
-				// TODO May be redundant with mutex
-				*mm_localfrm = true;
-
-				cvtColor(local_frame, working_frame, COLOR_BGR2GRAY);
-				working_frame = halo_noise_and_center(working_frame);
-				
-				Canny(working_frame.clone(), working_frame, thresh, thresh*2);
-				
-				// custom threshold
-				//cv::threshold(frame, frame, thresh, 255, CV_THRESH_BINARY);
-				
-				working_frame = mask_halo(working_frame);
-				
-				// Background subtraction
-				pMOG->apply(working_frame.clone(), working_frame, 0.05);
-				
-				if (DEBUG_COUT) {
-					std::cout << "gotconts_TRUE" << std::endl;
-				}
-				// Set the local "done" code for this fork in the mm
-				*mm_gotconts = true;
-				// Wait for sync
-				while(*mm_killcode != true) {
-					usleep(50);
-				}
-			}
-			// This fork dies with dignity
- 			exit(0);
-			
+		// If we have not told the program to exit, fork and continue.
+		if (SIG_ALERT == 0) {
+			pid1 = fork();
+			//pid2 = fork();
 		} else {
-			// FORK 3 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-			// This fork processes data collected from previous images
-			// TODO port data procs from Python
-			if ((SIG_ALERT == 0) && (*mm_ranprocs == false)) {
-				if (DEBUG_COUT) {
-					std::cout << "running procs" << std::endl;
-				}
-				// Set the local "done" code for this fork in the mm
-				*mm_ranprocs = true;
-				// Wait for sync
-				while(*mm_killcode != true) {
-					usleep(50);
-				}
-			}
-			// This fork dies with dignity
- 			exit(0);
+			break;
 		}
-		// END of forks ---------------------------------------------------------------------------
-	}
+		
+		if (pid1 > 0) {
+			// FORK 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			// This fork is the main coordinating fork and image processing fork
+			// Due to OpenCV limitations, frame fetch and display must happen here to avoid headache
+			if (DEBUG_COUT) {
+				std::cout << "---------divider----------\nFRAME: " << (*mm_frmcount + 1) << std::endl;
+			}
+			// Fetch next frame
+			cap >> frame;
+			++*mm_frmcount;
+			// Declare this here so it gets destroyed every loop
+			Mat working_frame;
+			// Image processing operations
+			cvtColor(frame, working_frame, COLOR_BGR2GRAY);
+			working_frame = halo_noise_and_center(working_frame.clone(), *mm_frmcount);
+			Canny(working_frame.clone(), working_frame, thresh, thresh*2);
+			working_frame = mask_halo(working_frame.clone());
+			pMOG->apply(working_frame.clone(), working_frame, 0.05);
+			// Wait for fork 1 to have the previous frame stored.  Prevent unlikely race condition.
+			while (*mm_gotframe == false) {
+				usleep(50);
+			}
+			*mm_gotframe = false;
+			// Store this image into the memory buffer
+			memcpy(buf, working_frame.ptr(), shmem_size);
+			// Show frame
+			if (DEBUG_FRAMES) {
+				imshow("fg_mask", working_frame);
+				waitKey(1);
+			}
+			// Ensure the other fork is done
+			wait(0);
+		} else {
+			// FORK 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			// This fork performs data processing on contours in the current frame
+			Point2f center;
+			float radius;
+			int local_count = *mm_frmcount;
+			
+			if (SIG_ALERT == 0) {
+				// Grab the previous frame and store it locally
+				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf, 1 * frame.size().width);
+				
+				if (DEBUG_COUT) {
+					std::cout << "operating on data from frame: " << local_count << std::endl;
+				}
+				*mm_gotframe = true;
+				// Get contours
+				if (local_count > -1) {
+					vector <vector<Point>> contours = contours_only(local_frame);
+					if (DEBUG_COUT) {
+						std::cout << "Number of contours in data proc frame: " << contours.size() << std::endl;
+					}
+					if (contours.size() > 100) {
+						if (DEBUG_COUT) {
+							std::cout << "skipping this frame in log, greater than 100 contours" << std::endl;
+						}
+						return 0;
+					}
+					
+					// Cycle through the contours
+					for (auto vec : contours) {
+						if (vec.size() > 1) {
+							if (DEBUG_COUT) {
+								std::cout << vec << std::endl;
+							}
+							float contarea = contourArea(vec);
+							minEnclosingCircle(vec, center, radius);
+							// Open the outfile to append
+							outfile.open("test.csv", std::ios_base::app);
+							outfile
+							<< local_count
+							<< ","
+							<< center.x
+							<< ","
+							<< center.y
+							<< ","
+							<< radius
+							<< std::endl;
+							outfile.close();
+							if (DEBUG_COUT) {
+								std::cout
+								<< "area = "
+								<< contarea
+								<< std::endl
+								<< "cent rad = "
+								<< center
+								<< " "
+								<< radius
+								<< std::endl;
+							}
+						} // END vector size if
+					} // END contour for loop
+				} // END skip -1
+			} // END if SIG_ALERT==0
+			// This fork dies with dignity
+ 			return 0;
+		}
+		
+		
+		
+// 		if ((pid1 > 0) && (pid2 > 0)) {
+// 			// FORK 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// 			// This fork is the main coordinating fork.
+// 			if (DEBUG_COUT) {
+// 				std::cout << "---------divider----------" << std::endl;
+// 			}
+// 			// Wait for each child to die.
+// 			wait(0);
+// 			wait(0);
+// 			wait(0);
+// 			if (DEBUG_COUT) {
+// 				std::cout
+// 				<< "gotframe code: "
+// 				<< *mm_gotframe
+// 				<< ", gotconts code: "
+// 				<< *mm_gotconts
+// 				<< ", ranprocs code: "
+// 				<< *mm_ranprocs
+// 				<< std::endl;
+// 			}
+// 			if (DEBUG_FRAMES) {
+// 				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), 16, buf, frame.elemSize() * frame.size().width);
+// 				imshow("fg_mask", local_frame);
+// 				waitKey(1);
+// 			}
+// 		} else if ((pid1 == 0) && (pid2 > 0)) {
+// 			// FORK 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// 			// This fork gets the next frame
+// 			// TODO this waits for local_frame to be captured in FORK 2, may be not needed with mutex
+// 			while (*mm_localfrm == false) {
+// 				usleep(50);
+// 			}
+// 			if ((SIG_ALERT == 0) && (*mm_gotframe == false)) {
+// 				cap >> frame;
+// 				++*mm_frmcount;
+// 				// NOTE do I need the mutex here?  Does it do anything within a fork?
+// // 				pthread_mutex_lock(&mutex);
+// 				memcpy(buf, frame.ptr(), shmem_size);
+// // 				pthread_mutex_unlock(&mutex);
+// 				if (DEBUG_COUT) {
+// 					std::cout << "FRAME Number: " << *mm_frmcount << std::endl;
+// 				}
+// 				// Set the local "done" code for this fork in the mm
+// 				*mm_gotframe = true;
+// 			}
+// 			// This fork dies with dignity
+//  			exit(0);
+// 			
+// 		} else if ((pid1 > 0) && (pid2 == 0)) {
+// 			// FORK 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// 			// This fork performs image processing on the current frame
+// 			if ((SIG_ALERT == 0) && (*mm_gotconts == false)) {
+// 
+// 				Mat working_frame;
+// // 				pthread_mutex_lock(&mutex);
+// 				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), 16, buf, frame.elemSize() * frame.size().width);
+// // 				pthread_mutex_unlock(&mutex);
+// 				// TODO May be redundant with mutex
+// 				*mm_localfrm = true;
+// 
+// 				cvtColor(local_frame, working_frame, COLOR_BGR2GRAY);
+// 				working_frame = halo_noise_and_center(working_frame);
+// 				
+// 				Canny(working_frame.clone(), working_frame, thresh, thresh*2);
+// 				
+// 				// custom threshold
+// 				//cv::threshold(frame, frame, thresh, 255, CV_THRESH_BINARY);
+// 				
+// 				working_frame = mask_halo(working_frame);
+// 				
+// 				// Background subtraction
+// 				pMOG->apply(working_frame.clone(), working_frame, 0.05);
+// 				
+// 				if (DEBUG_COUT) {
+// 					std::cout << "gotconts_TRUE" << std::endl;
+// 				}
+// 				
+// 				
+// 				// Set the local "done" code for this fork in the mm
+// 				*mm_gotconts = true;
+// 			}
+// 			// This fork dies with dignity
+//  			exit(0);
+// 			
+// 		} else {
+// 			// FORK 3 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// 			// This fork processes data collected from previous images
+// 			// TODO port data procs from Python
+// 			if ((SIG_ALERT == 0) && (*mm_ranprocs == false)) {
+// 				if (DEBUG_COUT) {
+// 					std::cout << "running procs" << std::endl;
+// 				}
+// 				// Set the local "done" code for this fork in the mm
+// 				*mm_ranprocs = true;
+// 			}
+// 			// This fork dies with dignity
+//  			exit(0);
+// 		}
+		
+	} // END of forks -----------------------------------------------------------------------------
 	// END of main loop ---------------------------------------------------------------------------
 				
 
