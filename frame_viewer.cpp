@@ -242,7 +242,7 @@ int important_frames(string vidpath, string path) {
 // 			filename << "./data/frames" << std::setfill('0') << std::setw(8) << frame1 << ".png";
 // 			std::cout << filename.str() << std::endl;
 			cap.set(CAP_PROP_POS_FRAMES, double(frame1));
-			double currentPos = cap.get(CV_CAP_PROP_POS_FRAMES);
+			double currentPos = cap.get(CAP_PROP_POS_FRAMES);
 			if (currentPos != frame1) {
 				std::cout << "Requesting frame " << frame1 << " but got == " << currentPos << std::endl;
 			}

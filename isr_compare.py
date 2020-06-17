@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 data_cpp = "./test.csv"
 data_isr = "/home/wes/Documents/Aeroecology_Biologging_Initiative/LunAero Project/Israel_vid1/osf/isrframes.csv"
@@ -8,6 +9,7 @@ data_ell = "./data/ellipses.csv"
 
 USE_CV = False
 DEBUG = True
+STATS = True
 
 # "isclose" tolerance values
 SPER = 1
@@ -22,6 +24,15 @@ def frame_cutoff(inout):
 	inout = inout[np.where(inout[:, 0] < 60000)]
 	if DEBUG:
 		print("the first 60k frames:", np.shape(inout))
+	return inout
+
+def dtype_restrict(inout):
+	if np.max(inout[:, 0] > 65535):
+		print("the input frame value exceeds integer range!")
+		raise RuntimeError
+	oldbyte = inout.nbytes
+	inout = inout.astype('i4')
+	print("reduced floating point precision to uint32, array now takes up", inout.nbytes, "rather than", oldbyte, "bytes")
 	return inout
 
 def no_tiny_rad(inout, thresh=1):
@@ -53,9 +64,11 @@ def max_conts(inout):
 	# Find unique frames/counts of contours
 	unique, counts = np.unique(inout[:, 0], return_counts=True)
 	# Remove outliers
-	maxarray = unique[np.where(counts <= (int(np.mean(counts) + (3*np.std(counts)))))]
+	#maxarray = unique[np.where(counts <= (int(np.mean(counts) + (3*np.std(counts)))))]
+	maxarray = unique[np.where(counts <= 30)]
 	inout = inout[np.where(np.isin(inout[:, 0], maxarray))]
 	if DEBUG:
+		print("noise ceiling:", (int(np.mean(counts) + (1*np.std(counts)))))
 		print("noise ceiling shape:", np.shape(inout))
 	return inout
 
@@ -106,16 +119,12 @@ def remove_dupes(inout):
 	"""
 	if DEBUG:
 		print("removing duplicates")
-	tempunique = np.unique(inout[:, :3].astype(int), axis=0)
-	newout = np.empty((0, 4))
-	for i in tempunique:
-		if DEBUG:
-			if i[0] % 1000 == 0:
-				print("on frame:", i[0])
-		newout = np.vstack((newout, np.hstack((i[:], np.max(inout[np.all(inout[:, :3].astype(int) == i[:], axis=1)][:, 3])))))
+	indf = pd.DataFrame(inout)
+	outdf = indf.groupby([0, 1, 2])[3].max().reset_index()
+	outdf = outdf.values
 	if DEBUG:
-		print("reduced from", inout.shape[0], "to", newout.shape[0], "entries")
-	return newout
+		print("reduced from", inout.shape[0], "to", outdf.shape[0], "entries")
+	return outdf
 
 def concat_x_deg(data):
 	"""
@@ -128,16 +137,24 @@ def concat_x_deg(data):
 	:return: The output numpy array with shape (:, 12)
 	:rtype: np.ndarray
 	"""
+	import os
+	import re
 	unique = np.unique(data[:, 0])
 	if DEBUG:
 		print("Concat/tile data")
 		print("Unique frames:", unique.shape)
 	output = np.empty((0, 12))
-	for i in unique_frames[:]:
-		if DEBUG:
-			if (i % 10000 == 0):
+	cnt = 0
+	maxcnt = np.max(unique)
+	for i in unique[:]:
+		if i > (cnt+1)*1000:
+			if DEBUG:
 				print("frame:", i)
-		if not np.isin(i-1, unique_frames[:]) and np.isin(i-2, unique_frames[:]):
+			if cnt > 0:
+				np.savetxt("./data/temp-{:06d}.csv".format(cnt), output, delimiter=',', fmt='%i')
+				output = np.empty((0, 12))
+			cnt += 1
+		if not np.isin(i-1, unique[:]) and np.isin(i-2, unique[:]):
 			continue
 		temp1 = data[np.where(data[:, 0] == i)]
 		temp2 = data[np.where(data[:, 0] == i-1)]
@@ -146,45 +163,47 @@ def concat_x_deg(data):
 		temp1 = np.column_stack((np.repeat(temp1, np.size(temp2, 0), axis=0), np.tile(temp2, (np.size(temp1, 0), 1))))
 		if np.shape(temp1)[1] == 12:
 			output = np.vstack((output, temp1))
+	np.savetxt("./data/temp-{:06d}.csv".format(cnt), output, delimiter=',', fmt='%i')
+	#for f in sorted(os.listdir("./data")):
+		#if re.match(r"temp-[0-9]{6}\.csv", f):
+			#output = np.vstack((output, np.loadtxt("./data/"+f, delimiter=',')))
+			#os.remove("./data/"+f)
+	#if DEBUG:
+		#print("shape after concat", np.shape(output))
 	if DEBUG:
-		print("shape after concat", np.shape(output))
+		print("generated temp files")
+	return
+
+def filewise_dirdist_test():
+	import os
+	import re
+	output = np.empty((0, 16))
+	if DEBUG:
+		print("testing temp files and concat")
+	for f in sorted(os.listdir("./data")):
+		if re.match(r"temp-[0-9]{6}\.csv", f):
+			inout = np.loadtxt("./data/"+f, delimiter=',').astype('i4')
+			if DEBUG:
+				print("type:", inout.dtype)
+				print("input shape of", f, "=", inout.shape)
+			# Get distance
+			inout = distance_calc(inout)
+			# new format: (n) dist1 dist2
+			# Get direction
+			inout = direction_calc(inout)
+			# new format: (n) (dist) dir1 dir2
+			# Perform "isclose" tests
+			inout = test_dist(inout)
+			inout = test_dir(inout)
+			inout = test_rad(inout)
+			if DEBUG:
+				print("output shape of", f, "=", inout.shape)
+			output = np.vstack((output, inout))
+			os.remove("./data/"+f)
 	return output
 
-def isr_frames(indata=data_isr):
-	"""
-	This function pulls reference data from human moonwatching reports.  The input must be formatted such that
-	the first and second columns are the first and last frames the bird appears on.
-	
-	:param indata: Path to the input dataset. Defaults to data_isr global.
-	:type inout: str
-	:return: israrr - 1D array of all frames which contain a human detected bird.
-	:rtype: np.ndarray
-	"""
-	import csv
-	if DEBUG:
-		print("making a list of ISR frames")
-	isrlist = []
-	with open(indata) as csvfile:
-		read = csv.reader(csvfile, delimiter=',')
-		for row in read:
-			for i in range(int(row[0]), int(row[1])+1):
-				isrlist.append(i)
-	israrr = np.asarray(isrlist)
-	return israrr
 
-def compare_to_isr(indata, israrr):
-	"""
-	This function performs a simple comparison of input data to the ISR human detected data. It simply reports
-	the number of frames which match the ISR input.
-	
-	:param indata: Path to the input dataset. Defaults to data_isr global.
-	:type inout: str
-	:return: nothing
-	"""
-	indata = indata[np.where(np.isin(indata[:, 0], israrr[:]))]
-	if DEBUG:
-		print("newcpp shape of isr frames", np.shape(indata))
-	return
+
 
 def distance_calc(inout):
 	# in size is [:, 12]
@@ -279,6 +298,42 @@ def test_rad(inout):
 	if DEBUG:
 		print("post radtest size:", np.shape(inout))
 	return inout
+
+def isr_frames(indata=data_isr):
+	"""
+	This function pulls reference data from human moonwatching reports.  The input must be formatted such that
+	the first and second columns are the first and last frames the bird appears on.
+	
+	:param indata: Path to the input dataset. Defaults to data_isr global.
+	:type inout: str
+	:return: israrr - 1D array of all frames which contain a human detected bird.
+	:rtype: np.ndarray
+	"""
+	import csv
+	if DEBUG:
+		print("making a list of ISR frames")
+	isrlist = []
+	with open(indata) as csvfile:
+		read = csv.reader(csvfile, delimiter=',')
+		for row in read:
+			for i in range(int(row[0]), int(row[1])+1):
+				isrlist.append(i)
+	israrr = np.asarray(isrlist)
+	return israrr
+
+def compare_to_isr(indata, israrr):
+	"""
+	This function performs a simple comparison of input data to the ISR human detected data. It simply reports
+	the number of frames which match the ISR input.
+	
+	:param indata: Path to the input dataset. Defaults to data_isr global.
+	:type inout: str
+	:return: nothing
+	"""
+	indata = indata[np.where(np.isin(indata[:, 0], israrr[:]))]
+	if DEBUG:
+		print("newcpp shape of isr frames", np.shape(indata))
+	return
 
 def label_isr(inout, israrr):
 	inout = np.column_stack((inout, np.where(np.isin(inout[:, 0], israrr), 1, 0)))
@@ -399,31 +454,56 @@ def attach_links(inout):
 	#or
 	#(a*b*sqrt(((-m^2)+2*j*m-j^2+a^2)*tan(t)^2+((2*m-2*j)*n-2*k*m+2*j*k)*tan(t)-n^2+2*k*n-k^2+b^2)+a^2*j*tan(t)^2+(a^2*n-a^2*k)*tan(t)+b^2*m)/(a^2*tan(t)^2+b^2)
 	
+	# inout must use floats
+	inout = inout.astype(float)
 	# calculate endpoint xy of vector on ellipse
 	matharr = -(inout[:, 21]/2*inout[:, 22]*np.sqrt(((-inout[:, 19]**2)+2*inout[:, 1]*inout[:, 19]-inout[:, 1]**2+inout[:, 21]**2)*np.tan(inout[:, 18])**2+((2*inout[:, 19]-2*inout[:, 1])*inout[:, 20]-2*inout[:, 2]*inout[:, 19]+2*inout[:, 1]*inout[:, 2])*np.tan(inout[:, 18])-inout[:, 20]**2+2*inout[:, 2]*inout[:, 20]-inout[:, 2]**2+inout[:, 22]**2)-inout[:, 21]**2*inout[:, 1]*np.tan(inout[:, 18])**2+(inout[:, 21]**2*inout[:, 2]-inout[:, 21]**2*inout[:, 20])*np.tan(inout[:, 18])-inout[:, 22]**2*inout[:, 19])/(inout[:, 21]**2*np.tan(inout[:, 18])**2+inout[:, 22]**2)
 	## Y value of the same
-	matharr2 = np.tan(inout[:, 18])*matharr[:]+inout[:, 2]-np.tan(inout[:, 18])*inout[:, 1]
-	# stacking adds elltargetx, elltargety
-	inout = np.column_stack((inout, matharr, matharr2))
+	matharr = np.column_stack((matharr, np.tan(inout[:, 18])*matharr[:]+inout[:, 2]-np.tan(inout[:, 18])*inout[:, 1]))
+	# stacking adds elltargetx, elltargety; switch back to int
+	inout = np.column_stack((inout, matharr)).astype('i4')
 	# calculate max frames away the final contour could be away from this one
-	inout = np.column_stack((inout, np.divide(np.sqrt(np.square(np.subtract(inout[:, 1], inout[:, 24]))+np.square(np.subtract(inout[:, 2], inout[:, 25]))), inout[:, 17]).astype(int)+2))
+	#inout = np.column_stack((inout, np.divide(np.sqrt(np.square(np.subtract(inout[:, 1], inout[:, 24]))+np.square(np.subtract(inout[:, 2], inout[:, 25]))), inout[:, 17]).astype(int)+2))
+	inout = np.column_stack((inout, np.repeat(3, inout.shape[0])))
 	if DEBUG:
 		print("new shape with math arrays", inout[0])
 	output = np.empty((0, 28))
-	for i in inout:
-		# newer frames
-		potential = inout[np.where(np.logical_and(inout[:, 0] > i[0], inout[:, 0] < (i[26]+i[0])))]
-		# test dist
+	cnt = 0
+	for i in np.unique(inout[:, 0]):
+		if i > (cnt+1)*1000:
+			if DEBUG:
+				print("merging frame:", i)
+			cnt += 1
+		maxdist = min(np.max(inout[np.where(inout[:, 0] == i)][:, 26]), 10)
+		print(i, "maxdist", maxdist, "with shape", inout[np.where(inout[:, 0] == i)].shape)
+		# each have shape of (:, 27)
+		## newer frames
+		potential = inout[np.where(np.logical_and(inout[:, 0] > i, inout[:, 0] < (maxdist+i+1)))]
+		thisframe = inout[np.where(inout[:, 0] == i)]
+		## newer frames
+		merged = np.column_stack((np.repeat(thisframe, np.size(potential, 0), axis=0), np.tile(potential, (np.size(thisframe, 0), 1))))
+		## test dir
+		merged = merged[np.isclose(merged[:, 18], merged[:, 18+27], rtol=ANGR, atol=ANGA)]
+		merged = np.column_stack((merged, np.divide(np.absolute(np.multiply((merged[:, 25]-merged[:, 2]), merged[:, 1+27])-np.multiply((merged[:, 24]-merged[:, 1]), merged[:, 2+27])+(merged[:, 24]*merged[:, 2])-(merged[:, 25]*merged[:, 1])), np.sqrt((merged[:, 25]-merged[:, 2])**2+(merged[:, 24]-merged[:, 1])**2))))
+		## only values near the line are kept
+		merged = merged[np.where(merged[:, 54] < 10)]
+		## count the potentials and add it to the list
+		output = np.vstack((output, np.column_stack((thisframe, np.repeat(merged.shape[0], thisframe.shape[0])))))
+		print("outputshape", output.shape)
+	#for i in inout:
+		## newer frames
+		#potential = inout[np.where(np.logical_and(inout[:, 0] > inout[inout[:, 0], 1:], inout[:, 0] < (i[26]+i[0])))]
+		## test dist
 		
-		# test dir
-		potential = potential[np.isclose(i[18], potential[:, 18], rtol=ANGR, atol=ANGA)]
-		# calculate the distance from potential point to line
-		potential = np.column_stack((potential, np.divide(np.absolute(np.multiply((i[25]-i[2]), potential[:, 1])-np.multiply((i[24]-i[1]), potential[:, 2])+(i[24]*i[2])-(i[25]*i[1])), np.sqrt((i[25]-i[2])**2+(i[24]-i[1])**2))))
-		# only values near the line are kept
-		potential = potential[np.where(potential[:, 27] < 10)]
+		## test dir
+		#potential = potential[np.isclose(i[18], potential[:, 18], rtol=ANGR, atol=ANGA)]
+		## calculate the distance from potential point to line
+		#potential = np.column_stack((potential, np.divide(np.absolute(np.multiply((i[25]-i[2]), potential[:, 1])-np.multiply((i[24]-i[1]), potential[:, 2])+(i[24]*i[2])-(i[25]*i[1])), np.sqrt((i[25]-i[2])**2+(i[24]-i[1])**2))))
+		## only values near the line are kept
+		#potential = potential[np.where(potential[:, 27] < 10)]
 		
-		# count the potentials and add it to the list
-		output = np.vstack((output, np.hstack((i, potential.shape[0]))))
+		## count the potentials and add it to the list
+		#output = np.vstack((output, np.hstack((i, potential.shape[0]))))
 	return output
 
 def draw_boxes_on_frames(inout):
@@ -484,6 +564,9 @@ def main():
 	# Only the first 60k frames
 	out_cat = frame_cutoff(out_cat)
 	
+	# Restrict datatypes
+	out_cat = dtype_restrict(out_cat)
+	
 	# Remove contours that are 0.5px radius
 	out_cat = no_tiny_rad(out_cat)
 	
@@ -497,46 +580,45 @@ def main():
 	out_cat = remove_dupes(out_cat)
 	
 	##Save Point
-	np.savetxt(data_out, out_cat, delimiter=',')
+	np.savetxt(data_out, out_cat, delimiter=',', fmt='%i')
 	
 	# Store this entire list in an alt spot for later
 	alt_cat = out_cat
 	
 	# expand data for nearby contours in time
-	out_cat = concat_x_deg(out_cat)
+	concat_x_deg(out_cat)
 	
 	# new format: n, n-1, n-2
 	
-	##Save Point
-	np.savetxt(data_out, out_cat, delimiter=',')
+	## Gen array of frames found by ISR
+	#israrr = isr_frames()
+	## Only keep frames found by ISR
+	#compare_to_isr(out_cat, israrr)
+	
+	out_cat = filewise_dirdist_test()
 	
 	if DEBUG:
 		print("Save point size:", np.shape(out_cat))
+	
+	## Get distance
+	#out_cat = distance_calc(out_cat)
+	## new format: (n) dist1 dist2
+	
+	## Get direction
+	#out_cat = direction_calc(out_cat)
+	## new format: (n) (dist) dir1 dir2
+	
+	## Perform "isclose" tests
+	#if DEBUG:
+		#print("performing isclose tests")
+	#out_cat = test_dist(out_cat)
+	#out_cat = test_dir(out_cat)
+	#out_cat = test_rad(out_cat)
 	
 	# Gen array of frames found by ISR
 	israrr = isr_frames()
 	# Only keep frames found by ISR
 	compare_to_isr(out_cat, israrr)
-	
-	# Get distance
-	out_cat = distance_calc(out_cat)
-	# new format: (n) dist1 dist2
-	
-	# Get direction
-	out_cat = direction_calc(out_cat)
-	# new format: (n) (dist) dir1 dir2
-	
-	# Perform "isclose" tests
-	if DEBUG:
-		print("performing isclose tests")
-	out_cat = test_dist(out_cat)
-	out_cat = test_dir(out_cat)
-	out_cat = test_rad(out_cat)
-	
-	# Gen array of frames found by ISR
-	israrr = isr_frames()
-	# Only keep frames found by ISR
-	new_cpp_to_isr(out_cat, israrr)
 	
 	# Label the hits and misses
 	out_cat = label_isr(out_cat, israrr)

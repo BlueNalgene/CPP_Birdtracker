@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
+#include <numeric>                       // for accumulate
 #include <pthread.h>
 #include <signal.h>
 #include <stdlib.h>                      // for exit
@@ -21,6 +22,7 @@ using std::string;
 #include <sys/shm.h>                     // for shmat
 #include <sys/mman.h>                    // for MAP_ANONYMOUS, MAP_SHARED
 #include <sys/wait.h>
+#include <tuple>
 #include <unistd.h>                      // for fork, sleep, usleep
 #include <vector>                        // for vector
 using std::vector;
@@ -169,7 +171,7 @@ static Mat canny_convert(Mat in_frame, int in_thresh) {
 static vector <vector<Point>> contours_only(Mat in_frame) {
 	vector <vector<Point>> contours;
 	vector<Vec4i> hierarchy;
-	findContours(in_frame, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
+	findContours(in_frame, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
 	return contours;
 }
 
@@ -248,7 +250,7 @@ static int thresh_detect(Mat in_frame) {
 		for (thresh_i = 0; thresh_i <256; ++thresh_i) {
 			halo_startup(in_frame, thresh_i);
 			// if we get to no contours besides the mask, that is the optimal threshold
-			if (STARTUP_CONTOURS < 5) {
+			if (STARTUP_CONTOURS < 1) {
 				out_thresh = thresh_i;
 				break;
 			}
@@ -273,6 +275,20 @@ static void show_usage(string name) {
 			<< "\t-do,--debug-output \t\tPrint debugging info to the terminal\n"
 			<< "\t-df,--debug-frames \t\tShow gui window of current frame"
 			<< std::endl;
+}
+
+static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe) {
+	float avg;
+	int outval = 0;
+	int cnt = 0;
+	for (size_t i = 0; i<contour.size(); i++) {
+		
+// 		std::cout << "(x, y, L): (" << contour[i].x << ", " << contour[i].y << ", " << (int)lapframe.at<uchar>(contour[i].x, contour[i].y) << ")"<< std::endl;
+		outval +=(int16_t)lapframe.at<int16_t>(contour[i].y, contour[i].x);
+		cnt++;
+	}
+	avg = outval/cnt;
+	return {avg, cnt};
 }
 
 void childcheck(int signum) {
@@ -363,6 +379,7 @@ int main(int argc, char* argv[]) {
 	pthread_mutex_t mutex;
 	pthread_mutex_init(&mutex, NULL);
 	int frame_fd = open("/tmp/file", O_CREAT|O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+	int frame_fd2 = open("/tmp/file2", O_CREAT|O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	
 	// Other local variables
 	int thresh = 0;
@@ -403,6 +420,12 @@ int main(int argc, char* argv[]) {
 		std::cout << "failed to truncate resize file descriptor" << std::endl;
 		return -1;
 	}
+	// Resize the frame_fd to fit the frame size we are using
+	if (ftruncate(frame_fd2, shmem_size) != 0) {
+		std::cout << "failed to truncate resize file descriptor 2" << std::endl;
+		return -1;
+	}
+	
 	
 	unsigned char *buf = static_cast <unsigned char*>(mmap(NULL, shmem_size, PROT_READ|PROT_WRITE, MAP_SHARED, frame_fd, 0));
 	if (DEBUG_COUT) {
@@ -410,6 +433,16 @@ int main(int argc, char* argv[]) {
 	}
 
 	memcpy(buf, frame.ptr(), shmem_size);
+	if (DEBUG_COUT) {
+		std::cout << "memcpy'd" << std::endl;
+	}
+	
+	unsigned char *buf2 = static_cast <unsigned char*>(mmap(NULL, shmem_size, PROT_READ|PROT_WRITE, MAP_SHARED, frame_fd2, 0));
+	if (DEBUG_COUT) {
+		std::cout << "buf2 size: " << sizeof(*buf2) << std::endl;
+	}
+	
+	memcpy(buf2, frame.ptr(), shmem_size);
 	if (DEBUG_COUT) {
 		std::cout << "memcpy'd" << std::endl;
 	}
@@ -469,6 +502,8 @@ int main(int argc, char* argv[]) {
 			// Image processing operations
 			cvtColor(frame, working_frame, COLOR_BGR2GRAY);
 			working_frame = halo_noise_and_center(working_frame.clone(), *mm_frmcount);
+			// Store centered image into the memory buffer 2
+			memcpy(buf2, working_frame.ptr(), shmem_size);
 			Canny(working_frame.clone(), working_frame, thresh, thresh*2);
 			working_frame = mask_halo(working_frame.clone());
 			pMOG->apply(working_frame.clone(), working_frame, 0.05);
@@ -496,32 +531,46 @@ int main(int argc, char* argv[]) {
 			if (SIG_ALERT == 0) {
 				// Grab the previous frame and store it locally
 				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf, 1 * frame.size().width);
+				Mat lap_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf2, 1 * frame.size().width);
 				
 				if (DEBUG_COUT) {
 					std::cout << "operating on data from frame: " << local_count << std::endl;
 				}
+				imwrite("./tst.png", lap_frame);
+				imwrite("./tst2.png", local_frame);
 				*mm_gotframe = true;
+				// Get and store Laplacian version of frame
+				Laplacian(lap_frame.clone(), lap_frame, CV_16S, 1, 1, 0, BORDER_REPLICATE);
+				
+// 				FileStorage file("some_name.xml", FileStorage::WRITE);
+// 				file << "matName" << lap_frame;
+				
+				
 				// Get contours
 				if (local_count > -1) {
 					vector <vector<Point>> contours = contours_only(local_frame);
 					if (DEBUG_COUT) {
 						std::cout << "Number of contours in data proc frame: " << contours.size() << std::endl;
 					}
-					if (contours.size() > 100) {
-						if (DEBUG_COUT) {
-							std::cout << "skipping this frame in log, greater than 100 contours" << std::endl;
-						}
-						return 0;
-					}
+// 					if (contours.size() > 100) {
+// 						if (DEBUG_COUT) {
+// 							std::cout << "skipping this frame in log, greater than 100 contours" << std::endl;
+// 						}
+// 						return 0;
+// 					}
 					
 					// Cycle through the contours
 					for (auto vec : contours) {
+						// Greater than one includes lunar ellipse
 						if (vec.size() > 1) {
 							if (DEBUG_COUT) {
 								std::cout << vec << std::endl;
 							}
 							float contarea = contourArea(vec);
 							minEnclosingCircle(vec, center, radius);
+							float lapsum;
+							int strictperi;
+							std::tie(lapsum, strictperi) = laplace_sum(vec, lap_frame);
 							// Open the outfile to append
 							outfile.open("test.csv", std::ios_base::app);
 							outfile
@@ -532,6 +581,10 @@ int main(int argc, char* argv[]) {
 							<< center.y
 							<< ","
 							<< radius
+							<< ","
+							<< lapsum
+							<< ","
+							<< strictperi
 							<< std::endl;
 							outfile.close();
 							if (DEBUG_COUT) {
