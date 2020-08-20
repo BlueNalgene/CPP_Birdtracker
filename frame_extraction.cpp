@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <ctime>                         // for NULL
 //#include <exception>
+#include <tgmath.h>                      // for sin, cos, etc.
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
@@ -28,9 +29,14 @@ using std::string;
 using std::vector;
 
 #include "opencv2/opencv.hpp"
+#include "opencv2/ximgproc.hpp"
 using namespace cv;
 
 // Defined Constants
+#define MAX_FEATURES 500
+#define GOOD_MATCH_PERCENT 0.15f
+#define EDGETHRESH 10
+
 
 // Global Variables
 bool DEBUG_FRAMES = false;
@@ -38,58 +44,255 @@ bool DEBUG_COUT = false;
 int STARTUP_CONTOURS;
 RotatedRect STOREBOX;
 int SIG_ALERT = 0;
+float ELL_RAD;
+double ORIG_AREA;
+double ORIG_PERI;
+int ORIG_VERT;
+int ORIG_HORZ;
+int BOXSIZE;
+Point ORIG_TL;
+Point ORIG_BR;
 
-// Declared functions
-static void show_usage(string name);
-int main(int argc, char* argv[]);
-static void halo_startup(Mat in_frame, int in_thresh);
+// Declared functions/prototypes
+static Mat shift_frame(Mat in_frame, int shiftx, int shifty);
+static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int plusy);
+static Mat test_edges(Mat in_frame, vector<Point> contour);
+static int min_square_dim(Mat in_frame);
+static Mat first_frame(Mat in_frame, int framecnt);
+static Mat halo_noise_and_center(Mat in_frame, int framecnt);
+static void signal_callback_handler(int signum);
+static Mat mask_halo(Mat in_frame, int maskwidth);
+static vector<vector<Point>> fetch_dynamic_mask(Mat in_frame);
+static Mat apply_dynamic_mask(Mat in_frame, vector<vector<Point>> contours, int maskwidth);
 static int largest_contour(vector <vector<Point>> contours);
-static Mat halo_noise_and_center(Mat in_frame);
-static RotatedRect ellipse_finder(Mat in_frame);
 static Mat canny_convert(Mat in_frame, int in_thresh);
 static vector <vector<Point>> contours_only(Mat in_frame);
+static RotatedRect ellipse_finder(Mat in_frame);
 static int thresh_detect(Mat frame);
+static void show_usage(string name);
+static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe);
+static void childcheck(int signum);
+static int tier_one(int cnt, Mat frame);
+static int tier_two(int cnt, Mat frame);
+static int tier_three(int cnt, Mat frame, Mat oldframe);
+int main(int argc, char* argv[]);
 
-static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
+
+
+
+static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
+	Mat zero_mask = Mat::zeros(in_frame.size(), in_frame.type());
+	
+	
+	if (DEBUG_COUT) {
+		std::cout << "SHIFT_X: " << shiftx << std::endl << "SHIFT_Y: " << shifty << std::endl;
+	}
+	
+	if ((shiftx < 0) && (shifty < 0)) { // move right and down
+		if (DEBUG_COUT) {
+			std::cout << "shifting case 1 - move right and down" << std::endl;
+		}
+		in_frame(Rect(0, 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
+		.copyTo(zero_mask(Rect(abs(shiftx), abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
+	} else if (shiftx < 0) { // move right and maybe up
+		if (DEBUG_COUT) {
+			std::cout << "shifting case 2 - move right and maybe up" << std::endl;
+		}
+		in_frame(Rect(0, abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
+		.copyTo(zero_mask(Rect(abs(shiftx), 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
+	} else if (shifty < 0) { // move down and maybe left
+		if (DEBUG_COUT) {
+			std::cout << "shifting case 3 - move down and maybe left" << std::endl;
+		}
+		in_frame(Rect(abs(shiftx), 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
+		.copyTo(zero_mask(Rect(0, abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
+	} else {  // positive moves up and left
+		if (DEBUG_COUT) {
+			std::cout << "shifting case 4 - move up and left" << std::endl;
+		}
+		in_frame(Rect(abs(shiftx), abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
+		.copyTo(zero_mask(Rect(0, 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
+	}
+	
+	in_frame = zero_mask;
+	
+	return in_frame;
+}
+
+static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int plusy) {
+	int shiftx = 0;
+	int shifty = 0;
+	
+	Point local_tl = boundingRect(contour).tl();
+	Point local_br = boundingRect(contour).br();
+	
+	if (DEBUG_COUT) {
+		std::cout << "PLUSX: " << plusx << " PLUSY: " << plusy << std::endl;
+		std::cout << "LOCAL_TL = (" << local_tl.x << ", " << local_tl.y << ")" << std::endl;
+		std::cout << "LOCAL_BR = (" << local_br.x << ", " << local_br.y << ")" << std::endl;
+		std::cout << "ORIG_TL = (" << ORIG_TL.x << ", " << ORIG_TL.y << ")" << std::endl;
+		std::cout << "ORIG_BR = (" << ORIG_BR.x << ", " << ORIG_BR.y << ")" << std::endl;
+	}
+	
+	if ((abs(plusx) > EDGETHRESH) && (abs(plusx) > EDGETHRESH)) {
+		if (plusx > 0) {
+			if (plusy > 0) {
+				// +x, +y (touching right and bottom edges)
+				shiftx = (local_tl.x - ORIG_TL.x);
+				shifty = (local_tl.y - ORIG_TL.y);
+			} else {
+				// +x, -y (touching right and top edges)
+				shiftx = (local_tl.x - ORIG_TL.x);
+				shifty = (local_br.y - ORIG_BR.y);
+			}
+		} else {
+			if (plusy > 0) {
+				// -x, +y (touching left and bottom edges)
+				shiftx = (local_br.x - ORIG_BR.x);
+				shifty = (local_tl.y - ORIG_TL.y);
+			} else {
+				// -x, -y (touching left and top edges)
+				shiftx = (local_br.x - ORIG_BR.x);
+				shifty = (local_br.y - ORIG_BR.y);
+			}
+		}
+	} else if (abs(plusx) > EDGETHRESH) {
+		if (plusx > 0) {
+			// +x (touching right edge)
+			shiftx = (local_tl.x - ORIG_TL.x);
+			
+		} else {
+			// -x (touching left edge)
+			shiftx = (local_br.x - ORIG_BR.x);
+			
+		}
+	} else if (abs(plusy) > EDGETHRESH) {
+		if (plusy > 0) {
+			// +y (touching bottom edge)
+			shifty = (local_tl.y - ORIG_TL.y);
+			
+		} else {
+			// -y (touching top edge)
+			shifty = (local_br.y - ORIG_BR.y);
+			
+		}
+	}
+	
+	in_frame = shift_frame(in_frame, shiftx, shifty);
+	
+	
+	return in_frame;
+}
+
+static Mat test_edges(Mat in_frame, vector<Point> contour) {
+	Moments M = moments(contour);
+	Point cen(int(M.m10/M.m00), int(M.m01/M.m00));
+	if (DEBUG_COUT) {
+		std::cout << "centroid: " << cen << std::endl;
+	}
+	
+	circle(in_frame, cen, 3, Scalar(255, 0, 0), 1, 8, 0);
+	
+	Rect rect  = boundingRect(contour);
+	int to_top = int(M.m01/M.m00) - rect.tl().y;
+	int to_right = rect.br().x - int(M.m10/M.m00);
+	int to_bottom = rect.br().y - int(M.m01/M.m00);
+	int to_left = int(M.m10/M.m00) - rect.tl().x;
+	
+	int xsize = rect.br().x - rect.tl().x;
+	int ysize = rect.br().y - rect.tl().y;
+	
+	std::cout << to_top << "," << to_right << "," << to_bottom << "," << to_left << std::endl;
+	
+	int plusx = 0;
+	int plusy = 0;
+	if (to_top != to_bottom) {
+		plusy = to_top - to_bottom;
+	}
+	if (to_left != to_right) {
+		plusx = to_left - to_right;
+	}
+	
+	std::cout << plusx << ", " << plusy << std::endl;
+	
+	if ((abs(plusx) > EDGETHRESH) || (abs(plusy) > EDGETHRESH)) {
+		
+		if (DEBUG_COUT) {
+			std::cout << "Activating Corner Matching" << std::endl;
+		}
+		in_frame = corner_matching(in_frame, contour, plusx, plusy);
+	}
+	
+	return in_frame;
+}
+
+static int min_square_dim(Mat in_frame) {
+	BOXSIZE = min(in_frame.rows, in_frame.cols);
+	if (DEBUG_COUT) {
+		std::cout << "Cutting frame to size: (" << BOXSIZE << ", " << BOXSIZE << ")" << std::endl;
+	}
+	return 0;
+}
+
+
+
+static Mat first_frame(Mat in_frame, int framecnt) {
+	min_square_dim(in_frame);
+	
 	std::ofstream outell;
-	RotatedRect box = ellipse_finder(in_frame);
+	vector <vector<Point>> contours = contours_only(in_frame);
 	
-	int cols = in_frame.size().width;
-	int rows = in_frame.size().height;
+	if (DEBUG_COUT) {
+		std::cout << "Number of detected contours in ellipse frame: " << contours.size() << std::endl;
+	}
 	
-	// create mats from size
-	Mat mask_mat = Mat::zeros(Size(cols, rows), CV_8UC1);
-	Mat zero_mat = Mat::zeros(Size(cols, rows), CV_8UC3);
+	int largest_contour_index = largest_contour(contours);
 	
-	// Select filled area with moon
-	ellipse(mask_mat, box, 255, -1, LINE_AA);
-	in_frame.copyTo(zero_mat, mask_mat);
+	// Store original area and perimeter of first frame
+	ORIG_AREA = contourArea(contours[largest_contour_index]);
+	ORIG_PERI = arcLength(contours[largest_contour_index], true);
+	ORIG_VERT = boundingRect(contours[largest_contour_index]).height;
+	ORIG_HORZ = boundingRect(contours[largest_contour_index]).width;
 	
-	// Reset our in_frame
-	in_frame = zero_mat.clone();
+	
+	// Fit the largest contour to an ellipse
+	RotatedRect box = fitEllipse(contours[largest_contour_index]);
+	
+	// Use minimum enclosing circle to get max diameter of moon ellipse
+	Point2f center;
+	minEnclosingCircle(contours[largest_contour_index], center, ELL_RAD);
+	
+	if (DEBUG_COUT) {
+		std::cout << "box width: " << box.size.width << std::endl;
+		std::cout << "box height: " << box.size.height << std::endl;
+		std::cout << "box x: " << box.center.x << std::endl;
+		std::cout << "box y: " << box.center.y << std::endl;
+		std::cout << "box angle: " << box.angle << std::endl;
+	}
+	
+	framecnt = framecnt + 1;
+	
+// 	// Select filled area with moon
+// 	ellipse(mask_mat, box, 255, -1, LINE_AA);
+	
+	// Create rect representing the image
+	Rect image_rect = Rect({}, in_frame.size());
+	Rect roi = Rect(box.center.x-(BOXSIZE/2), box.center.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
 
-	// Clear memory
-	zero_mat = Mat::zeros(Size(cols, rows), CV_8UC1);
+	// Find intersection, i.e. valid crop region
+	Rect intersection = image_rect & roi;
+
+	// Move intersection to the result coordinate space
+	Rect inter_roi = intersection - roi.tl();
+
+	// Create black image and copy intersection
+	Mat crop = Mat::zeros(roi.size(), in_frame.type());
+	in_frame(intersection).copyTo(crop(inter_roi));
 	
-	// Shift left by X and shift up by Y (distance from box center to frame center
-	int xdi = (cols / 2) - box.center.x;
-	int ydi = (rows / 2) - box.center.y;
-	
-	// Use warpaffine for generic transformation
-	// FIXME Warp affine is inefficient for what we need here, we should really use:
-	// - input(cv::Rect(sx, sy, w - sx, h - sy)).copyTo(output(cv::Rect(0, 0, w - sx, h - sy)));
-	// but that requires figuring out how to make the bounding rect behave for the rotatedrect.
-	mask_mat = (Mat_<float>(2, 3) << 1, 0, (float) xdi, 0, 1, (float) ydi);
-	warpAffine(in_frame, zero_mat, mask_mat, zero_mat.size());
-	
-	std::cout << (cols/2) << ", " << (rows/2) << std::endl;
-	STOREBOX = RotatedRect(Point2f((cols/2), (rows/2)), Size2f(box.size.width*.98, box.size.height*.98), box.angle);
-	
-	// Put it back to our inframe
-	in_frame = zero_mat.clone();
+	in_frame = crop;	
 	
 	// Open the outfile to append list of major ellipses
-	outell.open("./data/ellipses.csv", std::ios_base::app);
+	outell.open("../data/ellipses.csv", std::ios_base::app);
 	outell
 	<< framecnt
 	<< ","
@@ -102,8 +305,79 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	<< box.size.height
 	<< ","
 	<< box.angle
+	<< ","
+	<< ELL_RAD
 	<< std::endl;
 	outell.close();
+	
+	if (DEBUG_COUT) {
+		std::cout
+		<< "ORIG_AREA = "
+		<< ORIG_AREA
+		<< std::endl
+		<< "ORIG_PERI = "
+		<< ORIG_PERI
+		<< std::endl;
+	}
+	
+	// Now that the contour has moved, fetch the corners
+	contours = contours_only(in_frame);
+	vector<Point> bigone = contours[largest_contour(contours)];
+	ORIG_TL = boundingRect(bigone).tl();
+	ORIG_BR = boundingRect(bigone).br();
+	
+	return in_frame;
+}
+
+
+
+
+
+
+static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
+	// Find largest ellipse
+	RotatedRect box = ellipse_finder(in_frame);
+	// HACK increase the framecnt here
+	framecnt = framecnt + 1;
+	
+	// Create rect representing the image
+	Rect image_rect = Rect({}, in_frame.size());
+	Rect roi  = Rect(box.center.x-(BOXSIZE/2), box.center.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
+
+	// Find intersection, i.e. valid crop region
+	Rect intersection = image_rect & roi;
+
+	// Move intersection to the result coordinate space
+	Rect inter_roi = intersection - roi.tl();
+
+	// Create black image and copy intersection
+	Mat crop = Mat::zeros(roi.size(), in_frame.type());
+	in_frame(intersection).copyTo(crop(inter_roi));
+	in_frame = crop;
+	
+	// Open the outfile to append list of major ellipses
+	std::ofstream outell;
+	outell.open("../data/ellipses.csv", std::ios_base::app);
+	outell
+	<< framecnt
+	<< ","
+	<< box.center.x
+	<< ","
+	<< box.center.y
+	<< ","
+	<< box.size.width
+	<< ","
+	<< box.size.height
+	<< ","
+	<< box.angle
+	<< ","
+	<< ELL_RAD
+	<< std::endl;
+	outell.close();
+	
+	vector <vector<Point>> contours = contours_only(in_frame);
+	int largest = largest_contour(contours);
+	in_frame = test_edges(in_frame, contours[largest]);
 	
 	return in_frame;
 }
@@ -117,30 +391,23 @@ void signal_callback_handler(int signum) {
 	return;
 }
 
-static Mat mask_halo(Mat in_frame) {
-	// 	// Rezero mat
-// 	zero_mat = Mat::zeros(Size(cols, rows), CV_8UC1);
-// 	mask_mat = Mat::zeros(Size(cols, rows), CV_8UC1);
-// 	
-// 	
-// 	
-// 	// Shrink Ellipse
-// 	RotatedRect new_ellipse(Point2f(cols/2, rows/2), Size2f(box.size.width*0.95, box.size.height*0.95), (float)box.angle);
-// 
-// 	ellipse(in_frame, new_ellipse, 0, 8, LINE_AA);
-// 	
-// // 	// Make it a filled ellipse this time
-// // 	ellipse(mask_mat, new_ellipse, 255, -1, LINE_AA);
-// // 	
-// // 	// Slap what we have into the mask
-// // 	in_frame.copyTo(zero_mat, mask_mat);
-// // 	
-// // 	// Put it back to our inframe
-// // 	in_frame = zero_mat.clone();
-	
-	ellipse(in_frame, STOREBOX, 0, 20, LINE_AA);
+static Mat mask_halo(Mat in_frame, int maskwidth) {
+	ellipse(in_frame, STOREBOX, 0, maskwidth, LINE_AA);
+	return in_frame;
+}
 
-	
+static vector <vector<Point>> fetch_dynamic_mask(Mat in_frame) {
+	vector <vector<Point>> contours = contours_only(in_frame);
+	int index = largest_contour(contours);
+	vector<Point> maxcont = contours[index];
+	vector <vector<Point>> output;
+	output.push_back(maxcont);
+	return output;
+}
+
+static Mat apply_dynamic_mask(Mat in_frame, vector <vector<Point>> contours, int maskwidth) {
+// 	std::cout << "contour " << contours << std::endl;
+	drawContours(in_frame, contours, -1, 0, maskwidth, LINE_8);
 	return in_frame;
 }
 
@@ -188,6 +455,13 @@ static RotatedRect ellipse_finder(Mat in_frame) {
 	// Fit the largest contour to an ellipse
 	RotatedRect box = fitEllipse(contours[largest_contour_index]);
 	
+	// Check spokes
+// 	center_spokes(in_frame, contours[largest_contour_index]);
+	
+	// Use minimum enclosing circle to get max diameter of moon ellipse
+	Point2f center;
+	minEnclosingCircle(contours[largest_contour_index], center, ELL_RAD);
+	
 	if (DEBUG_COUT) {
 		std::cout << "box width: " << box.size.width << std::endl;
 		std::cout << "box height: " << box.size.height << std::endl;
@@ -196,75 +470,16 @@ static RotatedRect ellipse_finder(Mat in_frame) {
 		std::cout << "box angle: " << box.angle << std::endl;
 	}
 	
+	
+	
 	return box;
 }
 
-
-static void halo_startup(Mat in_frame, int in_thresh) {
-	
-	int cols = in_frame.size().width;
-	int rows = in_frame.size().height;
-	
-	Mat ones_mat = Mat::ones(Size(cols, rows), CV_8UC1);
-	Mat zero_mat = Mat::zeros(Size(cols, rows), CV_8UC3);
-	ones_mat = ones_mat * 255;
-	Mat canny_output = canny_convert(in_frame, in_thresh);
-	
-	RotatedRect box = ellipse_finder(canny_output);
-	ellipse(ones_mat, box, 0, 15, LINE_AA);
-	
-	if (DEBUG_COUT) {
-		std::cout << "frame size & ones_mat size & zero_mat size: "
-			<< canny_output.size()
-			<< " & "
-			<< ones_mat.size()
-			<< " & "
-			<< zero_mat.size()
-			<< std::endl;
-	}
-	
-	// Create masked copy
-	canny_output.copyTo(zero_mat, ones_mat);
-	
-	if (DEBUG_FRAMES) {
-		imshow("fg_mask", zero_mat);
-	}
-	
-	// Check masked image for contours
-	vector <vector<Point>> contours = contours_only(zero_mat);
-	STARTUP_CONTOURS = contours.size();
-	std::cout << "contours: " << STARTUP_CONTOURS << "\n\n\n\n" << std::endl;
-	
-	int keyboard = waitKey(1);
-	if (keyboard == 'q' || keyboard == 27) {
-		exit(0);
-	}
-}
-
 static int thresh_detect(Mat in_frame) {
-	int out_thresh = 0;
+	// THIS IS REQUIRED AND I DON"T KNOW WHY!!!!!
 	GaussianBlur(in_frame.clone(), in_frame, Size(5, 5), 0, 0);
-	while (true) {
-		int thresh_i;
-		
-		for (thresh_i = 0; thresh_i <256; ++thresh_i) {
-			halo_startup(in_frame, thresh_i);
-			// if we get to no contours besides the mask, that is the optimal threshold
-			if (STARTUP_CONTOURS < 1) {
-				out_thresh = thresh_i;
-				break;
-			}
-		}
-		if (out_thresh == 0) {
-			if (DEBUG_COUT) {
-				std::cout << "WARNING: Failed to completely optimize threshold, reverting to 50\% max thresh"
-					<< std::endl;
-			}
-			out_thresh = 127;
-		}
-		break;
-	}
-	return out_thresh;
+
+	return 0;
 }
 
 static void show_usage(string name) {
@@ -293,6 +508,191 @@ static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe) 
 
 void childcheck(int signum) {
 	wait(NULL);
+}
+
+int tier_one(int cnt, Mat frame) {
+	Point2f center;
+	float radius;
+	std::ofstream outfile;
+	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
+	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 35);
+// 	frame = mask_halo(frame.clone(), 40);
+	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
+	vector <vector<Point>> contours = contours_only(frame);
+	cnt = cnt + 1;
+	
+	if (DEBUG_COUT) {
+		std::cout << "Number of contours in tier 1 pass for frame " << cnt << ": " << contours.size() << std::endl;
+	}
+	outfile.open("./data/tier1.csv", std::ios_base::app);
+	// Cycle through the contours
+	for (auto vec : contours) {
+		// Greater than one includes lunar ellipse
+		if (vec.size() > 1) {
+			minEnclosingCircle(vec, center, radius);
+			// Open the outfile to append
+			outfile
+			<< cnt
+			<< ","
+			<< center.x
+			<< ","
+			<< center.y
+			<< ","
+			<< radius
+			<< std::endl;
+			
+		}
+	}
+	outfile.close();
+	return 0;
+}
+
+int tier_two(int cnt, Mat frame) {
+	Point2f center;
+	float radius;
+	std::ofstream outfile;
+	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
+	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 20);
+// 	frame = mask_halo(frame.clone(), 40);
+	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
+	vector <vector<Point>> contours = contours_only(frame);
+	cnt = cnt + 1;
+	
+	if (DEBUG_COUT) {
+		std::cout << "Number of contours in tier 2 pass for frame " << cnt << ": " << contours.size() << std::endl;
+	}
+	outfile.open("./data/tier2.csv", std::ios_base::app);
+	// Cycle through the contours
+	for (auto vec : contours) {
+		// Greater than one includes lunar ellipse
+		if (vec.size() > 1) {
+			minEnclosingCircle(vec, center, radius);
+			// Open the outfile to append
+			
+			outfile
+			<< cnt
+			<< ","
+			<< center.x
+			<< ","
+			<< center.y
+			<< ","
+			<< radius
+			<< std::endl;
+		}
+	}
+	outfile.close();
+	return 0;
+}
+
+int tier_three(int cnt, Mat frame, Mat oldframe) {
+	Point2f center;
+	float radius;
+	std::ofstream outfile;
+	Mat scaleframe;
+	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
+	cnt = cnt + 1;
+	
+// 	/* Eli Method for Tier 3 */
+// 	Laplacian(frame.clone(), frame, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
+// 	Laplacian(oldframe.clone(), oldframe, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
+// 	GaussianBlur(frame.clone(), frame, Size(11, 11), 1, 1, BORDER_DEFAULT);
+// 	GaussianBlur(oldframe.clone(), oldframe, Size(11, 11), 1, 1, BORDER_DEFAULT);
+// 	Mat scaleframe = frame.clone() - oldframe.clone();
+// 	scaleframe = scaleframe.clone() > 40;
+// 	/* end Eli Method */
+	
+	/* Canny Method */
+	
+// 	Canny(frame.clone(), scaleframe, 25, 75, 3);
+	
+	/* end Canny Method*/
+	
+// 	/* UnCanny Method for Tier 3 */
+// 	GaussianBlur(frame.clone(), frame, Size(11, 11), 1, 1, BORDER_DEFAULT);
+// 	
+// 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 35, 5);
+// 	adaptiveThreshold(oldframe.clone(), oldframe, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 35, 5);
+// 	
+// 	Mat ix1, iy1, ix2, iy2, ii1, ii2;
+// 	Sobel(frame.clone(), ix1, CV_32F, 1, 0);
+// 	Sobel(frame.clone(), iy1, CV_32F, 0, 1);
+// 	Sobel(oldframe.clone(), ix2, CV_32F, 1, 0);
+// 	Sobel(oldframe.clone(), iy2, CV_32F, 0, 1);
+// 	pow(ix1.clone(), 2, ix1);
+// 	pow(iy1.clone(), 2, iy1);
+// 	pow(ix2.clone(), 2, ix2);
+// 	pow(iy2.clone(), 2, ix2);
+// 	add(ix1, iy1, ii1);
+// 	add(ix2, iy2, ii2);
+// 	sqrt(ii1.clone(), ii1);
+// 	sqrt(ii2.clone(), ii2);
+// 	
+// 	pow(ii1.clone(), 2, ii1);
+// 	pow(ii2.clone(), 2, ii2);
+// 	add(ii1, ii2, frame);
+// 	sqrt(frame.clone(), frame);
+// 	
+// // 	subtract(frame.clone(), oldframe.clone(), frame);
+// // 	GaussianBlur(oldframe.clone(), oldframe, Size(11, 11), 1, 1, BORDER_DEFAULT);
+// // 	double minval, maxval;
+// // 	minMaxLoc(frame, &minval, &maxval);
+// // 	frame = frame.clone() / maxval * 255;
+// 	
+// 	convertScaleAbs(frame.clone(), scaleframe);
+// 	ximgproc::thinning(scaleframe.clone(), scaleframe, 0);
+// 	
+// 	/* end UnCanny Method */
+	
+	/* UnCanny v2 */
+	
+	subtract(frame.clone(), oldframe.clone(), frame);
+	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 35, 5);
+	Mat ix1, iy1, ii1;
+	Sobel(frame.clone(), ix1, CV_32F, 1, 0);
+	Sobel(frame.clone(), iy1, CV_32F, 0, 1);
+	pow(ix1.clone(), 2, ix1);
+	pow(iy1.clone(), 2, iy1);
+	add(ix1, iy1, ii1);
+	sqrt(ii1.clone(), ii1);
+	convertScaleAbs(ii1.clone(), ii1);
+	GaussianBlur(ii1.clone(), ii1, Size(11, 11), 1, 1, BORDER_DEFAULT);
+	ximgproc::thinning(ii1.clone(), scaleframe, 0);
+	
+	/* end UnCanny v2 */
+	
+	
+	scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, 45);
+// 	imwrite("./tstx.png", frame);
+// 	imwrite("./tsty.png", scaleframe);
+	vector <vector<Point>> contours = contours_only(scaleframe);
+	
+	if (DEBUG_COUT) {
+		std::cout << "Number of contours in tier 3 pass for frame " << cnt << ": " << contours.size() << std::endl;
+	}
+	outfile.open("./data/tier4.csv", std::ios_base::app);
+	// Cycle through the contours
+	for (auto vec : contours) {
+		// Greater than one includes lunar ellipse
+		if (vec.size() > 1) {
+			minEnclosingCircle(vec, center, radius);
+			// Open the outfile to append
+			outfile
+			<< cnt
+			<< ","
+			<< center.x
+			<< ","
+			<< center.y
+			<< ","
+			<< radius
+			<< std::endl;
+			
+		}
+	}
+	outfile.close();
+// 	if (DEBUG_COUT) {
+// 		imwrite("./tier3.png", frame);
+// 	}
+	return 0;
 }
 
 int main(int argc, char* argv[]) {
@@ -339,14 +739,22 @@ int main(int argc, char* argv[]) {
 		std::cout << "Using input file: " << input_file << std::endl;
 	}
 	
-	// Touch the output file
+	
+	// Touch the output file ----------------------------------------------------------------------
 	std::ofstream outfile;
-	outfile.open("test.csv");
-// 	outfile << "Data" << std::endl;
+	outfile.open("./data/test.csv");
+	outfile.close();
+	outfile.open("./data/tier1.csv");
+	outfile.close();
+	outfile.open("./data/tier2.csv");
+	outfile.close();
+	outfile.open("./data/tier3.csv");
+	outfile.close();
+	outfile.open("./data/tier4.csv");
 	outfile.close();
 	// Touch output ellipse file
 	std::ofstream outell;
-	outell.open("./data/ellipses.csv");
+	outell.open("../data/ellipses.csv");
 	outell.close();
 	
 	// Instance and Assign ------------------------------------------------------------------------
@@ -356,13 +764,21 @@ int main(int argc, char* argv[]) {
 	// mm_localfrm reports that the current frame was grabbed, proceed getting next frame
 	// mm_ranprocs reports that the contours were recorded
 	// mm_frmcount stores the frame counter
-	auto *mm_gotframe = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+	auto *mm_killed = static_cast <bool *>(mmap(NULL, sizeof(bool), \
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
-	auto *mm_gotconts = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+	auto *mm_frameavail = static_cast <bool *>(mmap(NULL, sizeof(bool), \
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
-	auto *mm_localfrm = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+	auto *mm_gotframe1 = static_cast <bool *>(mmap(NULL, sizeof(bool), \
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
-	auto *mm_ranprocs = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+	auto *mm_gotframe2 = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_gotframe3 = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_tier1 = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_tier2 = static_cast <bool *>(mmap(NULL, sizeof(bool), \
+		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
+	auto *mm_tier3 = static_cast <bool *>(mmap(NULL, sizeof(bool), \
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
 	auto *mm_frmcount = static_cast <int *>(mmap(NULL, sizeof(int), \
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
@@ -371,13 +787,9 @@ int main(int argc, char* argv[]) {
  		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
 	
 	// OpenCV specific variables
-	Ptr <BackgroundSubtractor> pMOG = createBackgroundSubtractorMOG2(100, 16, true);
-	Mat fg_mask;
 	Mat frame;
 	
 	// Memory and fork management inits
-	pthread_mutex_t mutex;
-	pthread_mutex_init(&mutex, NULL);
 	int frame_fd = open("/tmp/file", O_CREAT|O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	int frame_fd2 = open("/tmp/file2", O_CREAT|O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	
@@ -391,7 +803,10 @@ int main(int argc, char* argv[]) {
 		return -1;
 	// Get the first frame
 	cap >> frame;
-	
+	cvtColor(frame.clone(), frame, COLOR_BGR2GRAY);
+	frame = first_frame(frame.clone(), *mm_frmcount);
+// 	frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
+	++*mm_frmcount;
 	
 	// Memory management init continued -----------------------------------------------------------
 	// Memory map slot for video frame
@@ -428,333 +843,171 @@ int main(int argc, char* argv[]) {
 	
 	
 	unsigned char *buf = static_cast <unsigned char*>(mmap(NULL, shmem_size, PROT_READ|PROT_WRITE, MAP_SHARED, frame_fd, 0));
-	if (DEBUG_COUT) {
-		std::cout << "buf size: " << sizeof(*buf) << std::endl;
-	}
-
 	memcpy(buf, frame.ptr(), shmem_size);
 	if (DEBUG_COUT) {
-		std::cout << "memcpy'd" << std::endl;
+		std::cout << "memcpy'd buf1 with size:" << sizeof(*buf) << std::endl;
 	}
 	
 	unsigned char *buf2 = static_cast <unsigned char*>(mmap(NULL, shmem_size, PROT_READ|PROT_WRITE, MAP_SHARED, frame_fd2, 0));
-	if (DEBUG_COUT) {
-		std::cout << "buf2 size: " << sizeof(*buf2) << std::endl;
-	}
-	
 	memcpy(buf2, frame.ptr(), shmem_size);
 	if (DEBUG_COUT) {
-		std::cout << "memcpy'd" << std::endl;
+		std::cout << "memcpy'd buf2 with size:"  << sizeof(*buf2) << std::endl;
 	}
 	
-	// Thresh detect ------------------------------------------------------------------------------
-	// Determine the optimal threshold from the first frame
-	thresh = thresh_detect(frame);
-	std::time_t result = std::time(nullptr);
-	if (DEBUG_COUT) {
-		std::cout
-		<< "filesize: "
-		<< shmem_size
-		<< std::endl
-		<< "thresh: "
-		<< thresh
-		<< std::endl
-		<< "exiting thresh detect mode"
-		<< std::endl;
-	}
-	usleep(500);
+	// Store first frame in memory
+	memcpy(buf, frame.ptr(), shmem_size);
+	*mm_frameavail = true;
+	
+	// Delared PID here so we can stash the fork in an if statement.
+	int pid0;
+	int pid1;
+	int pid2;
+	
+	// Set all the mm_ codes
+	*mm_killed = false;
+	*mm_frameavail = true;
+// 	*mm_gotframe1 = false;
+// 	*mm_gotframe2 = false;
+// 	*mm_gotframe3 = false;
+	*mm_tier1 = true;
+	*mm_tier2 = true;
+	*mm_tier3 = true;
+	
+// 	// Thresh detect ------------------------------------------------------------------------------
+// 	// Determine the optimal threshold from the first frame
+// 	// AAAAH WHY CAN'T I KILL THIS THING!!!
+// 	thresh = thresh_detect(frame);
 	
 	// Main Loop ----------------------------------------------------------------------------------
+	// If we have not told the program to exit, fork and continue.
+// 	if (SIG_ALERT == 0) {
+// 		
+// 	} else {
+// 		break;
+// 	}
+
+		
+	pid0 = fork();
 	
-	while (1) {
-		// Delared PID here so we can stash the fork in an if statement.
-		int pid1;
-		//int pid2;
-		
-		// Define all the mm_ codes as false
-		*mm_gotframe = false;
-		*mm_gotconts = false;
-		*mm_localfrm = false;
-		*mm_ranprocs = false;
-		
-// 		std::cout << "starting new fork\n\n\n" << std::endl;
-		
-		// If we have not told the program to exit, fork and continue.
-		if (SIG_ALERT == 0) {
-			pid1 = fork();
-			//pid2 = fork();
-		} else {
-			break;
-		}
-		
-		if (pid1 > 0) {
-			// FORK 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-			// This fork is the main coordinating fork and image processing fork
-			// Due to OpenCV limitations, frame fetch and display must happen here to avoid headache
-			if (DEBUG_COUT) {
-				std::cout << "---------divider----------\nFRAME: " << (*mm_frmcount + 1) << std::endl;
+	if (pid0 > 0) {
+		// FORK 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// 			// BEGIN get first frame on start
+// 			*mm_frameavail = false;
+// 			++*mm_frmcount;
+// 			if (DEBUG_COUT) {
+// 				std::cout << "frame number: " << *mm_frmcount << std::endl;
+// 			}
+// 			
+// 			// Image processing operations
+// // 			cvtColor(frame, frame, COLOR_BGR2GRAY);
+// 			frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
+// 			// Store this image into the memory buffer
+// 			printf("1\n");
+// 			memcpy(buf, frame.ptr(), shmem_size);
+// 			printf("2\n");
+// 			*mm_frameavail = true;
+// 			// END get first frame on start
+		while (cap.isOpened()) {
+			// Check for ctrl C
+			if (SIG_ALERT != 0) {
+				*mm_killed = true;
+				cap.release();
+				break;
 			}
-			// Fetch next frame
-			cap >> frame;
-			++*mm_frmcount;
-			// Declare this here so it gets destroyed every loop
-			Mat working_frame;
-			// Image processing operations
-			cvtColor(frame, working_frame, COLOR_BGR2GRAY);
-			working_frame = halo_noise_and_center(working_frame.clone(), *mm_frmcount);
-			// Store centered image into the memory buffer 2
-			memcpy(buf2, working_frame.ptr(), shmem_size);
-			Canny(working_frame.clone(), working_frame, thresh, thresh*2);
-			working_frame = mask_halo(working_frame.clone());
-			pMOG->apply(working_frame.clone(), working_frame, 0.05);
-			// Wait for fork 1 to have the previous frame stored.  Prevent unlikely race condition.
-			while (*mm_gotframe == false) {
+			while ((*mm_tier1 == false) || (*mm_tier2 == false) || (*mm_tier3 == false)) {
 				usleep(50);
 			}
-			*mm_gotframe = false;
-			// Store this image into the memory buffer
-			memcpy(buf, working_frame.ptr(), shmem_size);
-			// Show frame
-			if (DEBUG_FRAMES) {
-				imshow("fg_mask", working_frame);
-				waitKey(1);
-			}
-			// Ensure the other fork is done
-			wait(0);
-		} else {
-			// FORK 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-			// This fork performs data processing on contours in the current frame
-			Point2f center;
-			float radius;
-			int local_count = *mm_frmcount;
+			*mm_frameavail = false;
+			*mm_tier1 = false;
+			*mm_tier2 = false;
+			*mm_tier3 = false;
 			
-			if (SIG_ALERT == 0) {
-				// Grab the previous frame and store it locally
-				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf, 1 * frame.size().width);
-				Mat lap_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf2, 1 * frame.size().width);
-				
-				if (DEBUG_COUT) {
-					std::cout << "operating on data from frame: " << local_count << std::endl;
-				}
-				imwrite("./tst.png", lap_frame);
-				imwrite("./tst2.png", local_frame);
-				*mm_gotframe = true;
-				// Get and store Laplacian version of frame
-				Laplacian(lap_frame.clone(), lap_frame, CV_16S, 1, 1, 0, BORDER_REPLICATE);
-				
-// 				FileStorage file("some_name.xml", FileStorage::WRITE);
-// 				file << "matName" << lap_frame;
-				
-				
-				// Get contours
-				if (local_count > -1) {
-					vector <vector<Point>> contours = contours_only(local_frame);
-					if (DEBUG_COUT) {
-						std::cout << "Number of contours in data proc frame: " << contours.size() << std::endl;
-					}
-// 					if (contours.size() > 100) {
-// 						if (DEBUG_COUT) {
-// 							std::cout << "skipping this frame in log, greater than 100 contours" << std::endl;
-// 						}
-// 						return 0;
-// 					}
-					
-					// Cycle through the contours
-					for (auto vec : contours) {
-						// Greater than one includes lunar ellipse
-						if (vec.size() > 1) {
-							if (DEBUG_COUT) {
-								std::cout << vec << std::endl;
-							}
-							float contarea = contourArea(vec);
-							minEnclosingCircle(vec, center, radius);
-							float lapsum;
-							int strictperi;
-							std::tie(lapsum, strictperi) = laplace_sum(vec, lap_frame);
-							// Open the outfile to append
-							outfile.open("test.csv", std::ios_base::app);
-							outfile
-							<< local_count
-							<< ","
-							<< center.x
-							<< ","
-							<< center.y
-							<< ","
-							<< radius
-							<< ","
-							<< lapsum
-							<< ","
-							<< strictperi
-							<< std::endl;
-							outfile.close();
-							if (DEBUG_COUT) {
-								std::cout
-								<< "area = "
-								<< contarea
-								<< std::endl
-								<< "cent rad = "
-								<< center
-								<< " "
-								<< radius
-								<< std::endl;
-							}
-						} // END vector size if
-					} // END contour for loop
-				} // END skip -1
-			} // END if SIG_ALERT==0
-			// This fork dies with dignity
- 			return 0;
-		}
-		
-		
-		
-// 		if ((pid1 > 0) && (pid2 > 0)) {
-// 			// FORK 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// 			// This fork is the main coordinating fork.
-// 			if (DEBUG_COUT) {
-// 				std::cout << "---------divider----------" << std::endl;
-// 			}
-// 			// Wait for each child to die.
-// 			wait(0);
-// 			wait(0);
-// 			wait(0);
-// 			if (DEBUG_COUT) {
-// 				std::cout
-// 				<< "gotframe code: "
-// 				<< *mm_gotframe
-// 				<< ", gotconts code: "
-// 				<< *mm_gotconts
-// 				<< ", ranprocs code: "
-// 				<< *mm_ranprocs
-// 				<< std::endl;
-// 			}
-// 			if (DEBUG_FRAMES) {
-// 				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), 16, buf, frame.elemSize() * frame.size().width);
-// 				imshow("fg_mask", local_frame);
-// 				waitKey(1);
-// 			}
-// 		} else if ((pid1 == 0) && (pid2 > 0)) {
-// 			// FORK 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// 			// This fork gets the next frame
-// 			// TODO this waits for local_frame to be captured in FORK 2, may be not needed with mutex
-// 			while (*mm_localfrm == false) {
+			
+			// Cycle ring buffer
+			memcpy(buf2, buf, shmem_size);
+			// Get new frame; operate and store
+			cap >> frame;
+			++*mm_frmcount;
+			// Image processing operations
+			cvtColor(frame, frame, COLOR_BGR2GRAY);
+			frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
+			
+			if (DEBUG_COUT) {
+				std::cout
+				<< "frame number: "
+				<< *mm_frmcount
+				<< std::endl
+				<< "frame dimensions: "
+				<< frame.size().width
+				<< " x "
+				<< frame.size().height
+				<< " x "
+				<< frame.elemSize()
+				<< " = "
+				<< shmem_size
+				<< std::endl;
+			}
+			// Store this image into the memory buffer
+			memcpy(buf, frame.ptr(), shmem_size);
+			
+			// Report that the frame was stored
+			*mm_frameavail = true;
+// 			while ((*mm_tier1 == false) || (*mm_tier2 == false) || (*mm_tier3 == false)) {
 // 				usleep(50);
 // 			}
-// 			if ((SIG_ALERT == 0) && (*mm_gotframe == false)) {
-// 				cap >> frame;
-// 				++*mm_frmcount;
-// 				// NOTE do I need the mutex here?  Does it do anything within a fork?
-// // 				pthread_mutex_lock(&mutex);
-// 				memcpy(buf, frame.ptr(), shmem_size);
-// // 				pthread_mutex_unlock(&mutex);
-// 				if (DEBUG_COUT) {
-// 					std::cout << "FRAME Number: " << *mm_frmcount << std::endl;
-// 				}
-// 				// Set the local "done" code for this fork in the mm
-// 				*mm_gotframe = true;
-// 			}
-// 			// This fork dies with dignity
-//  			exit(0);
-// 			
-// 		} else if ((pid1 > 0) && (pid2 == 0)) {
-// 			// FORK 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// 			// This fork performs image processing on the current frame
-// 			if ((SIG_ALERT == 0) && (*mm_gotconts == false)) {
-// 
-// 				Mat working_frame;
-// // 				pthread_mutex_lock(&mutex);
-// 				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), 16, buf, frame.elemSize() * frame.size().width);
-// // 				pthread_mutex_unlock(&mutex);
-// 				// TODO May be redundant with mutex
-// 				*mm_localfrm = true;
-// 
-// 				cvtColor(local_frame, working_frame, COLOR_BGR2GRAY);
-// 				working_frame = halo_noise_and_center(working_frame);
-// 				
-// 				Canny(working_frame.clone(), working_frame, thresh, thresh*2);
-// 				
-// 				// custom threshold
-// 				//cv::threshold(frame, frame, thresh, 255, CV_THRESH_BINARY);
-// 				
-// 				working_frame = mask_halo(working_frame);
-// 				
-// 				// Background subtraction
-// 				pMOG->apply(working_frame.clone(), working_frame, 0.05);
-// 				
-// 				if (DEBUG_COUT) {
-// 					std::cout << "gotconts_TRUE" << std::endl;
-// 				}
-// 				
-// 				
-// 				// Set the local "done" code for this fork in the mm
-// 				*mm_gotconts = true;
-// 			}
-// 			// This fork dies with dignity
-//  			exit(0);
-// 			
-// 		} else {
-// 			// FORK 3 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// 			// This fork processes data collected from previous images
-// 			// TODO port data procs from Python
-// 			if ((SIG_ALERT == 0) && (*mm_ranprocs == false)) {
-// 				if (DEBUG_COUT) {
-// 					std::cout << "running procs" << std::endl;
-// 				}
-// 				// Set the local "done" code for this fork in the mm
-// 				*mm_ranprocs = true;
-// 			}
-// 			// This fork dies with dignity
-//  			exit(0);
-// 		}
+// 			wait(0);
+// 				wait(0);
+			
+			if (DEBUG_FRAMES) {
+				imshow("fg_mask", frame);
+				waitKey(1);
+			}
+		}
+		*mm_killed = true;
+	} else {
+		pid1 = fork();
+		if (pid1 > 0) {
+			// FORK 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			while (*mm_killed == false) {
+				while ((*mm_frameavail == false) || (*mm_tier1 == true) || (*mm_tier2 == true) || (*mm_tier3 == true)) {
+					usleep(50);
+				}
+				// Grab the frame and store it locally
+				Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf, 1 * frame.size().width);
+				Mat local_frame_1 = local_frame.clone();
+				Mat local_frame_2 = local_frame.clone();
+				int local_count = *mm_frmcount;
+				tier_one(local_count, local_frame_1.clone());
+				tier_two(local_count, local_frame_2.clone());
+				*mm_tier1 = true;
+				*mm_tier2 = true;
+			}
+		} else {
+			// FORK 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			while (*mm_killed == false) {
+				while ((*mm_frameavail == false) || (*mm_tier1 == true) || (*mm_tier2 == true) || (*mm_tier3 == true))  {
+					usleep(50);
+				}
+				int local_count = *mm_frmcount;
+				if (local_count == 0) {
+					// Skip the zeroth frame since there will be no old_frame
+					if (DEBUG_COUT) {
+						std::cout << "skipping early frame tier3 in frame: " << local_count << std::endl;
+					}
+				} else {
+					
+					// Grab the previous frame + current frame and store them locally
+					Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf, 1 * frame.size().width);
+					Mat oldframe = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf2, 1 * frame.size().width);
+					tier_three(local_count, local_frame.clone(), oldframe.clone());
+					*mm_tier3 = true;
+				}
+			}
+			
+		}
+	}
 		
-	} // END of forks -----------------------------------------------------------------------------
-	// END of main loop ---------------------------------------------------------------------------
-				
-
-// 	//while (std::time(nullptr) < (result + 60)) {
-// 	while (SIG_ALERT == 0) {
-// 		// Get frame
-// 		cap >> frame; // get a new frame from camera
-// 
-// 		// Update counter
-// 		++count;
-// 		//if (DEBUG_COUT) {
-// 			std::cout << "FRAME Number: " << count << std::endl;
-// 		//}
-// 
-// 		//Mat working_frame = canny_convert(frame, thresh);
-// 		Mat working_frame;
-// 		
-// 		cvtColor(frame, frame, COLOR_BGR2GRAY);
-// 		working_frame = halo_noise_and_center(frame);
-// 		
-// 		Canny(working_frame.clone(), working_frame, thresh, thresh*2);
-// 		
-// 		// custom threshold
-// 		//cv::threshold(frame, frame, thresh, 255, CV_THRESH_BINARY);
-// 		
-// 		working_frame = mask_halo(working_frame);
-// 		
-// 		// Background subtraction
-// 		pMOG->apply(working_frame.clone(), working_frame, 0.05);
-// 
-// 		if (DEBUG_FRAMES) {
-// 			//imshow("frame", frame);
-// 			imshow("Birdtracker: Working Frame", working_frame);
-// 		}
-// 
-// 		// Save foreground mask
-// 		string name = "mask_" + std::to_string(count) + ".png";
-// 		//imwrite("D:\\SO\\temp\\" + name, fg_mask);
-// 
-// 		int keyboard = waitKey(1);
-// 			if (keyboard == 'q' || keyboard == 27)
-// 				break;
-// 	}
-	// the camera will be deinitialized automatically in VideoCapture destructor
-// 	kill(pid1, SIGKILL);
-// 	kill(pid2, SIGKILL);
-// 	usleep(1000000);
+ 	usleep(1000000);
 	exit(SIG_ALERT);
  	return 0;
 }
