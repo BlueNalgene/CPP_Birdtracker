@@ -75,6 +75,7 @@ static void childcheck(int signum);
 static int tier_one(int cnt, Mat frame);
 static int tier_two(int cnt, Mat frame);
 static int tier_three(int cnt, Mat frame, Mat oldframe);
+static int tier_four(int cnt, Mat frame, Mat oldframe);
 int main(int argc, char* argv[]);
 
 
@@ -191,7 +192,8 @@ static Mat test_edges(Mat in_frame, vector<Point> contour) {
 		std::cout << "centroid: " << cen << std::endl;
 	}
 	
-	circle(in_frame, cen, 3, Scalar(255, 0, 0), 1, 8, 0);
+	// Targeting reticle for debugging
+// 	circle(in_frame, cen, 3, Scalar(255, 0, 0), 1, 8, 0);
 	
 	Rect rect  = boundingRect(contour);
 	int to_top = int(M.m01/M.m00) - rect.tl().y;
@@ -292,7 +294,7 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	in_frame = crop;	
 	
 	// Open the outfile to append list of major ellipses
-	outell.open("../data/ellipses.csv", std::ios_base::app);
+	outell.open("./data/ellipses.csv", std::ios_base::app);
 	outell
 	<< framecnt
 	<< ","
@@ -357,7 +359,7 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	
 	// Open the outfile to append list of major ellipses
 	std::ofstream outell;
-	outell.open("../data/ellipses.csv", std::ios_base::app);
+	outell.open("./data/ellipses.csv", std::ios_base::app);
 	outell
 	<< framecnt
 	<< ","
@@ -514,10 +516,10 @@ int tier_one(int cnt, Mat frame) {
 	Point2f center;
 	float radius;
 	std::ofstream outfile;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
+// 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 35);
-// 	frame = mask_halo(frame.clone(), 40);
-	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
+	frame = mask_halo(frame.clone(), 40);
+// 	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
 	vector <vector<Point>> contours = contours_only(frame);
 	cnt = cnt + 1;
 	
@@ -551,10 +553,10 @@ int tier_two(int cnt, Mat frame) {
 	Point2f center;
 	float radius;
 	std::ofstream outfile;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
+// 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 20);
-// 	frame = mask_halo(frame.clone(), 40);
-	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
+	frame = mask_halo(frame.clone(), 40);
+// 	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
 	vector <vector<Point>> contours = contours_only(frame);
 	cnt = cnt + 1;
 	
@@ -591,6 +593,51 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 	Mat scaleframe;
 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	cnt = cnt + 1;
+	
+	/* Eli Method for Tier 3 */
+	Laplacian(frame.clone(), frame, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
+	Laplacian(oldframe.clone(), oldframe, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
+	GaussianBlur(frame.clone(), frame, Size(11, 11), 1, 1, BORDER_DEFAULT);
+	GaussianBlur(oldframe.clone(), oldframe, Size(11, 11), 1, 1, BORDER_DEFAULT);
+	scaleframe = frame.clone() - oldframe.clone();
+	scaleframe = scaleframe.clone() > 40;
+	/* end Eli Method */
+	
+	scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, 45);
+	vector <vector<Point>> contours = contours_only(scaleframe);
+	
+	if (DEBUG_COUT) {
+		std::cout << "Number of contours in tier 3 pass for frame " << cnt << ": " << contours.size() << std::endl;
+	}
+	outfile.open("./data/tier3.csv", std::ios_base::app);
+	// Cycle through the contours
+	for (auto vec : contours) {
+		// Greater than one includes lunar ellipse
+		if (vec.size() > 1) {
+			minEnclosingCircle(vec, center, radius);
+			// Open the outfile to append
+			outfile
+			<< cnt
+			<< ","
+			<< center.x
+			<< ","
+			<< center.y
+			<< ","
+			<< radius
+			<< std::endl;
+			
+		}
+	}
+	outfile.close();
+}
+
+int tier_four(int cnt, Mat frame, Mat oldframe) {
+	Point2f center;
+	float radius;
+	std::ofstream outfile;
+	Mat scaleframe;
+	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
+// 	cnt = cnt + 1;
 	
 // 	/* Eli Method for Tier 3 */
 // 	Laplacian(frame.clone(), frame, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
@@ -667,7 +714,7 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 	vector <vector<Point>> contours = contours_only(scaleframe);
 	
 	if (DEBUG_COUT) {
-		std::cout << "Number of contours in tier 3 pass for frame " << cnt << ": " << contours.size() << std::endl;
+		std::cout << "Number of contours in tier 4 pass for frame " << cnt << ": " << contours.size() << std::endl;
 	}
 	outfile.open("./data/tier4.csv", std::ios_base::app);
 	// Cycle through the contours
@@ -754,7 +801,7 @@ int main(int argc, char* argv[]) {
 	outfile.close();
 	// Touch output ellipse file
 	std::ofstream outell;
-	outell.open("../data/ellipses.csv");
+	outell.open("./data/ellipses.csv");
 	outell.close();
 	
 	// Instance and Assign ------------------------------------------------------------------------
@@ -1000,6 +1047,7 @@ int main(int argc, char* argv[]) {
 					Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf, 1 * frame.size().width);
 					Mat oldframe = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf2, 1 * frame.size().width);
 					tier_three(local_count, local_frame.clone(), oldframe.clone());
+					tier_four(local_count, local_frame.clone(), oldframe.clone());
 					*mm_tier3 = true;
 				}
 			}
