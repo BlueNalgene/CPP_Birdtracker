@@ -5,80 +5,7 @@
  * 
  */
 
-// Includes
-#include <algorithm>
-#include <ctime>                         // for NULL
-//#include <exception>
-#include <tgmath.h>                      // for sin, cos, etc.
-#include <fcntl.h>
-#include <fstream>
-#include <iostream>
-#include <numeric>                       // for accumulate
-#include <pthread.h>
-#include <signal.h>
-#include <stdlib.h>                      // for exit
-#include <string>                        // for string
-using std::string;
-#include <sys/ipc.h>                     // for IPC_CREAT, key_t
-#include <sys/shm.h>                     // for shmat
-#include <sys/mman.h>                    // for MAP_ANONYMOUS, MAP_SHARED
-#include <sys/wait.h>
-#include <tuple>
-#include <unistd.h>                      // for fork, sleep, usleep
-#include <vector>                        // for vector
-using std::vector;
-
-#include "opencv2/opencv.hpp"
-#include "opencv2/ximgproc.hpp"
-using namespace cv;
-
-// Defined Constants
-#define MAX_FEATURES 500
-#define GOOD_MATCH_PERCENT 0.15f
-#define EDGETHRESH 10
-
-
-// Global Variables
-bool DEBUG_FRAMES = false;
-bool DEBUG_COUT = false;
-int STARTUP_CONTOURS;
-RotatedRect STOREBOX;
-int SIG_ALERT = 0;
-float ELL_RAD;
-double ORIG_AREA;
-double ORIG_PERI;
-int ORIG_VERT;
-int ORIG_HORZ;
-int BOXSIZE;
-Point ORIG_TL;
-Point ORIG_BR;
-
-// Declared functions/prototypes
-static Mat shift_frame(Mat in_frame, int shiftx, int shifty);
-static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int plusy);
-static Mat test_edges(Mat in_frame, vector<Point> contour);
-static int min_square_dim(Mat in_frame);
-static Mat first_frame(Mat in_frame, int framecnt);
-static Mat halo_noise_and_center(Mat in_frame, int framecnt);
-static void signal_callback_handler(int signum);
-static Mat mask_halo(Mat in_frame, int maskwidth);
-static vector<vector<Point>> fetch_dynamic_mask(Mat in_frame);
-static Mat apply_dynamic_mask(Mat in_frame, vector<vector<Point>> contours, int maskwidth);
-static int largest_contour(vector <vector<Point>> contours);
-static Mat canny_convert(Mat in_frame, int in_thresh);
-static vector <vector<Point>> contours_only(Mat in_frame);
-static RotatedRect ellipse_finder(Mat in_frame);
-static int thresh_detect(Mat frame);
-static void show_usage(string name);
-static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe);
-static void childcheck(int signum);
-static int tier_one(int cnt, Mat frame);
-static int tier_two(int cnt, Mat frame);
-static int tier_three(int cnt, Mat frame, Mat oldframe);
-static int tier_four(int cnt, Mat frame, Mat oldframe);
-int main(int argc, char* argv[]);
-
-
+#include "frame_extraction.hpp"
 
 
 static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
@@ -477,12 +404,12 @@ static RotatedRect ellipse_finder(Mat in_frame) {
 	return box;
 }
 
-static int thresh_detect(Mat in_frame) {
-	// THIS IS REQUIRED AND I DON"T KNOW WHY!!!!!
-	GaussianBlur(in_frame.clone(), in_frame, Size(5, 5), 0, 0);
-
-	return 0;
-}
+// static int thresh_detect(Mat in_frame) {
+// 	// THIS IS REQUIRED AND I DON"T KNOW WHY!!!!!
+// 	GaussianBlur(in_frame.clone(), in_frame, Size(5, 5), 0, 0);
+// 
+// 	return 0;
+// }
 
 static void show_usage(string name) {
 	std::cerr << "Usage: "  << " <option(s)> \t\tSOURCES\tDescription\n"
@@ -742,6 +669,125 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 	return 0;
 }
 
+
+int parse_checklist(std::string name, std::string value) {
+	// Boolean cases
+	if (name == "DEBUG_COUT" || name == "DEBUG_FRAMES") {
+		// Define booleans
+		bool result;
+		if (value == "true" || value == "True" || value == "TRUE") {
+			result = true;
+		} else if (value == "false" || value == "False" || value == "FALSE") {
+			result = false;
+		} else {
+			std::cout << "Invalid boolean value in settings.cfg item: " << name << std::endl;
+			return 1;
+		}
+		
+		if (name == "DEBUG_COUT") {
+			DEBUG_COUT = result;
+		} else if (name == "DEBUG_FRAMES") {
+			DEBUG_FRAMES = result;
+		}
+	}
+	// Int cases
+	else if (
+		name == "T1_AT_BLOCKSIZE"
+		|| name == "T2_AT_BLOCKSIZE"
+		|| name == "T3_LAP_KERNEL"
+		|| name == "T3_GB_KERNEL_X"
+		|| name == "T3_GB_KERNEL_Y"
+		|| name == "T3_CUTOFF_THRESH"
+		|| name == "T3_DYNMASK_WIDTH"
+		|| name == "T4_AT_BLOCKSIZE"
+		|| name == "T4_GB_KERNEL_X"
+		|| name == "T4_GB_KERNEL_Y"
+		|| name == "T4_THINNING"
+		|| name == "T4_DYNMASK_WIDTH"
+		) {
+		int result = std::stoi(value);
+		if (name == "T1_AT_BLOCKSIZE") {
+			T1_AT_BLOCKSIZE = result;
+		} else if (name == "T2_AT_BLOCKSIZE") {
+			T2_AT_BLOCKSIZE = result;
+		} else if (name == "T3_LAP_KERNEL") {
+			T3_LAP_KERNEL = result;
+		} else if (name == "T3_GB_KERNEL_X") {
+			T3_GB_KERNEL_X = result;
+		} else if (name == "T3_GB_KERNEL_Y") {
+			T3_GB_KERNEL_Y = result;
+		} else if (name == "T3_CUTOFF_THRESH") {
+			T3_CUTOFF_THRESH = result;
+		} else if (name == "T3_DYNMASK_WIDTH") {
+			T3_DYNMASK_WIDTH = result;
+		} else if (name == "T4_AT_BLOCKSIZE") {
+			T4_AT_BLOCKSIZE = result;
+		} else if (name == "T4_GB_KERNEL_X") {
+			T4_GB_KERNEL_X = result;
+		} else if (name == "T4_GB_KERNEL_Y") {
+			T4_GB_KERNEL_Y = result;
+		} else if (name == "T4_THINNING") {
+			T4_THINNING = result;
+		} else if (name == "T4_DYNMASK_WIDTH") {
+			T4_DYNMASK_WIDTH = result;
+		}
+		
+	}
+	// Double cases
+	else if (
+		name == "T1_AT_MAX"
+		|| name == "T1_AT_CONSTANT"
+		|| name == "T2_AT_MAX"
+		|| name == "T2_AT_CONSTANT"
+		|| name == "T3_LAP_SCALE"
+		|| name == "T3_LAP_DELTA"
+		|| name == "T3_GB_SIGMA_X"
+		|| name == "T3_GB_SIGMA_Y"
+		|| name == "T4_AT_MAX"
+		|| name == "T4_AT_CONSTANT"
+		|| name == "T4_POWER"
+		|| name == "T4_GB_SIGMA_X"
+		|| name == "T4_GB_SIGMA_Y"
+		) {
+		double result = std::stod(value);
+		if (name == "T1_AT_MAX") {
+			T1_AT_MAX = result;
+		} else if (name == "T1_AT_CONSTANT") {
+			T1_AT_CONSTANT = result;
+		} else if (name == "T2_AT_MAX") {
+			T2_AT_MAX = result;
+		} else if (name == "T2_AT_CONSTANT") {
+			T2_AT_CONSTANT = result;
+		} else if (name == "T3_LAP_SCALE") {
+			T3_LAP_SCALE = result;
+		} else if (name == "T3_LAP_DELTA") {
+			T3_LAP_DELTA = result;
+		} else if (name == "T3_GB_SIGMA_X") {
+			T3_GB_SIGMA_X = result;
+		} else if (name == "T3_GB_SIGMA_Y") {
+			T3_GB_SIGMA_Y = result;
+		} else if (name == "T4_AT_MAX") {
+			T4_AT_MAX = result;
+		} else if (name == "T4_AT_CONSTANT") {
+			T4_AT_CONSTANT = result;
+		} else if (name == "T4_POWER") {
+			T4_POWER = result;
+		} else if (name == "T4_GB_SIGMA_X") {
+			T4_GB_SIGMA_X = result;
+		} else if (name == "T4_GB_SIGMA_Y") {
+			T4_GB_SIGMA_Y = result;
+		}
+	} else
+		// String cases
+		if (name == "OSFPROJECT") {
+			OSFPROJECT = value;
+		}
+	} else {
+		std::cerr << "Did not recognize entry " << name << " in config file, skipping" << std::endl;
+	}
+	return 0;
+}
+
 int main(int argc, char* argv[]) {
 	// Capture interrupt signals so we don't create zombie processes
 	// FIXME This doesn't work right with all the forks.
@@ -756,7 +802,9 @@ int main(int argc, char* argv[]) {
 	}
 	
 	vector <string> sources;
-	string input_file;
+	std::string osf_file = "";
+	std::string input_file = "";
+	std::string config_file = "settings.cfg";
 	
 	for (int i = 1; i < argc; ++i) {
 		string arg = argv[i];
@@ -764,10 +812,22 @@ int main(int argc, char* argv[]) {
 			show_usage(argv[0]);
 			
 			return 0;
-		} else if ((arg == "-do") || (arg == "--debug-output")) {
-			DEBUG_COUT = true;
-		} else if ((arg == "-df") || (arg == "--debug-frames")) {
-			DEBUG_FRAMES = true;
+		} else if ((arg == "-c") || (arg == "--config-file")) {
+			if (i + 1 < argc) {
+				config_file = argv[++i];
+			} else {
+				std::cerr << "--config-file option requires one argument" << std::endl;
+				return 1;
+			}
+		} else if ((arg == "-osf") || (arg == "--osf-path")) {
+			// Make sure we aren't at the end of argv!
+			if (i + 1 < argc) {
+				// Increment 'i' so we don't get the argument as the next argv[i].
+				osf_file = argv[++i];
+			} else {
+				std::cerr << "--osf-path option requires one argument." << std::endl;
+				return 1;
+			}
 		} else if ((arg == "-i") || (arg == "--input")) {
 			// Make sure we aren't at the end of argv!
 			if (i + 1 < argc) {
@@ -782,7 +842,59 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
+	// Check that we did not include both an OSF and manual input file.
+	if (osf_file.length() > 0 && input_file.length() > 0) {
+		std::cerr << "Either use an input file or an OSF file, not both" << std::endl;
+		return 1;
+	} else if (osf_file.length() == 0 && input_file.length() == 0) {
+		std::cerr << "You must give frame_extraction an input file or an OSF path" << std::endl;
+		return 1;
+	} else if (osf_file.length() > 0) {
+		if (!(osf_file[:9] == "osfstorage" && osf_file[-3:] == "mp4")) {
+			std::cerr << "The path to the OSF video must look like \"osfstorage/path/to/file.mp4\"" << std::endl;
+			return 1;
+		}
+		int ret = system("osf --version");
+		if !(WEXITSTATUS(ret) == 0x10) {
+			std::cerr << "OSFClient is not available on this system. Install using \"pip3 install osfclient --user\"" << std::endl;
+		}
+		std::string osfcommand = "osf -p ";
+		osfcommand.append(OSFPROJECT);
+		osfcommand.append(" fetch ");
+		osfcommand.append(osf_file);
+		osfcommand.append(" ./local.mp4");
+		system(osfcommand);
+		input_file = "local.mp4";
+	}
+	
+	
+	
+	// Config Handler -----------------------------------------------------------------------------
+	
+    std::ifstream cFile (config_file);
+	if (cFile.is_open()) {
+		std::string line;
+		while(getline(cFile, line)){
+			line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+			if(line[0] == '#' || line.empty()) {
+				continue;
+			}
+			auto delimiterPos = line.find("=");
+			std::string name = line.substr(0, delimiterPos);
+			std::string value = line.substr(delimiterPos + 1);
+			if (parse_checklist(name, value)) {
+				return 1;
+			}
+		}
+		
+	}
+	else {
+		std::cerr << "Couldn't open config file for reading." << std::endl;
+		return 1;
+	}
+
 	if (DEBUG_COUT) {
+		std::cout << "Config File Loaded from" << config_file << std::endl;
 		std::cout << "Using input file: " << input_file << std::endl;
 	}
 	
