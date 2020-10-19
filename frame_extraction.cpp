@@ -692,7 +692,8 @@ int parse_checklist(std::string name, std::string value) {
 	}
 	// Int cases
 	else if (
-		name == "T1_AT_BLOCKSIZE"
+		name == "EDGETHRESH"
+		|| name == "T1_AT_BLOCKSIZE"
 		|| name == "T2_AT_BLOCKSIZE"
 		|| name == "T3_LAP_KERNEL"
 		|| name == "T3_GB_KERNEL_X"
@@ -706,7 +707,9 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "T4_DYNMASK_WIDTH"
 		) {
 		int result = std::stoi(value);
-		if (name == "T1_AT_BLOCKSIZE") {
+		if (name == "EDGETHRESH") {
+			EDGETHRESH = result;
+		}else if (name == "T1_AT_BLOCKSIZE") {
 			T1_AT_BLOCKSIZE = result;
 		} else if (name == "T2_AT_BLOCKSIZE") {
 			T2_AT_BLOCKSIZE = result;
@@ -780,8 +783,9 @@ int parse_checklist(std::string name, std::string value) {
 	} else
 		// String cases
 		if (name == "OSFPROJECT") {
-			OSFPROJECT = value;
-		}
+			if (name == "OSFPROJECT") {
+				OSFPROJECT = value;
+			}
 	} else {
 		std::cerr << "Did not recognize entry " << name << " in config file, skipping" << std::endl;
 	}
@@ -850,12 +854,12 @@ int main(int argc, char* argv[]) {
 		std::cerr << "You must give frame_extraction an input file or an OSF path" << std::endl;
 		return 1;
 	} else if (osf_file.length() > 0) {
-		if (!(osf_file[:9] == "osfstorage" && osf_file[-3:] == "mp4")) {
+		if (!(osf_file.substr(0, 9) == "osfstorage" && osf_file.substr(osf_file.size() - 3) == "mp4")) {
 			std::cerr << "The path to the OSF video must look like \"osfstorage/path/to/file.mp4\"" << std::endl;
 			return 1;
 		}
 		int ret = system("osf --version");
-		if !(WEXITSTATUS(ret) == 0x10) {
+		if (WEXITSTATUS(ret) != 0x10) {
 			std::cerr << "OSFClient is not available on this system. Install using \"pip3 install osfclient --user\"" << std::endl;
 		}
 		std::string osfcommand = "osf -p ";
@@ -863,7 +867,7 @@ int main(int argc, char* argv[]) {
 		osfcommand.append(" fetch ");
 		osfcommand.append(osf_file);
 		osfcommand.append(" ./local.mp4");
-		system(osfcommand);
+		system(osfcommand.c_str());
 		input_file = "local.mp4";
 	}
 	

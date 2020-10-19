@@ -34,11 +34,6 @@ using std::vector;
 #include "opencv2/ximgproc.hpp"
 using namespace cv;
 
-// Defined Constants
-#define MAX_FEATURES 500
-#define GOOD_MATCH_PERCENT 0.15f
-#define EDGETHRESH 10
-
 std::map<std::string, std::string> options;
 
 // Global Variables
@@ -57,7 +52,8 @@ Point ORIG_BR;
 // Global Variables declared in settings.cfg
 bool DEBUG_FRAMES = false;
 bool DEBUG_COUT = false;
-std::string OSFPROJECT = ""
+std::string OSFPROJECT = "";
+int EDGETHRESH = 10;
 double T1_AT_MAX = 255;
 int T1_AT_BLOCKSIZE = 65;
 double T1_AT_CONSTANT = 35;
