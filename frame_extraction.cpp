@@ -880,6 +880,19 @@ int main(int argc, char* argv[]) {
 		input_file = "local.mp4";
 	}
 	
+	// H264 -> MP4 --------------------------------------------------------------------------------
+	// TODO add detection and conversion using MP4Box
+	// Note, this method only works with linux afaik
+	
+	
+	// Hack method to kick out h264 files
+	auto delimiter_pos = input_file.find('.');
+	if (input_file.substr(delimiter_pos + 1) != "mp4") {
+		std::cerr << "Input file (" << input_file
+		<< ") does not end with \"mp4\".  Assuming the input file is incompatible" << std::endl;
+		return 1;
+	}
+	
 	
 	
 	// Config Handler -----------------------------------------------------------------------------
@@ -892,9 +905,9 @@ int main(int argc, char* argv[]) {
 			if(line[0] == '#' || line.empty()) {
 				continue;
 			}
-			auto delimiterPos = line.find("=");
-			std::string name = line.substr(0, delimiterPos);
-			std::string value = line.substr(delimiterPos + 1);
+			delimiter_pos = line.find("=");
+			std::string name = line.substr(0, delimiter_pos);
+			std::string value = line.substr(delimiter_pos + 1);
 			if (parse_checklist(name, value)) {
 				return 1;
 			}
