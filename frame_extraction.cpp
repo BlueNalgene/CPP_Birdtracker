@@ -894,7 +894,6 @@ int main(int argc, char* argv[]) {
 	}
 	
 	
-	
 	// Config Handler -----------------------------------------------------------------------------
 	
     std::ifstream cFile (config_file);
@@ -930,13 +929,13 @@ int main(int argc, char* argv[]) {
 	// Create directories
 	std::string localpath;
 	fs::current_path(fs::temp_directory_path());
-	localpath = OUTPUTDIR.append("data")
+	localpath = OUTPUTDIR.append("data");
 	fs::create_directories(localpath);
-	fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
+// 	fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
 	if (OUTPUT_FRAMES) {
-		localpath = OUTPUTDIR.append("frames")
+		localpath = OUTPUTDIR.append("frames");
 		fs::create_directories(localpath);
-		fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
+// 		fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
 	}
 	
 	// Synthesize Filenames
@@ -965,10 +964,10 @@ int main(int argc, char* argv[]) {
 	// Touch and create metafile
 	std::ofstream metafile;
 	metafile.open(METADATA);
-	if (osf_file) {
+	if (!osf_file.empty()) {
 		metafile << "video:," << osf_file << std::endl;
 	} else {
-		metadata << "video:," << input_file << std::endl;
+		metafile << "video:," << input_file << std::endl;
 	}
 	metafile.close();
 	

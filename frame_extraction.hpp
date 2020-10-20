@@ -56,7 +56,7 @@ std::string TIER1FILE;
 std::string TIER2FILE;
 std::string TIER3FILE;
 std::string TIER4FILE;
-std::string ELLIPSEFILE;
+std::string ELLIPSEDATA;
 std::string METADATA;
 
 // Global Variables declared in settings.cfg
