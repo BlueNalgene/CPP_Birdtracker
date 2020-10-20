@@ -23,8 +23,12 @@ using std::string;
 #include <sys/wait.h>
 #include <tuple>
 #include <unistd.h>                      // for fork, sleep, usleep
-#include <vector>                        // for vector
 #include <typeinfo>
+
+#include <filesystem>
+namespace fs = std::filesystem;
+
+#include <vector>                        // for vector
 using std::vector;
 
 // #include <config4cpp/Configuration.h>
@@ -48,11 +52,19 @@ int ORIG_HORZ;
 int BOXSIZE;
 Point ORIG_TL;
 Point ORIG_BR;
+std::string TIER1FILE;
+std::string TIER2FILE;
+std::string TIER3FILE;
+std::string TIER4FILE;
+std::string ELLIPSEFILE;
+std::string METADATA;
 
 // Global Variables declared in settings.cfg
 bool DEBUG_FRAMES = false;
 bool DEBUG_COUT = false;
+bool OUTPUT_FRAMES = false;
 std::string OSFPROJECT = "";
+std::string OUTPUTDIR = "Birdtracker_Output/"
 int EDGETHRESH = 10;
 double T1_AT_MAX = 255;
 int T1_AT_BLOCKSIZE = 65;

@@ -221,7 +221,7 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	in_frame = crop;	
 	
 	// Open the outfile to append list of major ellipses
-	outell.open("./data/ellipses.csv", std::ios_base::app);
+	outell.open(ELLIPSEDATA, std::ios_base::app);
 	outell
 	<< framecnt
 	<< ","
@@ -286,7 +286,7 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	
 	// Open the outfile to append list of major ellipses
 	std::ofstream outell;
-	outell.open("./data/ellipses.csv", std::ios_base::app);
+	outell.open(ELLIPSEDATA, std::ios_base::app);
 	outell
 	<< framecnt
 	<< ","
@@ -453,7 +453,7 @@ int tier_one(int cnt, Mat frame) {
 	if (DEBUG_COUT) {
 		std::cout << "Number of contours in tier 1 pass for frame " << cnt << ": " << contours.size() << std::endl;
 	}
-	outfile.open("./data/tier1.csv", std::ios_base::app);
+	outfile.open(TIER1FILE, std::ios_base::app);
 	// Cycle through the contours
 	for (auto vec : contours) {
 		// Greater than one includes lunar ellipse
@@ -490,7 +490,7 @@ int tier_two(int cnt, Mat frame) {
 	if (DEBUG_COUT) {
 		std::cout << "Number of contours in tier 2 pass for frame " << cnt << ": " << contours.size() << std::endl;
 	}
-	outfile.open("./data/tier2.csv", std::ios_base::app);
+	outfile.open(TIER2FILE, std::ios_base::app);
 	// Cycle through the contours
 	for (auto vec : contours) {
 		// Greater than one includes lunar ellipse
@@ -536,7 +536,7 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 	if (DEBUG_COUT) {
 		std::cout << "Number of contours in tier 3 pass for frame " << cnt << ": " << contours.size() << std::endl;
 	}
-	outfile.open("./data/tier3.csv", std::ios_base::app);
+	outfile.open(TIER3FILE, std::ios_base::app);
 	// Cycle through the contours
 	for (auto vec : contours) {
 		// Greater than one includes lunar ellipse
@@ -643,7 +643,7 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 	if (DEBUG_COUT) {
 		std::cout << "Number of contours in tier 4 pass for frame " << cnt << ": " << contours.size() << std::endl;
 	}
-	outfile.open("./data/tier4.csv", std::ios_base::app);
+	outfile.open(TIER4FILE, std::ios_base::app);
 	// Cycle through the contours
 	for (auto vec : contours) {
 		// Greater than one includes lunar ellipse
@@ -904,21 +904,51 @@ int main(int argc, char* argv[]) {
 	
 	
 	// Touch the output file ----------------------------------------------------------------------
+	
+	// Create directories
+	std::string localpath;
+	fs::current_path(fs::temp_directory_path());
+	localpath = OUTPUTDIR.append("data")
+	fs::create_directories(localpath);
+	fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
+	if (OUTPUT_FRAMES) {
+		localpath = OUTPUTDIR.append("frames")
+		fs::create_directories(localpath);
+		fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
+	}
+	
+	// Synthesize Filenames
+	TIER1FILE = OUTPUTDIR.append("data/Tier1.csv");
+	TIER2FILE = OUTPUTDIR.append("data/Tier2.csv");
+	TIER3FILE = OUTPUTDIR.append("data/Tier3.csv");
+	TIER4FILE = OUTPUTDIR.append("data/Tier4.csv");
+	ELLIPSEDATA  = OUTPUTDIR.append("data/ellipses.csv");
+	METADATA = OUTPUTDIR.append("metadata.csv");
+	
 	std::ofstream outfile;
-	outfile.open("./data/test.csv");
+	outfile.open(TIER1FILE);
 	outfile.close();
-	outfile.open("./data/tier1.csv");
+	outfile.open(TIER2FILE);
 	outfile.close();
-	outfile.open("./data/tier2.csv");
+	outfile.open(TIER3FILE);
 	outfile.close();
-	outfile.open("./data/tier3.csv");
+	outfile.open(TIER4FILE);
 	outfile.close();
-	outfile.open("./data/tier4.csv");
-	outfile.close();
+	
 	// Touch output ellipse file
 	std::ofstream outell;
-	outell.open("./data/ellipses.csv");
+	outell.open(ELLIPSEDATA);
 	outell.close();
+	
+	// Touch and create metafile
+	std::ofstream metafile;
+	metafile.open(METADATA);
+	if (osf_file) {
+		metafile << "video:," << osf_file << std::endl;
+	} else {
+		metadata << "video:," << input_file << std::endl;
+	}
+	metafile.close();
 	
 	// Instance and Assign ------------------------------------------------------------------------
 	// Memory map variables we want to share across forks
