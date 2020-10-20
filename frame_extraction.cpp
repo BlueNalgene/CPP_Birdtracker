@@ -880,6 +880,12 @@ int main(int argc, char* argv[]) {
 		input_file = "local.mp4";
 	}
 	
+	// Make sure file exists
+	if (!std::experimental::filesystem::exists(input_file)) {
+		std::cerr << "Input file (" << input_file << ") not found.  Aborting." << std::endl;
+		return 1;
+	}
+	
 	// H264 -> MP4 --------------------------------------------------------------------------------
 	// TODO add detection and conversion using MP4Box
 	// Note, this method only works with linux afaik
