@@ -672,7 +672,10 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 
 int parse_checklist(std::string name, std::string value) {
 	// Boolean cases
-	if (name == "DEBUG_COUT" || name == "DEBUG_FRAMES") {
+	if (name == "DEBUG_COUT"
+		|| name == "DEBUG_FRAMES"
+		|| name == "OUTPUT_FRAMES"
+		) {
 		// Define booleans
 		bool result;
 		if (value == "true" || value == "True" || value == "TRUE") {
@@ -688,6 +691,8 @@ int parse_checklist(std::string name, std::string value) {
 			DEBUG_COUT = result;
 		} else if (name == "DEBUG_FRAMES") {
 			DEBUG_FRAMES = result;
+		} else if (name == "OUTPUT_FRAMES") {
+			OUTPUT_FRAMES = result;
 		}
 	}
 	// Int cases
@@ -782,9 +787,13 @@ int parse_checklist(std::string name, std::string value) {
 		}
 	} else
 		// String cases
-		if (name == "OSFPROJECT") {
+		if (name == "OSFPROJECT"
+		|| name == "OUTPUTDIR"
+		) {
 			if (name == "OSFPROJECT") {
 				OSFPROJECT = value;
+			} else if (name == "OUTPUTDIR") {
+				OUTPUTDIR = value;
 			}
 	} else {
 		std::cerr << "Did not recognize entry " << name << " in config file, skipping" << std::endl;
