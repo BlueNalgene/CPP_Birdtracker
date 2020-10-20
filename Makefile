@@ -11,6 +11,7 @@ OBJSTHREE=test.o
 
 # CFLAGS+=-Wfatal-errors
 # CFLAGS+=-Wall -g -O3
+CFLAGS+=-std=c++17
 LDFLAGS+=-L/opt/vc/lib/ -lpthread
 LDFLAGS+=-L/usr/local/lib/ -lopencv_ximgproc
 LDFLAGS+=`pkg-config --cflags --libs opencv4`

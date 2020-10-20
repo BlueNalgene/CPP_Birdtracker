@@ -25,8 +25,8 @@ using std::string;
 #include <unistd.h>                      // for fork, sleep, usleep
 #include <typeinfo>
 
-#include <filesystem>
-namespace fs = std::filesystem;
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
 
 #include <vector>                        // for vector
 using std::vector;
@@ -64,7 +64,7 @@ bool DEBUG_FRAMES = false;
 bool DEBUG_COUT = false;
 bool OUTPUT_FRAMES = false;
 std::string OSFPROJECT = "";
-std::string OUTPUTDIR = "Birdtracker_Output/"
+std::string OUTPUTDIR = "Birdtracker_Output/";
 int EDGETHRESH = 10;
 double T1_AT_MAX = 255;
 int T1_AT_BLOCKSIZE = 65;
