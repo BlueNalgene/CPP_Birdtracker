@@ -42,7 +42,7 @@ std::map<std::string, std::string> options;
 
 // Global Variables
 int STARTUP_CONTOURS;
-RotatedRect STOREBOX;
+Rect STOREBOX;
 int SIG_ALERT = 0;
 float ELL_RAD;
 double ORIG_AREA;
@@ -66,6 +66,7 @@ bool OUTPUT_FRAMES = false;
 std::string OSFPROJECT = "";
 std::string OUTPUTDIR = "Birdtracker_Output/";
 int EDGETHRESH = 10;
+int QHE_WIDTH = 10;
 double T1_AT_MAX = 255;
 int T1_AT_BLOCKSIZE = 65;
 double T1_AT_CONSTANT = 35;
@@ -107,7 +108,7 @@ static Mat apply_dynamic_mask(Mat in_frame, vector<vector<Point>> contours, int 
 static int largest_contour(vector <vector<Point>> contours);
 static Mat canny_convert(Mat in_frame, int in_thresh);
 static vector <vector<Point>> contours_only(Mat in_frame);
-static RotatedRect ellipse_finder(Mat in_frame);
+static Rect box_finder(Mat in_frame);
 // static int thresh_detect(Mat frame);
 static void show_usage(string name);
 static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe);

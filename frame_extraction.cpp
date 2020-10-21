@@ -178,25 +178,26 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	int largest_contour_index = largest_contour(contours);
 	
 	// Store original area and perimeter of first frame
-	ORIG_AREA = contourArea(contours[largest_contour_index]);
+	Rect box = boundingRect(contours[largest_contour_index]);
+	ORIG_AREA = box.area();
 	ORIG_PERI = arcLength(contours[largest_contour_index], true);
-	ORIG_VERT = boundingRect(contours[largest_contour_index]).height;
-	ORIG_HORZ = boundingRect(contours[largest_contour_index]).width;
+	ORIG_VERT = box.height;
+	ORIG_HORZ = box.width;
 	
 	
-	// Fit the largest contour to an ellipse
-	RotatedRect box = fitEllipse(contours[largest_contour_index]);
+// 	// Fit the largest contour to an ellipse
+// 	RotatedRect box = fitEllipse(contours[largest_contour_index]);
 	
-	// Use minimum enclosing circle to get max diameter of moon ellipse
-	Point2f center;
-	minEnclosingCircle(contours[largest_contour_index], center, ELL_RAD);
+// 	// Use minimum enclosing circle to get max diameter of moon ellipse
+// 	Point2f center;
+// 	minEnclosingCircle(contours[largest_contour_index], center, ELL_RAD);
 	
 	if (DEBUG_COUT) {
-		std::cout << "box width: " << box.size.width << std::endl;
-		std::cout << "box height: " << box.size.height << std::endl;
-		std::cout << "box x: " << box.center.x << std::endl;
-		std::cout << "box y: " << box.center.y << std::endl;
-		std::cout << "box angle: " << box.angle << std::endl;
+		std::cout << "box width: " << box.width << std::endl;
+		std::cout << "box height: " << box.height << std::endl;
+		std::cout << "box x: " << box.x << std::endl;
+		std::cout << "box y: " << box.y << std::endl;
+		std::cout << "box angle: " << box.area() << std::endl;
 	}
 	
 	framecnt = framecnt + 1;
@@ -206,7 +207,8 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
-	Rect roi = Rect(box.center.x-(BOXSIZE/2), box.center.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
+// 	Rect roi = Rect(box.x-(BOXSIZE/2), box.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
+	Rect roi = Rect(box.tl(), box.br());
 
 	// Find intersection, i.e. valid crop region
 	Rect intersection = image_rect & roi;
@@ -218,24 +220,22 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	Mat crop = Mat::zeros(roi.size(), in_frame.type());
 	in_frame(intersection).copyTo(crop(inter_roi));
 	
-	in_frame = crop;	
+	in_frame = crop;
 	
 	// Open the outfile to append list of major ellipses
 	outell.open(ELLIPSEDATA, std::ios_base::app);
 	outell
 	<< framecnt
 	<< ","
-	<< box.center.x
+	<< box.x
 	<< ","
-	<< box.center.y
+	<< box.y
 	<< ","
-	<< box.size.width
+	<< box.width
 	<< ","
-	<< box.size.height
+	<< box.height
 	<< ","
-	<< box.angle
-	<< ","
-	<< ELL_RAD
+	<< box.area()
 	<< std::endl;
 	outell.close();
 	
@@ -250,28 +250,44 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	}
 	
 	// Now that the contour has moved, fetch the corners
-	contours = contours_only(in_frame);
-	vector<Point> bigone = contours[largest_contour(contours)];
-	ORIG_TL = boundingRect(bigone).tl();
-	ORIG_BR = boundingRect(bigone).br();
+	Rect bigone = boundingRect(contours[largest_contour(contours_only(in_frame))]);
+	ORIG_TL = bigone.tl();
+	ORIG_BR = bigone.br();
+	
+	if (DEBUG_COUT) {
+		std::cout
+		<< "ORIG_TL = "
+		<< ORIG_TL
+		<< std::endl
+		<< "ORIG_BR = "
+		<< ORIG_BR
+		<< std::endl;
+	}
 	
 	return in_frame;
 }
 
 
-
+// std::cout << "box tr: " << box.tl() << std::endl;
+// std::cout << "box bl: " << box.br() << std::endl;
+// std::cout << "box x: " << box.x << std::endl;
+// std::cout << "box y: " << box.y << std::endl;
+// std::cout << "box width: " << box.width << std::endl;
+// std::cout << "box height: " << box.height << std::endl;
+// std::cout << "box area: " << box.area() << std::endl;
 
 
 
 static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	// Find largest ellipse
-	RotatedRect box = ellipse_finder(in_frame);
+	Rect box = box_finder(in_frame);
 	// HACK increase the framecnt here
 	framecnt = framecnt + 1;
 	
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
-	Rect roi  = Rect(box.center.x-(BOXSIZE/2), box.center.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
+// 	Rect roi  = Rect(box.x-(BOXSIZE/2), box.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
+	Rect roi = Rect(box.tl(), box.br());
 
 	// Find intersection, i.e. valid crop region
 	Rect intersection = image_rect & roi;
@@ -290,17 +306,15 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	outell
 	<< framecnt
 	<< ","
-	<< box.center.x
+	<< box.x
 	<< ","
-	<< box.center.y
+	<< box.y
 	<< ","
-	<< box.size.width
+	<< box.width
 	<< ","
-	<< box.size.height
+	<< box.height
 	<< ","
-	<< box.angle
-	<< ","
-	<< ELL_RAD
+	<< box.area()
 	<< std::endl;
 	outell.close();
 	
@@ -321,7 +335,7 @@ void signal_callback_handler(int signum) {
 }
 
 static Mat mask_halo(Mat in_frame, int maskwidth) {
-	ellipse(in_frame, STOREBOX, 0, maskwidth, LINE_AA);
+// 	ellipse(in_frame, STOREBOX, 0, maskwidth, LINE_AA);
 	return in_frame;
 }
 
@@ -371,7 +385,7 @@ static vector <vector<Point>> contours_only(Mat in_frame) {
 	return contours;
 }
 
-static RotatedRect ellipse_finder(Mat in_frame) {
+static Rect box_finder(Mat in_frame) {
 	
 	vector <vector<Point>> contours = contours_only(in_frame);
 	
@@ -381,22 +395,34 @@ static RotatedRect ellipse_finder(Mat in_frame) {
 	
 	int largest_contour_index = largest_contour(contours);
 	
-	// Fit the largest contour to an ellipse
-	RotatedRect box = fitEllipse(contours[largest_contour_index]);
+// 	// Fit the largest contour to an ellipse
+// 	RotatedRect box = fitEllipse(contours[largest_contour_index]);
+	
+	// Find the bounding box for the large contour
+	Rect box = boundingRect(contours[largest_contour_index]);
 	
 	// Check spokes
 // 	center_spokes(in_frame, contours[largest_contour_index]);
 	
-	// Use minimum enclosing circle to get max diameter of moon ellipse
-	Point2f center;
-	minEnclosingCircle(contours[largest_contour_index], center, ELL_RAD);
-	
+// 	// Use minimum enclosing circle to get max diameter of moon ellipse
+// 	Point2f center;
+// 	minEnclosingCircle(contours[largest_contour_index], center, ELL_RAD);
+// 	
+// 	if (DEBUG_COUT) {
+// 		std::cout << "box width: " << box.size.width << std::endl;
+// 		std::cout << "box height: " << box.size.height << std::endl;
+// 		std::cout << "box x: " << box.center.x << std::endl;
+// 		std::cout << "box y: " << box.center.y << std::endl;
+// 		std::cout << "box angle: " << box.angle << std::endl;
+// 	}
 	if (DEBUG_COUT) {
-		std::cout << "box width: " << box.size.width << std::endl;
-		std::cout << "box height: " << box.size.height << std::endl;
-		std::cout << "box x: " << box.center.x << std::endl;
-		std::cout << "box y: " << box.center.y << std::endl;
-		std::cout << "box angle: " << box.angle << std::endl;
+		std::cout << "box tr: " << box.tl() << std::endl;
+		std::cout << "box bl: " << box.br() << std::endl;
+		std::cout << "box x: " << box.x << std::endl;
+		std::cout << "box y: " << box.y << std::endl;
+		std::cout << "box width: " << box.width << std::endl;
+		std::cout << "box height: " << box.height << std::endl;
+		std::cout << "box area: " << box.area() << std::endl;
 	}
 	
 	
@@ -439,15 +465,58 @@ void childcheck(int signum) {
 	wait(NULL);
 }
 
+static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, int tier) {
+	int largest_contour_index = largest_contour(contours);
+	if (largest_contour_index < 0) {
+		return contours;
+	}
+	vector <Point> bigone = contours[largest_contour_index];
+	
+	float distance;
+	vector <vector<Point>> out_contours;
+	
+	bool caught_mask = false;
+	
+	int deleteme = contours.size();
+	
+	for (size_t i = 0; i < contours.size(); i++) {
+		caught_mask = false;
+		// Skip the big one
+		if (i == largest_contour_index) {
+			continue;
+		}
+		Moments M = moments(contours[i]);
+		int x_cen = (M.m10/M.m00);
+		int y_cen = (M.m01/M.m00);
+		for (size_t j = 0; j < contours[i].size(); j++) {
+			distance = sqrt(pow((x_cen - contours[i][j].x), 2) + pow((y_cen - contours[i][j].y), 2));
+			if (distance < QHE_WIDTH) {
+				caught_mask = true;
+				break;
+			}
+		}
+		if (!caught_mask) {
+			out_contours.push_back(contours[i]);
+		}
+	}
+	
+	int deletemetoo = out_contours.size();
+	if (DEBUG_COUT) {
+		std::cout << "QHE reduced tier " << tier << " from " << deleteme << " to " << deletemetoo << std::endl;
+	}
+	return out_contours;
+}
+
 int tier_one(int cnt, Mat frame) {
 	Point2f center;
 	float radius;
 	std::ofstream outfile;
 // 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 35);
-	frame = mask_halo(frame.clone(), 40);
+// 	frame = mask_halo(frame.clone(), 40);
 // 	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
 	vector <vector<Point>> contours = contours_only(frame);
+	contours = quiet_halo_elim(contours, 1);
 	cnt = cnt + 1;
 	
 	if (DEBUG_COUT) {
@@ -482,9 +551,10 @@ int tier_two(int cnt, Mat frame) {
 	std::ofstream outfile;
 // 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 20);
-	frame = mask_halo(frame.clone(), 40);
+// 	frame = mask_halo(frame.clone(), 40);
 // 	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
 	vector <vector<Point>> contours = contours_only(frame);
+	contours = quiet_halo_elim(contours, 2);
 	cnt = cnt + 1;
 	
 	if (DEBUG_COUT) {
@@ -532,6 +602,7 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 	
 	scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, 45);
 	vector <vector<Point>> contours = contours_only(scaleframe);
+	contours = quiet_halo_elim(contours, 3);
 	
 	if (DEBUG_COUT) {
 		std::cout << "Number of contours in tier 3 pass for frame " << cnt << ": " << contours.size() << std::endl;
@@ -639,6 +710,7 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 // 	imwrite("./tstx.png", frame);
 // 	imwrite("./tsty.png", scaleframe);
 	vector <vector<Point>> contours = contours_only(scaleframe);
+	contours = quiet_halo_elim(contours, 4);
 	
 	if (DEBUG_COUT) {
 		std::cout << "Number of contours in tier 4 pass for frame " << cnt << ": " << contours.size() << std::endl;
@@ -698,6 +770,7 @@ int parse_checklist(std::string name, std::string value) {
 	// Int cases
 	else if (
 		name == "EDGETHRESH"
+		|| name == "QHE_WIDTH"
 		|| name == "T1_AT_BLOCKSIZE"
 		|| name == "T2_AT_BLOCKSIZE"
 		|| name == "T3_LAP_KERNEL"
@@ -714,7 +787,9 @@ int parse_checklist(std::string name, std::string value) {
 		int result = std::stoi(value);
 		if (name == "EDGETHRESH") {
 			EDGETHRESH = result;
-		}else if (name == "T1_AT_BLOCKSIZE") {
+		} else if (name == "QHE_WIDTH") {
+			QHE_WIDTH = result;
+		} else if (name == "T1_AT_BLOCKSIZE") {
 			T1_AT_BLOCKSIZE = result;
 		} else if (name == "T2_AT_BLOCKSIZE") {
 			T2_AT_BLOCKSIZE = result;
@@ -934,23 +1009,27 @@ int main(int argc, char* argv[]) {
 	
 	// Create directories
 	std::string localpath;
-	fs::current_path(fs::temp_directory_path());
-	localpath = OUTPUTDIR.append("data");
+	localpath = fs::current_path();
+	OUTPUTDIR = localpath + OUTPUTDIR;
+	localpath = OUTPUTDIR + "data";
 	fs::create_directories(localpath);
 // 	fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
+	if (DEBUG_COUT) {
+		std::cout << "Creating new directory for files at: " << localpath << std::endl;
+	}
 	if (OUTPUT_FRAMES) {
-		localpath = OUTPUTDIR.append("frames");
+		localpath = OUTPUTDIR + "frames";
 		fs::create_directories(localpath);
 // 		fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
 	}
 	
 	// Synthesize Filenames
-	TIER1FILE = OUTPUTDIR.append("data/Tier1.csv");
-	TIER2FILE = OUTPUTDIR.append("data/Tier2.csv");
-	TIER3FILE = OUTPUTDIR.append("data/Tier3.csv");
-	TIER4FILE = OUTPUTDIR.append("data/Tier4.csv");
-	ELLIPSEDATA  = OUTPUTDIR.append("data/ellipses.csv");
-	METADATA = OUTPUTDIR.append("metadata.csv");
+	TIER1FILE = OUTPUTDIR + "data/Tier1.csv";
+	TIER2FILE = OUTPUTDIR + "data/Tier2.csv";
+	TIER3FILE = OUTPUTDIR + "data/Tier3.csv";
+	TIER4FILE = OUTPUTDIR + "data/Tier4.csv";
+	ELLIPSEDATA  = OUTPUTDIR + "frames/ellipses.csv";
+	METADATA = OUTPUTDIR + "data/metadata.csv";
 	
 	std::ofstream outfile;
 	outfile.open(TIER1FILE);
