@@ -11,7 +11,6 @@
 static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
 	Mat zero_mask = Mat::zeros(in_frame.size(), in_frame.type());
 	
-	
 	if (DEBUG_COUT) {
 		std::cout << "SHIFT_X: " << shiftx << std::endl << "SHIFT_Y: " << shifty << std::endl;
 	}
@@ -38,8 +37,6 @@ static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
 		if (DEBUG_COUT) {
 			std::cout << "shifting case 4 - move up and left" << std::endl;
 		}
-		in_frame(Rect(abs(shiftx), abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
-		.copyTo(zero_mask(Rect(0, 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
 	}
 	
 	in_frame = zero_mask;
@@ -106,7 +103,7 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 		}
 	}
 	
-	in_frame = shift_frame(in_frame, shiftx, shifty);
+	in_frame = shift_frame(in_frame, shiftx, -shifty);
 	
 	
 	return in_frame;
@@ -184,6 +181,9 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	ORIG_VERT = box.height;
 	ORIG_HORZ = box.width;
 	
+	ORIG_TL = box.tl();
+	ORIG_BR = box.br();
+	
 	
 // 	// Fit the largest contour to an ellipse
 // 	RotatedRect box = fitEllipse(contours[largest_contour_index]);
@@ -249,10 +249,9 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 		<< std::endl;
 	}
 	
-	// Now that the contour has moved, fetch the corners
-	Rect bigone = boundingRect(contours[largest_contour(contours_only(in_frame))]);
-	ORIG_TL = bigone.tl();
-	ORIG_BR = bigone.br();
+// 	// Now that the contour has moved, fetch the corners
+// 	Rect bigone = boundingRect(contours[largest_contour(contours_only(in_frame))]);
+// 	
 	
 	if (DEBUG_COUT) {
 		std::cout
@@ -267,17 +266,6 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	return in_frame;
 }
 
-
-// std::cout << "box tr: " << box.tl() << std::endl;
-// std::cout << "box bl: " << box.br() << std::endl;
-// std::cout << "box x: " << box.x << std::endl;
-// std::cout << "box y: " << box.y << std::endl;
-// std::cout << "box width: " << box.width << std::endl;
-// std::cout << "box height: " << box.height << std::endl;
-// std::cout << "box area: " << box.area() << std::endl;
-
-
-
 static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	// Find largest ellipse
 	Rect box = box_finder(in_frame);
@@ -287,7 +275,9 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
 // 	Rect roi  = Rect(box.x-(BOXSIZE/2), box.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
-	Rect roi = Rect(box.tl(), box.br());
+	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2), (box.tl().y- (BOXSIZE - box.height)/2));
+	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x, ((BOXSIZE - box.height)/2) + box.br().y);
+	Rect roi = Rect(roi_tl, roi_br);
 
 	// Find intersection, i.e. valid crop region
 	Rect intersection = image_rect & roi;
@@ -296,7 +286,7 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	Rect inter_roi = intersection - roi.tl();
 
 	// Create black image and copy intersection
-	Mat crop = Mat::zeros(roi.size(), in_frame.type());
+	Mat crop = Mat::zeros(Size(BOXSIZE, BOXSIZE), in_frame.type());
 	in_frame(intersection).copyTo(crop(inter_roi));
 	in_frame = crop;
 	
