@@ -41,6 +41,9 @@ using namespace cv;
 std::map<std::string, std::string> options;
 
 // Global Variables
+int MAJOR_VERSION = 0;
+int MINOR_VERSION = 2;
+std::string ALPHA_BETA = "-alpha";
 int STARTUP_CONTOURS;
 Rect STOREBOX;
 int SIG_ALERT = 0;

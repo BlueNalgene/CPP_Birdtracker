@@ -457,9 +457,10 @@ static void show_usage(string name) {
 	std::cerr << "Usage: "  << " <option(s)> \t\tSOURCES\tDescription\n"
 			<< "Options:\n"
 			<< "\t-h,--help\t\t\tShow this help message\n"
+			<< "\t-v,--version\t\t\tPrint version info to STDOUT\n"
 			<< "\t-i,--input\t\tINPUT\tSpecify path to input video\n"
-			<< "\t-do,--debug-output \t\tPrint debugging info to the terminal\n"
-			<< "\t-df,--debug-frames \t\tShow gui window of current frame"
+			<< "\t-c,--config-file \tINPUT\tSpecify config file (default settings.cfg)\n"
+			<< "\t-osf,--osf-path \tINPUT\tSpeify path to osf video\n"
 			<< std::endl;
 }
 
@@ -912,7 +913,7 @@ int main(int argc, char* argv[]) {
 	// Arg Handler --------------------------------------------------------------------------------
 	
 	// Handle arguments
-	if (argc < 3) {
+	if (argc < 2) {
 		show_usage(argv[0]);
 		return 1;
 	}
@@ -927,6 +928,19 @@ int main(int argc, char* argv[]) {
 		if ((arg == "-h") || (arg == "--help")) {
 			show_usage(argv[0]);
 			
+			return 0;
+		} else if ((arg == "-v") || (arg == "--version")) {
+			std::cout
+			<< "LunAero Frame Extractor"
+			<< std::endl
+			<< "v" << MAJOR_VERSION << "." << MINOR_VERSION << ALPHA_BETA
+			<< std::endl
+			<< "Compiled: " << __TIMESTAMP__
+			<< std::endl
+			<< "Copyright (C) 2020, GPL-3.0"
+			<< std::endl
+			<< "Wesley T. Honeycutt, Oklahoma Biological Survey"
+			<< std::endl;
 			return 0;
 		} else if ((arg == "-c") || (arg == "--config-file")) {
 			if (i + 1 < argc) {
