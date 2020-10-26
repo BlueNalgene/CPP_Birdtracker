@@ -1189,17 +1189,74 @@ int main(int argc, char* argv[]) {
 	METADATA = OUTPUTDIR + "data/metadata.csv";
 	
 	outfile.open(TIER1FILE);
+	outfile
+	<< "frame number"
+	<< ","
+	<< "x pos"
+	<< ","
+	<< "y pos"
+	<< ","
+	<< "radius"
+	<< std::endl;
 	outfile.close();
 	outfile.open(TIER2FILE);
+	outfile
+	<< "frame number"
+	<< ","
+	<< "x pos"
+	<< ","
+	<< "y pos"
+	<< ","
+	<< "radius"
+	<< std::endl;
 	outfile.close();
 	outfile.open(TIER3FILE);
+	outfile
+	<< "frame number"
+	<< ","
+	<< "x pos"
+	<< ","
+	<< "y pos"
+	<< ","
+	<< "radius"
+	<< std::endl;
 	outfile.close();
 	outfile.open(TIER4FILE);
+	outfile
+	<< "frame number"
+	<< ","
+	<< "x pos"
+	<< ","
+	<< "y pos"
+	<< ","
+	<< "radius"
+	<< std::endl;
 	outfile.close();
 	
 	// Touch output ellipse file
 	std::ofstream outell;
 	outell.open(ELLIPSEDATA);
+	outell
+	<< "frame number"
+	<< ","
+	<< "moon center x"
+	<< ","
+	<< "moon center y"
+	<< ","
+	<< "moon x diameter"
+	<< ","
+	<< "moon y diameter"
+	<< ","
+	<< "moon enclosing box area"
+	<< ","
+	<< "points on top edge"
+	<< ","
+	<< "points on bot edge"
+	<< ","
+	<< "points on left edge"
+	<< ","
+	<< "points on right edge"
+	<< std::endl;
 	outell.close();
 	
 	// Touch and create metafile
