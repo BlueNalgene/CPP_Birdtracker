@@ -52,6 +52,8 @@ int ORIG_HORZ;
 int BOXSIZE;
 Point ORIG_TL;
 Point ORIG_BR;
+std::string LOGOUT;
+std::ofstream LOGGING;
 std::string TIER1FILE;
 std::string TIER2FILE;
 std::string TIER3FILE;

@@ -12,30 +12,40 @@ static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
 	Mat zero_mask = Mat::zeros(in_frame.size(), in_frame.type());
 	
 	if (DEBUG_COUT) {
-		std::cout << "SHIFT_X: " << shiftx << std::endl << "SHIFT_Y: " << shifty << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "SHIFT_X: " << shiftx << std::endl << "SHIFT_Y: " << shifty << std::endl;
+		LOGGING.close();
 	}
 	
 	if ((shiftx < 0) && (shifty < 0)) { // move right and down
 		if (DEBUG_COUT) {
-			std::cout << "shifting case 1 - move right and down" << std::endl;
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "shifting case 1 - move right and down" << std::endl;
+			LOGGING.close();
 		}
 		in_frame(Rect(0, 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
 		.copyTo(zero_mask(Rect(abs(shiftx), abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
 	} else if (shiftx < 0) { // move right and maybe up
 		if (DEBUG_COUT) {
-			std::cout << "shifting case 2 - move right and maybe up" << std::endl;
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "shifting case 2 - move right and maybe up" << std::endl;
+			LOGGING.close();
 		}
 		in_frame(Rect(0, abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
 		.copyTo(zero_mask(Rect(abs(shiftx), 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
 	} else if (shifty < 0) { // move down and maybe left
 		if (DEBUG_COUT) {
-			std::cout << "shifting case 3 - move down and maybe left" << std::endl;
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "shifting case 3 - move down and maybe left" << std::endl;
+			LOGGING.close();
 		}
 		in_frame(Rect(abs(shiftx), 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
 		.copyTo(zero_mask(Rect(0, abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
 	} else {  // positive moves up and left
 		if (DEBUG_COUT) {
-			std::cout << "shifting case 4 - move up and left" << std::endl;
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "shifting case 4 - move up and left" << std::endl;
+			LOGGING.close();
 		}
 	}
 	
@@ -52,11 +62,14 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 	Point local_br = boundingRect(contour).br();
 	
 	if (DEBUG_COUT) {
-		std::cout << "PLUSX: " << plusx << " PLUSY: " << plusy << std::endl;
-		std::cout << "LOCAL_TL = (" << local_tl.x << ", " << local_tl.y << ")" << std::endl;
-		std::cout << "LOCAL_BR = (" << local_br.x << ", " << local_br.y << ")" << std::endl;
-		std::cout << "ORIG_TL = (" << ORIG_TL.x << ", " << ORIG_TL.y << ")" << std::endl;
-		std::cout << "ORIG_BR = (" << ORIG_BR.x << ", " << ORIG_BR.y << ")" << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "PLUSX: " << plusx << " PLUSY: " << plusy << std::endl
+		<< "LOCAL_TL = (" << local_tl.x << ", " << local_tl.y << ")" << std::endl
+		<< "LOCAL_BR = (" << local_br.x << ", " << local_br.y << ")" << std::endl
+		<< "ORIG_TL = (" << ORIG_TL.x << ", " << ORIG_TL.y << ")" << std::endl
+		<< "ORIG_BR = (" << ORIG_BR.x << ", " << ORIG_BR.y << ")" << std::endl;
+		LOGGING.close();
 	}
 	
 	if ((abs(plusx) > EDGETHRESH) && (abs(plusx) > EDGETHRESH)) {
@@ -113,7 +126,9 @@ static Mat test_edges(Mat in_frame, vector<Point> contour) {
 	Moments M = moments(contour);
 	Point cen(int(M.m10/M.m00), int(M.m01/M.m00));
 	if (DEBUG_COUT) {
-		std::cout << "centroid: " << cen << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "centroid: " << cen << std::endl;
+		LOGGING.close();
 	}
 	
 	// Targeting reticle for debugging
@@ -128,7 +143,19 @@ static Mat test_edges(Mat in_frame, vector<Point> contour) {
 	int xsize = rect.br().x - rect.tl().x;
 	int ysize = rect.br().y - rect.tl().y;
 	
-	std::cout << to_top << "," << to_right << "," << to_bottom << "," << to_left << std::endl;
+	if (DEBUG_COUT) {
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< to_top
+		<< ","
+		<< to_right
+		<< ","
+		<< to_bottom
+		<< ","
+		<< to_left
+		<< std::endl;
+		LOGGING.close();
+	}
 	
 	int plusx = 0;
 	int plusy = 0;
@@ -139,12 +166,18 @@ static Mat test_edges(Mat in_frame, vector<Point> contour) {
 		plusx = to_left - to_right;
 	}
 	
-	std::cout << plusx << ", " << plusy << std::endl;
+	if (DEBUG_COUT) {
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << plusx << ", " << plusy << std::endl;
+		LOGGING.close();
+	}
 	
 	if ((abs(plusx) > EDGETHRESH) || (abs(plusy) > EDGETHRESH)) {
 		
 		if (DEBUG_COUT) {
-			std::cout << "Activating Corner Matching" << std::endl;
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "Activating Corner Matching" << std::endl;
+			LOGGING.close();
 		}
 		in_frame = corner_matching(in_frame, contour, plusx, plusy);
 	}
@@ -155,7 +188,9 @@ static Mat test_edges(Mat in_frame, vector<Point> contour) {
 static int min_square_dim(Mat in_frame) {
 	BOXSIZE = min(in_frame.rows, in_frame.cols);
 	if (DEBUG_COUT) {
-		std::cout << "Cutting frame to size: (" << BOXSIZE << ", " << BOXSIZE << ")" << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "Cutting frame to size: (" << BOXSIZE << ", " << BOXSIZE << ")" << std::endl;
+		LOGGING.close();
 	}
 	return 0;
 }
@@ -169,7 +204,12 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	vector <vector<Point>> contours = contours_only(in_frame);
 	
 	if (DEBUG_COUT) {
-		std::cout << "Number of detected contours in ellipse frame: " << contours.size() << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "Number of detected contours in ellipse frame: "
+		<< contours.size()
+		<< std::endl;
+		LOGGING.close();
 	}
 	
 	int largest_contour_index = largest_contour(contours);
@@ -193,11 +233,14 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 // 	minEnclosingCircle(contours[largest_contour_index], center, ELL_RAD);
 	
 	if (DEBUG_COUT) {
-		std::cout << "box width: " << box.width << std::endl;
-		std::cout << "box height: " << box.height << std::endl;
-		std::cout << "box x: " << box.x << std::endl;
-		std::cout << "box y: " << box.y << std::endl;
-		std::cout << "box angle: " << box.area() << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "box width: " << box.width << std::endl
+		<< "box height: " << box.height << std::endl
+		<< "box x: " << box.x << std::endl
+		<< "box y: " << box.y << std::endl
+		<< "box angle: " << box.area() << std::endl;
+		LOGGING.close();
 	}
 	
 	framecnt = framecnt + 1;
@@ -240,27 +283,27 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	outell.close();
 	
 	if (DEBUG_COUT) {
-		std::cout
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
 		<< "ORIG_AREA = "
 		<< ORIG_AREA
 		<< std::endl
 		<< "ORIG_PERI = "
 		<< ORIG_PERI
 		<< std::endl;
+		LOGGING.close();
 	}
 	
-// 	// Now that the contour has moved, fetch the corners
-// 	Rect bigone = boundingRect(contours[largest_contour(contours_only(in_frame))]);
-// 	
-	
 	if (DEBUG_COUT) {
-		std::cout
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
 		<< "ORIG_TL = "
 		<< ORIG_TL
 		<< std::endl
 		<< "ORIG_BR = "
 		<< ORIG_BR
 		<< std::endl;
+		LOGGING.close();
 	}
 	
 	return in_frame;
@@ -317,7 +360,7 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 
 void signal_callback_handler(int signum) {
 	if (signum == 2) {
-		std::cout << "Caught ctrl+c interrupt signal: " << std::endl;
+		std::cerr << "Caught ctrl+c interrupt signal: " << std::endl;
 	}
 	// Terminate program
 	SIG_ALERT = signum;
@@ -339,7 +382,6 @@ static vector <vector<Point>> fetch_dynamic_mask(Mat in_frame) {
 }
 
 static Mat apply_dynamic_mask(Mat in_frame, vector <vector<Point>> contours, int maskwidth) {
-// 	std::cout << "contour " << contours << std::endl;
 	drawContours(in_frame, contours, -1, 0, maskwidth, LINE_8);
 	return in_frame;
 }
@@ -380,52 +422,36 @@ static Rect box_finder(Mat in_frame) {
 	vector <vector<Point>> contours = contours_only(in_frame);
 	
 	if (DEBUG_COUT) {
-		std::cout << "Number of detected contours in ellipse frame: " << contours.size() << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "Number of detected contours in ellipse frame: "
+		<< contours.size()
+		<< std::endl;
+		LOGGING.close();
 	}
 	
 	int largest_contour_index = largest_contour(contours);
 	
-// 	// Fit the largest contour to an ellipse
-// 	RotatedRect box = fitEllipse(contours[largest_contour_index]);
-	
 	// Find the bounding box for the large contour
 	Rect box = boundingRect(contours[largest_contour_index]);
-	
-	// Check spokes
-// 	center_spokes(in_frame, contours[largest_contour_index]);
-	
-// 	// Use minimum enclosing circle to get max diameter of moon ellipse
-// 	Point2f center;
-// 	minEnclosingCircle(contours[largest_contour_index], center, ELL_RAD);
-// 	
-// 	if (DEBUG_COUT) {
-// 		std::cout << "box width: " << box.size.width << std::endl;
-// 		std::cout << "box height: " << box.size.height << std::endl;
-// 		std::cout << "box x: " << box.center.x << std::endl;
-// 		std::cout << "box y: " << box.center.y << std::endl;
-// 		std::cout << "box angle: " << box.angle << std::endl;
-// 	}
+
 	if (DEBUG_COUT) {
-		std::cout << "box tr: " << box.tl() << std::endl;
-		std::cout << "box bl: " << box.br() << std::endl;
-		std::cout << "box x: " << box.x << std::endl;
-		std::cout << "box y: " << box.y << std::endl;
-		std::cout << "box width: " << box.width << std::endl;
-		std::cout << "box height: " << box.height << std::endl;
-		std::cout << "box area: " << box.area() << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "box tr: " << box.tl() << std::endl
+		<< "box bl: " << box.br() << std::endl
+		<< "box x: " << box.x << std::endl
+		<< "box y: " << box.y << std::endl
+		<< "box width: " << box.width << std::endl
+		<< "box height: " << box.height << std::endl
+		<< "box area: " << box.area() << std::endl;
+		LOGGING.close();
 	}
 	
 	
 	
 	return box;
 }
-
-// static int thresh_detect(Mat in_frame) {
-// 	// THIS IS REQUIRED AND I DON"T KNOW WHY!!!!!
-// 	GaussianBlur(in_frame.clone(), in_frame, Size(5, 5), 0, 0);
-// 
-// 	return 0;
-// }
 
 static void show_usage(string name) {
 	std::cerr << "Usage: "  << " <option(s)> \t\tSOURCES\tDescription\n"
@@ -442,8 +468,6 @@ static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe) 
 	int outval = 0;
 	int cnt = 0;
 	for (size_t i = 0; i<contour.size(); i++) {
-		
-// 		std::cout << "(x, y, L): (" << contour[i].x << ", " << contour[i].y << ", " << (int)lapframe.at<uchar>(contour[i].x, contour[i].y) << ")"<< std::endl;
 		outval +=(int16_t)lapframe.at<int16_t>(contour[i].y, contour[i].x);
 		cnt++;
 	}
@@ -467,8 +491,6 @@ static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, i
 	
 	bool caught_mask = false;
 	
-	int deleteme = contours.size();
-	
 	for (size_t i = 0; i < contours.size(); i++) {
 		caught_mask = false;
 		// Skip the big one
@@ -489,11 +511,6 @@ static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, i
 			out_contours.push_back(contours[i]);
 		}
 	}
-	
-	int deletemetoo = out_contours.size();
-	if (DEBUG_COUT) {
-		std::cout << "QHE reduced tier " << tier << " from " << deleteme << " to " << deletemetoo << std::endl;
-	}
 	return out_contours;
 }
 
@@ -510,7 +527,14 @@ int tier_one(int cnt, Mat frame) {
 	cnt = cnt + 1;
 	
 	if (DEBUG_COUT) {
-		std::cout << "Number of contours in tier 1 pass for frame " << cnt << ": " << contours.size() << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "Number of contours in tier 1 pass for frame "
+		<< cnt
+		<< ": "
+		<< contours.size()
+		<< std::endl;
+		LOGGING.close();
 	}
 	outfile.open(TIER1FILE, std::ios_base::app);
 	// Cycle through the contours
@@ -528,7 +552,6 @@ int tier_one(int cnt, Mat frame) {
 			<< ","
 			<< radius
 			<< std::endl;
-			
 		}
 	}
 	outfile.close();
@@ -548,7 +571,14 @@ int tier_two(int cnt, Mat frame) {
 	cnt = cnt + 1;
 	
 	if (DEBUG_COUT) {
-		std::cout << "Number of contours in tier 2 pass for frame " << cnt << ": " << contours.size() << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "Number of contours in tier 2 pass for frame "
+		<< cnt
+		<< ": "
+		<< contours.size()
+		<< std::endl;
+		LOGGING.close();
 	}
 	outfile.open(TIER2FILE, std::ios_base::app);
 	// Cycle through the contours
@@ -557,7 +587,6 @@ int tier_two(int cnt, Mat frame) {
 		if (vec.size() > 1) {
 			minEnclosingCircle(vec, center, radius);
 			// Open the outfile to append
-			
 			outfile
 			<< cnt
 			<< ","
@@ -595,7 +624,14 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 	contours = quiet_halo_elim(contours, 3);
 	
 	if (DEBUG_COUT) {
-		std::cout << "Number of contours in tier 3 pass for frame " << cnt << ": " << contours.size() << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "Number of contours in tier 3 pass for frame "
+		<< cnt
+		<< ": "
+		<< contours.size()
+		<< std::endl;
+		LOGGING.close();
 	}
 	outfile.open(TIER3FILE, std::ios_base::app);
 	// Cycle through the contours
@@ -613,7 +649,6 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 			<< ","
 			<< radius
 			<< std::endl;
-			
 		}
 	}
 	outfile.close();
@@ -625,7 +660,6 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 	std::ofstream outfile;
 	Mat scaleframe;
 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
-// 	cnt = cnt + 1;
 	
 // 	/* Eli Method for Tier 3 */
 // 	Laplacian(frame.clone(), frame, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
@@ -703,7 +737,14 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 	contours = quiet_halo_elim(contours, 4);
 	
 	if (DEBUG_COUT) {
-		std::cout << "Number of contours in tier 4 pass for frame " << cnt << ": " << contours.size() << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "Number of contours in tier 4 pass for frame "
+		<< cnt
+		<< ": "
+		<< contours.size()
+		<< std::endl;
+		LOGGING.close();
 	}
 	outfile.open(TIER4FILE, std::ios_base::app);
 	// Cycle through the contours
@@ -725,9 +766,6 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 		}
 	}
 	outfile.close();
-// 	if (DEBUG_COUT) {
-// 		imwrite("./tier3.png", frame);
-// 	}
 	return 0;
 }
 
@@ -745,7 +783,7 @@ int parse_checklist(std::string name, std::string value) {
 		} else if (value == "false" || value == "False" || value == "FALSE") {
 			result = false;
 		} else {
-			std::cout << "Invalid boolean value in settings.cfg item: " << name << std::endl;
+			std::cerr << "Invalid boolean value in settings.cfg item: " << name << std::endl;
 			return 1;
 		}
 		
@@ -959,8 +997,11 @@ int main(int argc, char* argv[]) {
 	// Hack method to kick out h264 files
 	auto delimiter_pos = input_file.find('.');
 	if (input_file.substr(delimiter_pos + 1) != "mp4") {
-		std::cerr << "Input file (" << input_file
-		<< ") does not end with \"mp4\".  Assuming the input file is incompatible" << std::endl;
+		std::cerr
+		<< "Input file ("
+		<< input_file
+		<< ") does not end with \"mp4\".  Assuming the input file is incompatible"
+		<< std::endl;
 		return 1;
 	}
 	
@@ -990,8 +1031,11 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (DEBUG_COUT) {
-		std::cout << "Config File Loaded from" << config_file << std::endl;
-		std::cout << "Using input file: " << input_file << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
+		<< "Config File Loaded from" << config_file << std::endl
+		<< "Using input file: " << input_file << std::endl;
+		LOGGING.close();
 	}
 	
 	
@@ -1003,9 +1047,12 @@ int main(int argc, char* argv[]) {
 	OUTPUTDIR = localpath + OUTPUTDIR;
 	localpath = OUTPUTDIR + "data";
 	fs::create_directories(localpath);
+	std::ofstream outfile;
 // 	fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
 	if (DEBUG_COUT) {
-		std::cout << "Creating new directory for files at: " << localpath << std::endl;
+		LOGOUT = OUTPUTDIR + "data/log.log";
+		LOGGING.open(LOGOUT);
+		LOGGING.close();
 	}
 	if (OUTPUT_FRAMES) {
 		localpath = OUTPUTDIR + "frames";
@@ -1018,10 +1065,9 @@ int main(int argc, char* argv[]) {
 	TIER2FILE = OUTPUTDIR + "data/Tier2.csv";
 	TIER3FILE = OUTPUTDIR + "data/Tier3.csv";
 	TIER4FILE = OUTPUTDIR + "data/Tier4.csv";
-	ELLIPSEDATA  = OUTPUTDIR + "frames/ellipses.csv";
+	ELLIPSEDATA  = OUTPUTDIR + "data/ellipses.csv";
 	METADATA = OUTPUTDIR + "data/metadata.csv";
 	
-	std::ofstream outfile;
 	outfile.open(TIER1FILE);
 	outfile.close();
 	outfile.open(TIER2FILE);
@@ -1104,7 +1150,8 @@ int main(int argc, char* argv[]) {
 	const size_t shmem_size = frame.total() * frame.elemSize();
 	
 	if (DEBUG_COUT) {
-		std::cout
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING
 		<< "frame dimensions: "
 		<< frame.size().width
 		<< " x "
@@ -1117,30 +1164,35 @@ int main(int argc, char* argv[]) {
 		<< "frame_fd: "
 		<< frame_fd
 		<< std::endl;
+		LOGGING.close();
 	}
 	
 	// Resize the frame_fd to fit the frame size we are using
 	if (ftruncate(frame_fd, shmem_size) != 0) {
-		std::cout << "failed to truncate resize file descriptor" << std::endl;
-		return -1;
+		std::cerr << "failed to truncate resize file descriptor" << std::endl;
+		return 1;
 	}
 	// Resize the frame_fd to fit the frame size we are using
 	if (ftruncate(frame_fd2, shmem_size) != 0) {
-		std::cout << "failed to truncate resize file descriptor 2" << std::endl;
-		return -1;
+		std::cerr << "failed to truncate resize file descriptor 2" << std::endl;
+		return 1;
 	}
 	
 	
 	unsigned char *buf = static_cast <unsigned char*>(mmap(NULL, shmem_size, PROT_READ|PROT_WRITE, MAP_SHARED, frame_fd, 0));
 	memcpy(buf, frame.ptr(), shmem_size);
 	if (DEBUG_COUT) {
-		std::cout << "memcpy'd buf1 with size:" << sizeof(*buf) << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "memcpy'd buf1 with size:" << sizeof(*buf) << std::endl;
+		LOGGING.close();
 	}
 	
 	unsigned char *buf2 = static_cast <unsigned char*>(mmap(NULL, shmem_size, PROT_READ|PROT_WRITE, MAP_SHARED, frame_fd2, 0));
 	memcpy(buf2, frame.ptr(), shmem_size);
 	if (DEBUG_COUT) {
-		std::cout << "memcpy'd buf2 with size:"  << sizeof(*buf2) << std::endl;
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "memcpy'd buf2 with size:"  << sizeof(*buf2) << std::endl;
+		LOGGING.close();
 	}
 	
 	// Store first frame in memory
@@ -1155,47 +1207,15 @@ int main(int argc, char* argv[]) {
 	// Set all the mm_ codes
 	*mm_killed = false;
 	*mm_frameavail = true;
-// 	*mm_gotframe1 = false;
-// 	*mm_gotframe2 = false;
-// 	*mm_gotframe3 = false;
 	*mm_tier1 = true;
 	*mm_tier2 = true;
 	*mm_tier3 = true;
 	
-// 	// Thresh detect ------------------------------------------------------------------------------
-// 	// Determine the optimal threshold from the first frame
-// 	// AAAAH WHY CAN'T I KILL THIS THING!!!
-// 	thresh = thresh_detect(frame);
-	
 	// Main Loop ----------------------------------------------------------------------------------
-	// If we have not told the program to exit, fork and continue.
-// 	if (SIG_ALERT == 0) {
-// 		
-// 	} else {
-// 		break;
-// 	}
-
-		
 	pid0 = fork();
 	
 	if (pid0 > 0) {
 		// FORK 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// 			// BEGIN get first frame on start
-// 			*mm_frameavail = false;
-// 			++*mm_frmcount;
-// 			if (DEBUG_COUT) {
-// 				std::cout << "frame number: " << *mm_frmcount << std::endl;
-// 			}
-// 			
-// 			// Image processing operations
-// // 			cvtColor(frame, frame, COLOR_BGR2GRAY);
-// 			frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
-// 			// Store this image into the memory buffer
-// 			printf("1\n");
-// 			memcpy(buf, frame.ptr(), shmem_size);
-// 			printf("2\n");
-// 			*mm_frameavail = true;
-// 			// END get first frame on start
 		while (cap.isOpened()) {
 			// Check for ctrl C
 			if (SIG_ALERT != 0) {
@@ -1217,7 +1237,9 @@ int main(int argc, char* argv[]) {
 			// Get new frame; operate and store
 			cap >> frame;
 			if (frame.empty()) {
-				std::cout << "Reached end of frames.  Exiting" << std::endl;
+				LOGGING.open(LOGOUT, std::ios_base::app);
+				LOGGING << "Reached end of frames.  Exiting" << std::endl;
+				LOGGING.close();
 				break;
 			}
 			++*mm_frmcount;
@@ -1226,7 +1248,8 @@ int main(int argc, char* argv[]) {
 			frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
 			
 			if (DEBUG_COUT) {
-				std::cout
+				LOGGING.open(LOGOUT, std::ios_base::app);
+				LOGGING 
 				<< "frame number: "
 				<< *mm_frmcount
 				<< std::endl
@@ -1239,17 +1262,13 @@ int main(int argc, char* argv[]) {
 				<< " = "
 				<< shmem_size
 				<< std::endl;
+				LOGGING.close();
 			}
 			// Store this image into the memory buffer
 			memcpy(buf, frame.ptr(), shmem_size);
 			
 			// Report that the frame was stored
 			*mm_frameavail = true;
-// 			while ((*mm_tier1 == false) || (*mm_tier2 == false) || (*mm_tier3 == false)) {
-// 				usleep(50);
-// 			}
-// 			wait(0);
-// 				wait(0);
 			
 			if (DEBUG_FRAMES) {
 				imshow("fg_mask", frame);
@@ -1285,7 +1304,12 @@ int main(int argc, char* argv[]) {
 				if (local_count == 0) {
 					// Skip the zeroth frame since there will be no old_frame
 					if (DEBUG_COUT) {
-						std::cout << "skipping early frame tier3 in frame: " << local_count << std::endl;
+						LOGGING.open(LOGOUT, std::ios_base::app);
+						LOGGING
+						<< "skipping early frame tier3 in frame: "
+						<< local_count
+						<< std::endl;
+						LOGGING.close();
 					}
 				} else {
 					
