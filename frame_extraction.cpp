@@ -103,7 +103,7 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 		}
 	}
 	
-	in_frame = shift_frame(in_frame, shiftx, -shifty);
+	in_frame = shift_frame(in_frame, shiftx/2, -shifty/2);
 	
 	
 	return in_frame;
@@ -1216,6 +1216,10 @@ int main(int argc, char* argv[]) {
 			memcpy(buf2, buf, shmem_size);
 			// Get new frame; operate and store
 			cap >> frame;
+			if (frame.empty()) {
+				std::cout << "Reached end of frames.  Exiting" << std::endl;
+				break;
+			}
 			++*mm_frmcount;
 			// Image processing operations
 			cvtColor(frame, frame, COLOR_BGR2GRAY);
