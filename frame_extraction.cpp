@@ -122,7 +122,7 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 	return in_frame;
 }
 
-static Mat test_edges(Mat in_frame, vector<Point> contour) {
+static vector <int> test_edges(Mat in_frame, vector<Point> contour) {
 	Moments M = moments(contour);
 	Point cen(int(M.m10/M.m00), int(M.m01/M.m00));
 	if (DEBUG_COUT) {
@@ -172,17 +172,10 @@ static Mat test_edges(Mat in_frame, vector<Point> contour) {
 		LOGGING.close();
 	}
 	
-	if ((abs(plusx) > EDGETHRESH) || (abs(plusy) > EDGETHRESH)) {
-		
-		if (DEBUG_COUT) {
-			LOGGING.open(LOGOUT, std::ios_base::app);
-			LOGGING << "Activating Corner Matching" << std::endl;
-			LOGGING.close();
-		}
-		in_frame = corner_matching(in_frame, contour, plusx, plusy);
-	}
-	
-	return in_frame;
+	vector <int> outplus;
+	outplus.push_back(plusx);
+	outplus.push_back(plusy);
+	return outplus;
 }
 
 static int min_square_dim(Mat in_frame) {
@@ -313,7 +306,7 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	// Find largest ellipse
 	Rect box = box_finder(in_frame);
 	// HACK increase the framecnt here
-	framecnt = framecnt + 1;
+// 	framecnt = framecnt + 1;
 	
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
@@ -353,7 +346,17 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	
 	vector <vector<Point>> contours = contours_only(in_frame);
 	int largest = largest_contour(contours);
-	in_frame = test_edges(in_frame, contours[largest]);
+	vector <int> outplus = test_edges(in_frame, contours[largest]);
+	
+	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
+		
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "Activating Corner Matching" << std::endl;
+			LOGGING.close();
+		}
+		in_frame = corner_matching(in_frame, contours[largest], outplus[0], outplus[1]);
+	}
 	
 	return in_frame;
 }

@@ -102,7 +102,7 @@ int T4_DYNMASK_WIDTH = 45;
 // Declared functions/prototypes
 static Mat shift_frame(Mat in_frame, int shiftx, int shifty);
 static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int plusy);
-static Mat test_edges(Mat in_frame, vector<Point> contour);
+static vector <int> test_edges(Mat in_frame, vector<Point> contour);
 static int min_square_dim(Mat in_frame);
 static Mat first_frame(Mat in_frame, int framecnt);
 static Mat halo_noise_and_center(Mat in_frame, int framecnt);
