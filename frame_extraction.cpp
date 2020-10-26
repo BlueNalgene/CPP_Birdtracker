@@ -188,12 +188,59 @@ static int min_square_dim(Mat in_frame) {
 	return 0;
 }
 
+static vector <int> edge_width(vector<Point> contour) {
+	vector <int> local_vec;
+	
+	Rect box = boundingRect(contour);
+	int top = box.tl().y;
+	int bot = box.br().y;
+	
+	int topout = 0;
+	int botout = 0;
+	int cnt = 0;
+	for (size_t i = 0; i<contour.size(); i++) {
+		if (contour[i].y == top) {
+			topout += 1;
+		}
+		if (contour[i].y == bot) {
+			botout += 1;
+		}
+	}
+	
+	local_vec.push_back(topout);
+	local_vec.push_back(botout);
+	
+	return local_vec;
+}
 
+static vector <int> edge_height(vector<Point> contour) {
+	vector <int> local_vec;
+	
+	Rect box = boundingRect(contour);
+	int lef = box.tl().x;
+	int rig = box.br().x;
+	
+	int lefout = 0;
+	int rigout = 0;
+	int cnt = 0;
+	for (size_t i = 0; i<contour.size(); i++) {
+		if (contour[i].y == lef) {
+			lefout += 1;
+		}
+		if (contour[i].y == rig) {
+			rigout += 1;
+		}
+	}
+	
+	local_vec.push_back(lefout);
+	local_vec.push_back(rigout);
+	
+	return local_vec;
+}
 
 static Mat first_frame(Mat in_frame, int framecnt) {
 	min_square_dim(in_frame);
 	
-	std::ofstream outell;
 	vector <vector<Point>> contours = contours_only(in_frame);
 	
 	if (DEBUG_COUT) {
@@ -258,23 +305,6 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	
 	in_frame = crop;
 	
-	// Open the outfile to append list of major ellipses
-	outell.open(ELLIPSEDATA, std::ios_base::app);
-	outell
-	<< framecnt
-	<< ","
-	<< box.x
-	<< ","
-	<< box.y
-	<< ","
-	<< box.width
-	<< ","
-	<< box.height
-	<< ","
-	<< box.area()
-	<< std::endl;
-	outell.close();
-	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -298,6 +328,53 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 		<< std::endl;
 		LOGGING.close();
 	}
+	
+	
+	vector <int> outplus = test_edges(in_frame, contours[largest_contour_index]);
+	
+	int edge_top = 0;
+	int edge_bot = 0;
+	int edge_lef = 0;
+	int edge_rig = 0;
+	
+	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
+		if ((outplus[0] > 0) || (outplus[0] < 0)) {
+			vector <int> local_edge = edge_width(contours[largest_contour_index]);
+			edge_top = local_edge[0];
+			edge_bot = local_edge[1];
+		}
+		if ((outplus[1] > 0) || (outplus[1] < 0)) {
+			vector <int> local_edge = edge_height(contours[largest_contour_index]);
+			edge_lef = local_edge[0];
+			edge_rig = local_edge[1];
+		}
+	}
+	
+	// Open the outfile to append list of major ellipses
+	std::ofstream outell;
+	outell.open(ELLIPSEDATA, std::ios_base::app);
+	outell
+	<< framecnt
+	<< ","
+	<< box.x
+	<< ","
+	<< box.y
+	<< ","
+	<< box.width
+	<< ","
+	<< box.height
+	<< ","
+	<< box.area()
+	<< ","
+	<< edge_top
+	<< ","
+	<< edge_bot
+	<< ","
+	<< edge_lef
+	<< ","
+	<< edge_rig
+	<< std::endl;
+	outell.close();
 	
 	return in_frame;
 }
@@ -326,6 +403,37 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	in_frame(intersection).copyTo(crop(inter_roi));
 	in_frame = crop;
 	
+	
+	
+	vector <vector<Point>> contours = contours_only(in_frame);
+	int largest = largest_contour(contours);
+	vector <int> outplus = test_edges(in_frame, contours[largest]);
+	
+	int edge_top = 0;
+	int edge_bot = 0;
+	int edge_lef = 0;
+	int edge_rig = 0;
+	
+	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
+		
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "Activating Corner Matching" << std::endl;
+			LOGGING.close();
+		}
+		in_frame = corner_matching(in_frame, contours[largest], outplus[0], outplus[1]);
+		if ((outplus[0] > 0) || (outplus[0] < 0)) {
+			vector <int> local_edge = edge_width(contours[largest]);
+			edge_top = local_edge[0];
+			edge_bot = local_edge[1];
+		}
+		if ((outplus[1] > 0) || (outplus[1] < 0)) {
+			vector <int> local_edge = edge_height(contours[largest]);
+			edge_lef = local_edge[0];
+			edge_rig = local_edge[1];
+		}
+	}
+	
 	// Open the outfile to append list of major ellipses
 	std::ofstream outell;
 	outell.open(ELLIPSEDATA, std::ios_base::app);
@@ -341,22 +449,17 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	<< box.height
 	<< ","
 	<< box.area()
+	<< ","
+	<< edge_top
+	<< ","
+	<< edge_bot
+	<< ","
+	<< edge_lef
+	<< ","
+	<< edge_rig
 	<< std::endl;
 	outell.close();
 	
-	vector <vector<Point>> contours = contours_only(in_frame);
-	int largest = largest_contour(contours);
-	vector <int> outplus = test_edges(in_frame, contours[largest]);
-	
-	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
-		
-		if (DEBUG_COUT) {
-			LOGGING.open(LOGOUT, std::ios_base::app);
-			LOGGING << "Activating Corner Matching" << std::endl;
-			LOGGING.close();
-		}
-		in_frame = corner_matching(in_frame, contours[largest], outplus[0], outplus[1]);
-	}
 	
 	return in_frame;
 }
