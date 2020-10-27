@@ -291,7 +291,10 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
 // 	Rect roi = Rect(box.x-(BOXSIZE/2), box.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
-	Rect roi = Rect(box.tl(), box.br());
+	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2), (box.tl().y- (BOXSIZE - box.height)/2));
+	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x, ((BOXSIZE - box.height)/2) + box.br().y);
+// 	Rect roi = Rect(box.tl(), box.br());
+	Rect roi = Rect(roi_tl, roi_br);
 
 	// Find intersection, i.e. valid crop region
 	Rect intersection = image_rect & roi;
@@ -479,10 +482,16 @@ static Mat mask_halo(Mat in_frame, int maskwidth) {
 }
 
 static vector <vector<Point>> fetch_dynamic_mask(Mat in_frame) {
+	vector <vector<Point>> output;
 	vector <vector<Point>> contours = contours_only(in_frame);
 	int index = largest_contour(contours);
+	if (index < 0) {
+		vector<Point> aaa;
+		aaa.push_back(Point(-1, -1));
+		output.push_back(aaa);
+		return output;
+	}
 	vector<Point> maxcont = contours[index];
-	vector <vector<Point>> output;
 	output.push_back(maxcont);
 	return output;
 }
@@ -631,7 +640,7 @@ int tier_one(int cnt, Mat frame) {
 // 	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
 	vector <vector<Point>> contours = contours_only(frame);
 	contours = quiet_halo_elim(contours, 1);
-	cnt = cnt + 1;
+// 	cnt = cnt + 1;
 	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
@@ -675,7 +684,7 @@ int tier_two(int cnt, Mat frame) {
 // 	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
 	vector <vector<Point>> contours = contours_only(frame);
 	contours = quiet_halo_elim(contours, 2);
-	cnt = cnt + 1;
+// 	cnt = cnt + 1;
 	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
@@ -715,7 +724,7 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 	std::ofstream outfile;
 	Mat scaleframe;
 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
-	cnt = cnt + 1;
+// 	cnt = cnt + 1;
 	
 	/* Eli Method for Tier 3 */
 	Laplacian(frame.clone(), frame, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
@@ -725,8 +734,9 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 	scaleframe = frame.clone() - oldframe.clone();
 	scaleframe = scaleframe.clone() > 40;
 	/* end Eli Method */
-	
-	scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, 45);
+	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
+		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, 45);
+	}
 	vector <vector<Point>> contours = contours_only(scaleframe);
 	contours = quiet_halo_elim(contours, 3);
 	
@@ -836,8 +846,9 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 	
 	/* end UnCanny v2 */
 	
-	
-	scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, 45);
+	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
+		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, 45);
+	}
 // 	imwrite("./tstx.png", frame);
 // 	imwrite("./tsty.png", scaleframe);
 	vector <vector<Point>> contours = contours_only(scaleframe);
