@@ -668,9 +668,9 @@ int tier_one(int cnt, Mat frame) {
 				outfile
 				<< cnt
 				<< ","
-				<< center.x
+				<< static_cast<int>(center.x)
 				<< ","
-				<< center.y
+				<< static_cast<int>(center.y)
 				<< ","
 				<< radius
 				<< std::endl;
@@ -719,9 +719,9 @@ int tier_two(int cnt, Mat frame) {
 				outfile
 				<< cnt
 				<< ","
-				<< center.x
+				<< static_cast<int>(center.x)
 				<< ","
-				<< center.y
+				<< static_cast<int>(center.y)
 				<< ","
 				<< radius
 				<< std::endl;
@@ -780,9 +780,9 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 				outfile
 				<< cnt
 				<< ","
-				<< center.x
+				<< static_cast<int>(center.x)
 				<< ","
-				<< center.y
+				<< static_cast<int>(center.y)
 				<< ","
 				<< radius
 				<< std::endl;
@@ -901,9 +901,9 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 				outfile
 				<< cnt
 				<< ","
-				<< center.x
+				<< static_cast<int>(center.x)
 				<< ","
-				<< center.y
+				<< static_cast<int>(center.y)
 				<< ","
 				<< radius
 				<< std::endl;
