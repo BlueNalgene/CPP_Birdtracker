@@ -633,6 +633,7 @@ static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, i
 int tier_one(int cnt, Mat frame) {
 	Point2f center;
 	float radius;
+	float bigradius = 0;
 	std::ofstream outfile;
 // 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 35);
@@ -652,22 +653,28 @@ int tier_one(int cnt, Mat frame) {
 		<< std::endl;
 		LOGGING.close();
 	}
+	int largest_contour_index = largest_contour(contours);
+	if (largest_contour_index > -1) {
+		minEnclosingCircle(contours[largest_contour_index], center, bigradius);
+	}
 	outfile.open(TIER1FILE, std::ios_base::app);
 	// Cycle through the contours
 	for (auto vec : contours) {
 		// Greater than one includes lunar ellipse
 		if (vec.size() > 1) {
 			minEnclosingCircle(vec, center, radius);
-			// Open the outfile to append
-			outfile
-			<< cnt
-			<< ","
-			<< center.x
-			<< ","
-			<< center.y
-			<< ","
-			<< radius
-			<< std::endl;
+			if (radius != bigradius) {
+				// Open the outfile to append
+				outfile
+				<< cnt
+				<< ","
+				<< center.x
+				<< ","
+				<< center.y
+				<< ","
+				<< radius
+				<< std::endl;
+			}
 		}
 	}
 	outfile.close();
@@ -677,6 +684,7 @@ int tier_one(int cnt, Mat frame) {
 int tier_two(int cnt, Mat frame) {
 	Point2f center;
 	float radius;
+	float bigradius = 0;
 	std::ofstream outfile;
 // 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 20);
@@ -696,22 +704,28 @@ int tier_two(int cnt, Mat frame) {
 		<< std::endl;
 		LOGGING.close();
 	}
+	int largest_contour_index = largest_contour(contours);
+	if (largest_contour_index > -1) {
+		minEnclosingCircle(contours[largest_contour_index], center, bigradius);
+	}
 	outfile.open(TIER2FILE, std::ios_base::app);
 	// Cycle through the contours
 	for (auto vec : contours) {
 		// Greater than one includes lunar ellipse
 		if (vec.size() > 1) {
 			minEnclosingCircle(vec, center, radius);
-			// Open the outfile to append
-			outfile
-			<< cnt
-			<< ","
-			<< center.x
-			<< ","
-			<< center.y
-			<< ","
-			<< radius
-			<< std::endl;
+			if (radius != bigradius) {
+				// Open the outfile to append
+				outfile
+				<< cnt
+				<< ","
+				<< center.x
+				<< ","
+				<< center.y
+				<< ","
+				<< radius
+				<< std::endl;
+			}
 		}
 	}
 	outfile.close();
@@ -721,6 +735,7 @@ int tier_two(int cnt, Mat frame) {
 int tier_three(int cnt, Mat frame, Mat oldframe) {
 	Point2f center;
 	float radius;
+	float bigradius = 0;
 	std::ofstream outfile;
 	Mat scaleframe;
 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
@@ -750,22 +765,28 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 		<< std::endl;
 		LOGGING.close();
 	}
+	int largest_contour_index = largest_contour(contours);
+	if (largest_contour_index > -1) {
+		minEnclosingCircle(contours[largest_contour_index], center, bigradius);
+	}
 	outfile.open(TIER3FILE, std::ios_base::app);
 	// Cycle through the contours
 	for (auto vec : contours) {
 		// Greater than one includes lunar ellipse
 		if (vec.size() > 1) {
 			minEnclosingCircle(vec, center, radius);
-			// Open the outfile to append
-			outfile
-			<< cnt
-			<< ","
-			<< center.x
-			<< ","
-			<< center.y
-			<< ","
-			<< radius
-			<< std::endl;
+			if (radius != bigradius) {
+				// Open the outfile to append
+				outfile
+				<< cnt
+				<< ","
+				<< center.x
+				<< ","
+				<< center.y
+				<< ","
+				<< radius
+				<< std::endl;
+			}
 		}
 	}
 	outfile.close();
@@ -774,6 +795,7 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 int tier_four(int cnt, Mat frame, Mat oldframe) {
 	Point2f center;
 	float radius;
+	float bigradius = 0;
 	std::ofstream outfile;
 	Mat scaleframe;
 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
@@ -864,22 +886,28 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 		<< std::endl;
 		LOGGING.close();
 	}
+	int largest_contour_index = largest_contour(contours);
+	if (largest_contour_index > -1) {
+		minEnclosingCircle(contours[largest_contour_index], center, bigradius);
+	}
 	outfile.open(TIER4FILE, std::ios_base::app);
 	// Cycle through the contours
 	for (auto vec : contours) {
 		// Greater than one includes lunar ellipse
 		if (vec.size() > 1) {
 			minEnclosingCircle(vec, center, radius);
-			// Open the outfile to append
-			outfile
-			<< cnt
-			<< ","
-			<< center.x
-			<< ","
-			<< center.y
-			<< ","
-			<< radius
-			<< std::endl;
+			if (radius != bigradius) {
+				// Open the outfile to append
+				outfile
+				<< cnt
+				<< ","
+				<< center.x
+				<< ","
+				<< center.y
+				<< ","
+				<< radius
+				<< std::endl;
+			}
 			
 		}
 	}
