@@ -116,10 +116,11 @@ static Mat apply_dynamic_mask(Mat in_frame, vector<vector<Point>> contours, int 
 static int largest_contour(vector <vector<Point>> contours);
 static vector <vector<Point>> contours_only(Mat in_frame);
 static Rect box_finder(Mat in_frame);
-static void show_usage(string name);
-static int tier_one(int cnt, Mat frame);
-static int tier_two(int cnt, Mat frame);
-static int tier_three(int cnt, Mat frame, Mat oldframe);
-static int tier_four(int cnt, Mat frame, Mat oldframe);
+static int show_usage(string name);
+static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours);
+static int tier_one(int cnt, Mat in_frame);
+static int tier_two(int cnt, Mat in_frame);
+static int tier_three(int cnt, Mat in_frame, Mat old_frame);
+static int tier_four(int cnt, Mat in_frame, Mat old_frame);
 static int parse_checklist(std::string name, std::string value);
 int main(int argc, char* argv[]); 

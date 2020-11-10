@@ -7,7 +7,16 @@
 
 #include "frame_extraction.hpp"
 
-
+/**
+ * This function performs a shifting crop of the input image based on the values shiftx and shifty.
+ * The output image will always have BOXOUT dimensions determined from the size of the original
+ * image's shortest side.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param shiftx number of pixels the cropped image should be shifted in the horizontal direction
+ * @param shifty number of pixels the cropped image should be shifted in the vertical direction
+ * @return in_frame The modified in_frame from the input params
+ */
 static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
 	Mat zero_mask = Mat::zeros(in_frame.size(), in_frame.type());
 	
@@ -54,6 +63,21 @@ static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
 	return in_frame;
 }
 
+/**
+ * If the moon cannot be centered properly using moment methods, this function is called.  Here, the
+ * corner of the bounding box around the moon in the input frame is matched to the corners detected
+ * in the first frame.  If the first frame of the video was centered properly, this will produce an
+ * output frame which deviates less from the intended centering function.  This helps to reduce noise
+ * in when the contours are detected across all tiers.  Corner matching is determined by comparison
+ * against the maximum allowable edge length declared by EDGETHRESH from settings.cfg.  If this
+ * threshold is violated, corner matching will occur.  Otherwise, traditional centering will occur.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param contour OpenCV contour, a vector of int int points
+ * @param plusx horizontal deviation of contour in pixels
+ * @param plusy vertical deviation of contour in pixels
+ * @return in_frame The modified in_frame from the input params
+ */
 static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int plusy) {
 	int shiftx = 0;
 	int shifty = 0;
@@ -122,6 +146,14 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 	return in_frame;
 }
 
+/**
+ * This function tests the moon contour to determine the degree of shift required to center it in a
+ * frame.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param contour OpenCV contour, a vector of int int points
+ * @return outplus integer vector of horizontal and vertical deviation of the primary contour
+ */
 static vector <int> test_edges(Mat in_frame, vector<Point> contour) {
 	Moments M = moments(contour);
 	Point cen(int(M.m10/M.m00), int(M.m01/M.m00));
@@ -130,9 +162,6 @@ static vector <int> test_edges(Mat in_frame, vector<Point> contour) {
 		LOGGING << "centroid: " << cen << std::endl;
 		LOGGING.close();
 	}
-	
-	// Targeting reticle for debugging
-// 	circle(in_frame, cen, 3, Scalar(255, 0, 0), 1, 8, 0);
 	
 	Rect rect  = boundingRect(contour);
 	int to_top = int(M.m01/M.m00) - rect.tl().y;
@@ -178,6 +207,13 @@ static vector <int> test_edges(Mat in_frame, vector<Point> contour) {
 	return outplus;
 }
 
+/**
+ * This function stores the BOXSIZE variable globally.  BOXSIZE is the shortest side of the input
+ * image dimensions.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @return status
+ */
 static int min_square_dim(Mat in_frame) {
 	BOXSIZE = min(in_frame.rows, in_frame.cols);
 	if (DEBUG_COUT) {
@@ -188,6 +224,12 @@ static int min_square_dim(Mat in_frame) {
 	return 0;
 }
 
+/**
+ * This function determines the length of the extreme top and bottom edges of the moon contour.
+ *
+ * @param contour OpenCV contour, a vector of int int points
+ * @return local_vec integer vector of the top and bottom edge length of the moon
+ */
 static vector <int> edge_width(vector<Point> contour) {
 	vector <int> local_vec;
 	
@@ -197,7 +239,6 @@ static vector <int> edge_width(vector<Point> contour) {
 	
 	int topout = 0;
 	int botout = 0;
-	int cnt = 0;
 	for (size_t i = 0; i<contour.size(); i++) {
 		if (contour[i].y == top) {
 			topout += 1;
@@ -213,6 +254,12 @@ static vector <int> edge_width(vector<Point> contour) {
 	return local_vec;
 }
 
+/**
+ * This function determines the length of the extreme left and right edges of the moon contour.
+ *
+ * @param contour OpenCV contour, a vector of int int points
+ * @return local_vec integer vector of the left and right edge length of the moon
+ */
 static vector <int> edge_height(vector<Point> contour) {
 	vector <int> local_vec;
 	
@@ -222,7 +269,6 @@ static vector <int> edge_height(vector<Point> contour) {
 	
 	int lefout = 0;
 	int rigout = 0;
-	int cnt = 0;
 	for (size_t i = 0; i<contour.size(); i++) {
 		if (contour[i].y == lef) {
 			lefout += 1;
@@ -238,6 +284,15 @@ static vector <int> edge_height(vector<Point> contour) {
 	return local_vec;
 }
 
+/**
+ * This function is a special case of the frame preparation steps.  It outputs many of the initial
+ * values which are used later (globals that start with the ORIG_ template) and omits some of the
+ * masking steps not possible on the first frame.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param framecnt int of nth frame retrieved by program
+ * @return in_frame The modified in_frame from the input params
+ */
 static Mat first_frame(Mat in_frame, int framecnt) {
 	min_square_dim(in_frame);
 	
@@ -264,14 +319,6 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	ORIG_TL = box.tl();
 	ORIG_BR = box.br();
 	
-	
-// 	// Fit the largest contour to an ellipse
-// 	RotatedRect box = fitEllipse(contours[largest_contour_index]);
-	
-// 	// Use minimum enclosing circle to get max diameter of moon ellipse
-// 	Point2f center;
-// 	minEnclosingCircle(contours[largest_contour_index], center, ELL_RAD);
-	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -285,15 +332,10 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	
 	framecnt = framecnt + 1;
 	
-// 	// Select filled area with moon
-// 	ellipse(mask_mat, box, 255, -1, LINE_AA);
-	
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
-// 	Rect roi = Rect(box.x-(BOXSIZE/2), box.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
 	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2), (box.tl().y- (BOXSIZE - box.height)/2));
 	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x, ((BOXSIZE - box.height)/2) + box.br().y);
-// 	Rect roi = Rect(box.tl(), box.br());
 	Rect roi = Rect(roi_tl, roi_br);
 
 	// Find intersection, i.e. valid crop region
@@ -382,15 +424,23 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	return in_frame;
 }
 
+/**
+ * This function finds the largest contour (presumably the edge of the moon) and attempts to center
+ * the cropped image based on the centroid of the contour.  It calls corner_matching in cases where
+ * the centroid is not an appropriate method for centering.  Data from this ellipse are stored in
+ * the ellipse.csv file.  A small portion of the edge of the moon contour is removed to keep out the
+ * noisest portions.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param framecnt int of nth frame retrieved by program
+ * @return in_frame The modified in_frame from the input params
+ */
 static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	// Find largest ellipse
 	Rect box = box_finder(in_frame);
-	// HACK increase the framecnt here
-// 	framecnt = framecnt + 1;
 	
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
-// 	Rect roi  = Rect(box.x-(BOXSIZE/2), box.y-(BOXSIZE/2), BOXSIZE, BOXSIZE);
 	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2), (box.tl().y- (BOXSIZE - box.height)/2));
 	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x, ((BOXSIZE - box.height)/2) + box.br().y);
 	Rect roi = Rect(roi_tl, roi_br);
@@ -405,8 +455,6 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	Mat crop = Mat::zeros(Size(BOXSIZE, BOXSIZE), in_frame.type());
 	in_frame(intersection).copyTo(crop(inter_roi));
 	in_frame = crop;
-	
-	
 	
 	vector <vector<Point>> contours = contours_only(in_frame);
 	int largest = largest_contour(contours);
@@ -467,6 +515,12 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	return in_frame;
 }
 
+/**
+ * This is a helper function to handle terminal signals.  This shuts down the various forks properly
+ * when an interrupt is caught.
+ *
+ * @param signum signal number passed to this function. Only handles 2.
+ */
 void signal_callback_handler(int signum) {
 	if (signum == 2) {
 		std::cerr << "Caught ctrl+c interrupt signal: " << std::endl;
@@ -476,6 +530,13 @@ void signal_callback_handler(int signum) {
 	return;
 }
 
+/**
+ * This function fetches the largest contour to be used as a mask later on.  If no contour is found,
+ * negative values are returned in the output to be handled later.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @return output nested vector of int-int OpenCV points
+ */
 static vector <vector<Point>> fetch_dynamic_mask(Mat in_frame) {
 	vector <vector<Point>> output;
 	vector <vector<Point>> contours = contours_only(in_frame);
@@ -491,11 +552,27 @@ static vector <vector<Point>> fetch_dynamic_mask(Mat in_frame) {
 	return output;
 }
 
+/**
+ * This function masks out the edges of the input frame based on the contour.  The maskwidth determines
+ * how much to mask out.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param contours vector of OpenCV vectors of int-int point contour edges
+ * @param maskwidth
+ * @return in_frame The modified in_frame from the input params
+ */
 static Mat apply_dynamic_mask(Mat in_frame, vector <vector<Point>> contours, int maskwidth) {
 	drawContours(in_frame, contours, -1, 0, maskwidth, LINE_8);
 	return in_frame;
 }
 
+/**
+ * This function returns the index of the largest contour in a list of contours so it can be accessed
+ * in future functions.
+ *
+ * @param contours vector of OpenCV vectors of int-int point contour edges
+ * @return largest_contour_index integer index of the largest contour in a vector of contour vectors
+ */
 static int largest_contour(vector <vector<Point>> contours) {
 	int largest_contour_index = -1;
 	int largest_area = 0;
@@ -512,6 +589,13 @@ static int largest_contour(vector <vector<Point>> contours) {
 	return largest_contour_index;
 }
 
+/**
+ * This function returns the contours from an image.  It really only needs to exist because
+ * repeatedly declaring the unused hierarchy is tedious.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @return vector of int-int OpenCV Point vectors for each contour detected in the in_frame
+ */
 static vector <vector<Point>> contours_only(Mat in_frame) {
 	vector <vector<Point>> contours;
 	vector<Vec4i> hierarchy;
@@ -519,6 +603,12 @@ static vector <vector<Point>> contours_only(Mat in_frame) {
 	return contours;
 }
 
+/**
+ * This function finds the bounding box for the largest contour and reports on its properties.
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @return box OpenCV Rect object bounding the largest contour (presumably the moon)
+ */
 static Rect box_finder(Mat in_frame) {
 	
 	vector <vector<Point>> contours = contours_only(in_frame);
@@ -555,7 +645,13 @@ static Rect box_finder(Mat in_frame) {
 	return box;
 }
 
-static void show_usage(string name) {
+/**
+ * This is a helper function called using -h in terminal.
+ *
+ * @param name
+ * @return status
+ */
+static int show_usage(string name) {
 	std::cerr << "Usage: "  << " <option(s)> \t\tSOURCES\tDescription\n"
 			<< "Options:\n"
 			<< "\t-h,--help\t\t\tShow this help message\n"
@@ -564,9 +660,19 @@ static void show_usage(string name) {
 			<< "\t-c,--config-file \tINPUT\tSpecify config file (default settings.cfg)\n"
 			<< "\t-osf,--osf-path \tINPUT\tSpeify path to osf video\n"
 			<< std::endl;
+	return 0;
 }
 
-static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, int tier) {
+/**
+ * This function removes contours which are near to the edge of the moon halo.  This is a quiet kind
+ * of masking which does not alter the image, rather it quietly makes contours in violation
+ * `disappear'.  The distance from the moon edge which is to be masked is determined by QHE_WIDTH
+ * from settings.cfg.
+ *
+ * @param contours vector of OpenCV vectors of int-int point contour edges
+ * @return out_contours vector of OpenCV int-int Point vectors representing valid contours
+ */
+static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours) {
 	int largest_contour_index = largest_contour(contours);
 	if (largest_contour_index < 0) {
 		return contours;
@@ -605,25 +711,39 @@ static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, i
 	return out_contours;
 }
 
-int tier_one(int cnt, Mat frame) {
+/**
+ * This is the first pass to detect valid contours in a frame.  The parameters of the function are
+ * set in the T1 section of settings.cfg.  Contours are detected based on a relatively strict OpenCV
+ * adaptiveThreshold function.  These should be gauranteed "hits".
+ *
+ * @param framecnt int of nth frame retrieved by program
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @return status
+ */
+int tier_one(int framecnt, Mat in_frame) {
 	Point2f center;
 	float radius;
 	float bigradius = 0;
 	std::ofstream outfile;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
-	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 35);
+	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
+	adaptiveThreshold(in_frame.clone(), in_frame,
+		T1_AT_MAX,
+		ADAPTIVE_THRESH_GAUSSIAN_C,
+		THRESH_BINARY_INV,
+		T1_AT_BLOCKSIZE,
+		T1_AT_CONSTANT
+	);
 	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
-		frame = apply_dynamic_mask(frame.clone(), dymask, T1_DYMASK);
+		in_frame = apply_dynamic_mask(in_frame.clone(), dymask, T1_DYMASK);
 	}
-	vector <vector<Point>> contours = contours_only(frame);
-	contours = quiet_halo_elim(contours, 1);
-// 	cnt = cnt + 1;
+	vector <vector<Point>> contours = contours_only(in_frame);
+	contours = quiet_halo_elim(contours);
 	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
 		<< "Number of contours in tier 1 pass for frame "
-		<< cnt
+		<< framecnt
 		<< ": "
 		<< contours.size()
 		<< std::endl;
@@ -642,7 +762,7 @@ int tier_one(int cnt, Mat frame) {
 			if (radius != bigradius) {
 				// Open the outfile to append
 				outfile
-				<< cnt
+				<< framecnt
 				<< ","
 				<< static_cast<int>(center.x)
 				<< ","
@@ -657,25 +777,39 @@ int tier_one(int cnt, Mat frame) {
 	return 0;
 }
 
-int tier_two(int cnt, Mat frame) {
+/**
+ * This is the second pass to detect valid contours in a frame.  The parameters of the function are
+ * set in the T2 section of settings.cfg.  Contours are detected based on a relatively loose OpenCV
+ * adaptiveThreshold function.
+ *
+ * @param framecnt int of nth frame retrieved by program
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @return status
+ */
+int tier_two(int framecnt, Mat in_frame) {
 	Point2f center;
 	float radius;
 	float bigradius = 0;
 	std::ofstream outfile;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
-	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 20);
+	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
+	adaptiveThreshold(in_frame.clone(), in_frame,
+		T2_AT_MAX,
+		ADAPTIVE_THRESH_GAUSSIAN_C,
+		THRESH_BINARY_INV,
+		T2_AT_BLOCKSIZE,
+		T2_AT_CONSTANT
+	);
 	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
-		frame = apply_dynamic_mask(frame.clone(), dymask, T2_DYMASK);
+		in_frame = apply_dynamic_mask(in_frame.clone(), dymask, T2_DYMASK);
 	}
-	vector <vector<Point>> contours = contours_only(frame);
-	contours = quiet_halo_elim(contours, 2);
-// 	cnt = cnt + 1;
+	vector <vector<Point>> contours = contours_only(in_frame);
+	contours = quiet_halo_elim(contours);
 	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
 		<< "Number of contours in tier 2 pass for frame "
-		<< cnt
+		<< framecnt
 		<< ": "
 		<< contours.size()
 		<< std::endl;
@@ -694,7 +828,7 @@ int tier_two(int cnt, Mat frame) {
 			if (radius != bigradius) {
 				// Open the outfile to append
 				outfile
-				<< cnt
+				<< framecnt
 				<< ","
 				<< static_cast<int>(center.x)
 				<< ","
@@ -709,34 +843,65 @@ int tier_two(int cnt, Mat frame) {
 	return 0;
 }
 
-int tier_three(int cnt, Mat frame, Mat oldframe) {
+/**
+ * This is the third pass to detect valid contours in a frame.  The parameters of the function are
+ * set in the T3 section of settings.cfg.  The detector performs an isotropic Laplacian on the current
+ * frame and the previous frame (settings.cfg can be modified for anisotropic Laplacian).  The outputs
+ * are blurred and recombined.  Values passing a cutoff threshold are retained and the contours are
+ * detected.
+ *
+ * @param framecnt int of nth frame retrieved by program
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param old_frame OpenCV matrix image, 16-bit single depth format, stored from previous cycle
+ * @return status
+ */
+int tier_three(int framecnt, Mat in_frame, Mat old_frame) {
 	Point2f center;
 	float radius;
 	float bigradius = 0;
 	std::ofstream outfile;
 	Mat scaleframe;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
-// 	cnt = cnt + 1;
+	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
 	
 	/* Eli Method for Tier 3 */
-	Laplacian(frame.clone(), frame, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
-	Laplacian(oldframe.clone(), oldframe, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
-	GaussianBlur(frame.clone(), frame, Size(11, 11), 1, 1, BORDER_DEFAULT);
-	GaussianBlur(oldframe.clone(), oldframe, Size(11, 11), 1, 1, BORDER_DEFAULT);
-	scaleframe = frame.clone() - oldframe.clone();
-	scaleframe = scaleframe.clone() > 40;
+	Laplacian(in_frame.clone(), in_frame, CV_32F,
+		T3_LAP_KERNEL,
+		T3_LAP_SCALE,
+		T3_LAP_DELTA,
+		BORDER_DEFAULT
+	);
+	Laplacian(old_frame.clone(), old_frame, CV_32F,
+		T3_LAP_KERNEL,
+		T3_LAP_SCALE,
+		T3_LAP_DELTA,
+		BORDER_DEFAULT
+	);
+	GaussianBlur(in_frame.clone(), in_frame,
+		Size(T3_GB_KERNEL_X, T3_GB_KERNEL_Y),
+		T3_GB_SIGMA_X,
+		T3_GB_SIGMA_Y,
+		BORDER_DEFAULT
+	);
+	GaussianBlur(old_frame.clone(), old_frame,
+		Size(T3_GB_KERNEL_X, T3_GB_KERNEL_Y),
+		T3_GB_SIGMA_X,
+		T3_GB_SIGMA_Y,
+		BORDER_DEFAULT
+	);
+	scaleframe = in_frame.clone() - old_frame.clone();
+	scaleframe = scaleframe.clone() > T3_CUTOFF_THRESH;
 	/* end Eli Method */
 	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
 		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, T3_DYMASK);
 	}
 	vector <vector<Point>> contours = contours_only(scaleframe);
-	contours = quiet_halo_elim(contours, 3);
+	contours = quiet_halo_elim(contours);
 	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
 		<< "Number of contours in tier 3 pass for frame "
-		<< cnt
+		<< framecnt
 		<< ": "
 		<< contours.size()
 		<< std::endl;
@@ -755,7 +920,7 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 			if (radius != bigradius) {
 				// Open the outfile to append
 				outfile
-				<< cnt
+				<< framecnt
 				<< ","
 				<< static_cast<int>(center.x)
 				<< ","
@@ -767,97 +932,72 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 		}
 	}
 	outfile.close();
+	return 0;
 }
 
-int tier_four(int cnt, Mat frame, Mat oldframe) {
+/**
+ * This is the fourth pass to detect valid contours in a frame.  The parameters of the function are
+ * set in the T4 section of settings.cfg.  This is the UnCanny method for detecting motion.  The steps
+ * are essentially the backward operation of the steps taken during Canny filtering.  The current
+ * frame is subtracted from the previous frame, and this output is threholded.  The thresholded image
+ * is then passed through directional Sobel filters to separate the x and y components.  These
+ * components are squared, added to each other, and square rooted.  The output is rescaled to match
+ * the input value ranges, and a Gaussian blur is applied.  Since this output is messy, the blurry
+ * image is processed using Zhang-Suen thinning to get distinct edges.  Any details lost between the
+ * blurring and thinning steps reduce noise.  Contours are then detected in the normal way.
+ *
+ * @param framecnt int of nth frame retrieved by program
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param old_frame OpenCV matrix image, 16-bit single depth format, stored from previous cycle
+ * @return status
+ */
+int tier_four(int framecnt, Mat in_frame, Mat old_frame) {
 	Point2f center;
 	float radius;
 	float bigradius = 0;
 	std::ofstream outfile;
 	Mat scaleframe;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
-	
-// 	/* Eli Method for Tier 3 */
-// 	Laplacian(frame.clone(), frame, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
-// 	Laplacian(oldframe.clone(), oldframe, CV_32F, 11, 0.0001, 0, BORDER_DEFAULT);
-// 	GaussianBlur(frame.clone(), frame, Size(11, 11), 1, 1, BORDER_DEFAULT);
-// 	GaussianBlur(oldframe.clone(), oldframe, Size(11, 11), 1, 1, BORDER_DEFAULT);
-// 	Mat scaleframe = frame.clone() - oldframe.clone();
-// 	scaleframe = scaleframe.clone() > 40;
-// 	/* end Eli Method */
-	
-	/* Canny Method */
-	
-// 	Canny(frame.clone(), scaleframe, 25, 75, 3);
-	
-	/* end Canny Method*/
-	
-// 	/* UnCanny Method for Tier 3 */
-// 	GaussianBlur(frame.clone(), frame, Size(11, 11), 1, 1, BORDER_DEFAULT);
-// 	
-// 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 35, 5);
-// 	adaptiveThreshold(oldframe.clone(), oldframe, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 35, 5);
-// 	
-// 	Mat ix1, iy1, ix2, iy2, ii1, ii2;
-// 	Sobel(frame.clone(), ix1, CV_32F, 1, 0);
-// 	Sobel(frame.clone(), iy1, CV_32F, 0, 1);
-// 	Sobel(oldframe.clone(), ix2, CV_32F, 1, 0);
-// 	Sobel(oldframe.clone(), iy2, CV_32F, 0, 1);
-// 	pow(ix1.clone(), 2, ix1);
-// 	pow(iy1.clone(), 2, iy1);
-// 	pow(ix2.clone(), 2, ix2);
-// 	pow(iy2.clone(), 2, ix2);
-// 	add(ix1, iy1, ii1);
-// 	add(ix2, iy2, ii2);
-// 	sqrt(ii1.clone(), ii1);
-// 	sqrt(ii2.clone(), ii2);
-// 	
-// 	pow(ii1.clone(), 2, ii1);
-// 	pow(ii2.clone(), 2, ii2);
-// 	add(ii1, ii2, frame);
-// 	sqrt(frame.clone(), frame);
-// 	
-// // 	subtract(frame.clone(), oldframe.clone(), frame);
-// // 	GaussianBlur(oldframe.clone(), oldframe, Size(11, 11), 1, 1, BORDER_DEFAULT);
-// // 	double minval, maxval;
-// // 	minMaxLoc(frame, &minval, &maxval);
-// // 	frame = frame.clone() / maxval * 255;
-// 	
-// 	convertScaleAbs(frame.clone(), scaleframe);
-// 	ximgproc::thinning(scaleframe.clone(), scaleframe, 0);
-// 	
-// 	/* end UnCanny Method */
+	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
 	
 	/* UnCanny v2 */
 	
-	subtract(frame.clone(), oldframe.clone(), frame);
-	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 35, 5);
+	subtract(in_frame.clone(), old_frame.clone(), in_frame);
+	adaptiveThreshold(in_frame.clone(), in_frame,
+		T4_AT_MAX,
+		ADAPTIVE_THRESH_GAUSSIAN_C,
+		THRESH_BINARY_INV,
+		T4_AT_BLOCKSIZE,
+		T4_AT_CONSTANT
+	);
 	Mat ix1, iy1, ii1;
-	Sobel(frame.clone(), ix1, CV_32F, 1, 0);
-	Sobel(frame.clone(), iy1, CV_32F, 0, 1);
-	pow(ix1.clone(), 2, ix1);
-	pow(iy1.clone(), 2, iy1);
+	Sobel(in_frame.clone(), ix1, CV_32F, 1, 0);
+	Sobel(in_frame.clone(), iy1, CV_32F, 0, 1);
+	pow(ix1.clone(), T4_POWER, ix1);
+	pow(iy1.clone(), T4_POWER, iy1);
 	add(ix1, iy1, ii1);
 	sqrt(ii1.clone(), ii1);
 	convertScaleAbs(ii1.clone(), ii1);
-	GaussianBlur(ii1.clone(), ii1, Size(11, 11), 1, 1, BORDER_DEFAULT);
-	ximgproc::thinning(ii1.clone(), scaleframe, 0);
+	GaussianBlur(ii1.clone(), ii1,
+		Size(T4_GB_KERNEL_X, T4_GB_KERNEL_Y),
+		T4_GB_SIGMA_X,
+		T4_GB_SIGMA_Y,
+		BORDER_DEFAULT
+	);
+	ximgproc::thinning(ii1.clone(), scaleframe, T4_THINNING);
 	
 	/* end UnCanny v2 */
 	
 	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
 		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, T4_DYMASK);
 	}
-// 	imwrite("./tstx.png", frame);
-// 	imwrite("./tsty.png", scaleframe);
 	vector <vector<Point>> contours = contours_only(scaleframe);
-	contours = quiet_halo_elim(contours, 4);
+	contours = quiet_halo_elim(contours);
 	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
 		<< "Number of contours in tier 4 pass for frame "
-		<< cnt
+		<< framecnt
 		<< ": "
 		<< contours.size()
 		<< std::endl;
@@ -876,7 +1016,7 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 			if (radius != bigradius) {
 				// Open the outfile to append
 				outfile
-				<< cnt
+				<< framecnt
 				<< ","
 				<< static_cast<int>(center.x)
 				<< ","
@@ -892,7 +1032,14 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 	return 0;
 }
 
-
+/**
+ * This function handles the strings and values parsed from the settings.cfg file and assigns them
+ * to the global values.
+ *
+ * @param name String obtained while parsing the settings.cfg file
+ * @param value The value associated with name from settings.cfg file
+ * @return status
+ */
 int parse_checklist(std::string name, std::string value) {
 	// Boolean cases
 	if (name == "DEBUG_COUT"
@@ -1033,6 +1180,13 @@ int parse_checklist(std::string name, std::string value) {
 	return 0;
 }
 
+/**
+ * Main loop
+ *
+ * @param argc
+ * @param argv
+ * @return status
+ */
 int main(int argc, char* argv[]) {
 	// Capture interrupt signals so we don't create zombie processes
 	// FIXME This doesn't work right with all the forks.
@@ -1190,7 +1344,6 @@ int main(int argc, char* argv[]) {
 	localpath = OUTPUTDIR + "data";
 	fs::create_directories(localpath);
 	std::ofstream outfile;
-// 	fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
 	if (DEBUG_COUT) {
 		LOGOUT = OUTPUTDIR + "data/log.log";
 		LOGGING.open(LOGOUT);
@@ -1199,7 +1352,6 @@ int main(int argc, char* argv[]) {
 	if (OUTPUT_FRAMES) {
 		localpath = OUTPUTDIR + "frames";
 		fs::create_directories(localpath);
-// 		fs::permissions(localpath, fs::perms::others_all, fs::perm_options::remove);
 	}
 	
 	// Synthesize Filenames
@@ -1317,8 +1469,6 @@ int main(int argc, char* argv[]) {
 	auto *mm_frmcount = static_cast <int *>(mmap(NULL, sizeof(int), \
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
 	*mm_frmcount = -1;
-// 	auto *mm_vec1 = static_cast <vector <vector float>>(mmap(NULL, 524288000, \
- 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
 	
 	// OpenCV specific variables
 	Mat frame;
@@ -1339,7 +1489,6 @@ int main(int argc, char* argv[]) {
 	cap >> frame;
 	cvtColor(frame.clone(), frame, COLOR_BGR2GRAY);
 	frame = first_frame(frame.clone(), *mm_frmcount);
-// 	frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
 	++*mm_frmcount;
 	
 	// Memory management init continued -----------------------------------------------------------
