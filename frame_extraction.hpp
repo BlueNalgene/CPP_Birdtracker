@@ -114,7 +114,6 @@ static void signal_callback_handler(int signum);
 static vector<vector<Point>> fetch_dynamic_mask(Mat in_frame);
 static Mat apply_dynamic_mask(Mat in_frame, vector<vector<Point>> contours, int maskwidth);
 static int largest_contour(vector <vector<Point>> contours);
-static Mat canny_convert(Mat in_frame, int in_thresh);
 static vector <vector<Point>> contours_only(Mat in_frame);
 static Rect box_finder(Mat in_frame);
 // static int thresh_detect(Mat frame);

@@ -512,14 +512,6 @@ static int largest_contour(vector <vector<Point>> contours) {
 	return largest_contour_index;
 }
 
-static Mat canny_convert(Mat in_frame, int in_thresh) {
-	Mat canny_output;
-	cvtColor(in_frame, canny_output, COLOR_BGR2GRAY);
-	Canny(canny_output.clone(), canny_output, in_thresh, in_thresh*2);
-	
-	return canny_output;
-}
-
 static vector <vector<Point>> contours_only(Mat in_frame) {
 	vector <vector<Point>> contours;
 	vector<Vec4i> hierarchy;
