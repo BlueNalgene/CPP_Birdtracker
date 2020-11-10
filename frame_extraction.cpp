@@ -586,10 +586,6 @@ static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe) 
 	return {avg, cnt};
 }
 
-void childcheck(int signum) {
-	wait(NULL);
-}
-
 static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, int tier) {
 	int largest_contour_index = largest_contour(contours);
 	if (largest_contour_index < 0) {

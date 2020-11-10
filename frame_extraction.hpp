@@ -120,7 +120,6 @@ static Rect box_finder(Mat in_frame);
 // static int thresh_detect(Mat frame);
 static void show_usage(string name);
 static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe);
-static void childcheck(int signum);
 static int tier_one(int cnt, Mat frame);
 static int tier_two(int cnt, Mat frame);
 static int tier_three(int cnt, Mat frame, Mat oldframe);
