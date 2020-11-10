@@ -75,9 +75,11 @@ int QHE_WIDTH = 10;
 double T1_AT_MAX = 255;
 int T1_AT_BLOCKSIZE = 65;
 double T1_AT_CONSTANT = 35;
+int T1_DYMASK = 25;
 double T2_AT_MAX = 255;
 int T2_AT_BLOCKSIZE = 65;
 double T2_AT_CONSTANT = 20;
+int T2_DYMASK = 25;
 int T3_LAP_KERNEL = 11;
 double T3_LAP_SCALE = 0.0001;
 double T3_LAP_DELTA = 0;
@@ -86,7 +88,7 @@ int T3_GB_KERNEL_Y = 11;
 double T3_GB_SIGMA_X = 1;
 double T3_GB_SIGMA_Y = 1;
 int T3_CUTOFF_THRESH = 40;
-int T3_DYNMASK_WIDTH = 45;
+int T3_DYMASK = 45;
 double T4_AT_MAX = 255;
 int T4_AT_BLOCKSIZE = 65;
 double T4_AT_CONSTANT = 20;
@@ -96,7 +98,7 @@ int T4_GB_KERNEL_Y = 11;
 double T4_GB_SIGMA_X = 1;
 double T4_GB_SIGMA_Y = 1;
 int T4_THINNING = 0;
-int T4_DYNMASK_WIDTH = 45;
+int T4_DYMASK = 45;
 
 
 // Declared functions/prototypes

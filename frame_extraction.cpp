@@ -616,8 +616,12 @@ static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, i
 		Moments M = moments(contours[i]);
 		int x_cen = (M.m10/M.m00);
 		int y_cen = (M.m01/M.m00);
-		for (size_t j = 0; j < contours[i].size(); j++) {
-			distance = sqrt(pow((x_cen - contours[i][j].x), 2) + pow((y_cen - contours[i][j].y), 2));
+		if ((x_cen < 0) || (y_cen < 0)) {
+			x_cen = contours[i][0].x;
+			y_cen = contours[i][0].y;
+		}
+		for (size_t j = 0; j < bigone.size(); j++) {
+			distance = sqrt(pow((x_cen - bigone[j].x), 2) + pow((y_cen - bigone[j].y), 2));
 			if (distance < QHE_WIDTH) {
 				caught_mask = true;
 				break;
@@ -635,10 +639,12 @@ int tier_one(int cnt, Mat frame) {
 	float radius;
 	float bigradius = 0;
 	std::ofstream outfile;
-// 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
+	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 35);
 // 	frame = mask_halo(frame.clone(), 40);
-// 	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
+	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
+		frame = apply_dynamic_mask(frame.clone(), dymask, T1_DYMASK);
+	}
 	vector <vector<Point>> contours = contours_only(frame);
 	contours = quiet_halo_elim(contours, 1);
 // 	cnt = cnt + 1;
@@ -686,10 +692,12 @@ int tier_two(int cnt, Mat frame) {
 	float radius;
 	float bigradius = 0;
 	std::ofstream outfile;
-// 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
+	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 20);
 // 	frame = mask_halo(frame.clone(), 40);
-// 	frame = apply_dynamic_mask(frame.clone(), dymask, 25);
+	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
+		frame = apply_dynamic_mask(frame.clone(), dymask, T2_DYMASK);
+	}
 	vector <vector<Point>> contours = contours_only(frame);
 	contours = quiet_halo_elim(contours, 2);
 // 	cnt = cnt + 1;
@@ -750,7 +758,7 @@ int tier_three(int cnt, Mat frame, Mat oldframe) {
 	scaleframe = scaleframe.clone() > 40;
 	/* end Eli Method */
 	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
-		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, 45);
+		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, T3_DYMASK);
 	}
 	vector <vector<Point>> contours = contours_only(scaleframe);
 	contours = quiet_halo_elim(contours, 3);
@@ -869,7 +877,7 @@ int tier_four(int cnt, Mat frame, Mat oldframe) {
 	/* end UnCanny v2 */
 	
 	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
-		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, 45);
+		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, T4_DYMASK);
 	}
 // 	imwrite("./tstx.png", frame);
 // 	imwrite("./tsty.png", scaleframe);
@@ -946,17 +954,19 @@ int parse_checklist(std::string name, std::string value) {
 		name == "EDGETHRESH"
 		|| name == "QHE_WIDTH"
 		|| name == "T1_AT_BLOCKSIZE"
+		|| name == "T1_DYMASK"
 		|| name == "T2_AT_BLOCKSIZE"
+		|| name == "T2_DYMASK"
 		|| name == "T3_LAP_KERNEL"
 		|| name == "T3_GB_KERNEL_X"
 		|| name == "T3_GB_KERNEL_Y"
 		|| name == "T3_CUTOFF_THRESH"
-		|| name == "T3_DYNMASK_WIDTH"
+		|| name == "T3_DYMASK"
 		|| name == "T4_AT_BLOCKSIZE"
 		|| name == "T4_GB_KERNEL_X"
 		|| name == "T4_GB_KERNEL_Y"
 		|| name == "T4_THINNING"
-		|| name == "T4_DYNMASK_WIDTH"
+		|| name == "T4_DYMASK"
 		) {
 		int result = std::stoi(value);
 		if (name == "EDGETHRESH") {
@@ -965,8 +975,12 @@ int parse_checklist(std::string name, std::string value) {
 			QHE_WIDTH = result;
 		} else if (name == "T1_AT_BLOCKSIZE") {
 			T1_AT_BLOCKSIZE = result;
+		} else if (name == "T1_DYMASK") {
+			T1_DYMASK = result;
 		} else if (name == "T2_AT_BLOCKSIZE") {
 			T2_AT_BLOCKSIZE = result;
+		} else if (name == "T2_DYMASK") {
+			T2_DYMASK = result;
 		} else if (name == "T3_LAP_KERNEL") {
 			T3_LAP_KERNEL = result;
 		} else if (name == "T3_GB_KERNEL_X") {
@@ -975,8 +989,8 @@ int parse_checklist(std::string name, std::string value) {
 			T3_GB_KERNEL_Y = result;
 		} else if (name == "T3_CUTOFF_THRESH") {
 			T3_CUTOFF_THRESH = result;
-		} else if (name == "T3_DYNMASK_WIDTH") {
-			T3_DYNMASK_WIDTH = result;
+		} else if (name == "T3_DYMASK") {
+			T3_DYMASK = result;
 		} else if (name == "T4_AT_BLOCKSIZE") {
 			T4_AT_BLOCKSIZE = result;
 		} else if (name == "T4_GB_KERNEL_X") {
@@ -985,8 +999,8 @@ int parse_checklist(std::string name, std::string value) {
 			T4_GB_KERNEL_Y = result;
 		} else if (name == "T4_THINNING") {
 			T4_THINNING = result;
-		} else if (name == "T4_DYNMASK_WIDTH") {
-			T4_DYNMASK_WIDTH = result;
+		} else if (name == "T4_DYMASK") {
+			T4_DYMASK = result;
 		}
 		
 	}
