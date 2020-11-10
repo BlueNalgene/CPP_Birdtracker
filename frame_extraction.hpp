@@ -111,7 +111,6 @@ static vector <int> edge_height(vector<Point> contour);
 static Mat first_frame(Mat in_frame, int framecnt);
 static Mat halo_noise_and_center(Mat in_frame, int framecnt);
 static void signal_callback_handler(int signum);
-static Mat mask_halo(Mat in_frame, int maskwidth);
 static vector<vector<Point>> fetch_dynamic_mask(Mat in_frame);
 static Mat apply_dynamic_mask(Mat in_frame, vector<vector<Point>> contours, int maskwidth);
 static int largest_contour(vector <vector<Point>> contours);

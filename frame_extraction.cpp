@@ -476,11 +476,6 @@ void signal_callback_handler(int signum) {
 	return;
 }
 
-static Mat mask_halo(Mat in_frame, int maskwidth) {
-// 	ellipse(in_frame, STOREBOX, 0, maskwidth, LINE_AA);
-	return in_frame;
-}
-
 static vector <vector<Point>> fetch_dynamic_mask(Mat in_frame) {
 	vector <vector<Point>> output;
 	vector <vector<Point>> contours = contours_only(in_frame);
@@ -641,7 +636,6 @@ int tier_one(int cnt, Mat frame) {
 	std::ofstream outfile;
 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 35);
-// 	frame = mask_halo(frame.clone(), 40);
 	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
 		frame = apply_dynamic_mask(frame.clone(), dymask, T1_DYMASK);
 	}
@@ -694,7 +688,6 @@ int tier_two(int cnt, Mat frame) {
 	std::ofstream outfile;
 	vector <vector<Point>> dymask = fetch_dynamic_mask(frame);
 	adaptiveThreshold(frame.clone(), frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 65, 20);
-// 	frame = mask_halo(frame.clone(), 40);
 	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
 		frame = apply_dynamic_mask(frame.clone(), dymask, T2_DYMASK);
 	}
