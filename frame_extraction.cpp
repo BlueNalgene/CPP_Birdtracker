@@ -566,18 +566,6 @@ static void show_usage(string name) {
 			<< std::endl;
 }
 
-static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe) {
-	float avg;
-	int outval = 0;
-	int cnt = 0;
-	for (size_t i = 0; i<contour.size(); i++) {
-		outval +=(int16_t)lapframe.at<int16_t>(contour[i].y, contour[i].x);
-		cnt++;
-	}
-	avg = outval/cnt;
-	return {avg, cnt};
-}
-
 static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, int tier) {
 	int largest_contour_index = largest_contour(contours);
 	if (largest_contour_index < 0) {

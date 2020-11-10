@@ -116,9 +116,7 @@ static Mat apply_dynamic_mask(Mat in_frame, vector<vector<Point>> contours, int 
 static int largest_contour(vector <vector<Point>> contours);
 static vector <vector<Point>> contours_only(Mat in_frame);
 static Rect box_finder(Mat in_frame);
-// static int thresh_detect(Mat frame);
 static void show_usage(string name);
-static std::tuple <float, int> laplace_sum(vector<Point> contour, Mat lapframe);
 static int tier_one(int cnt, Mat frame);
 static int tier_two(int cnt, Mat frame);
 static int tier_three(int cnt, Mat frame, Mat oldframe);
