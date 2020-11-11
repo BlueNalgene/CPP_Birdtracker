@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <stdlib.h>                      // for exit
+// #include <stdio.h>                       // for remove
 #include <string>                        // for string
 using std::string;
 #include <sys/ipc.h>                     // for IPC_CREAT, key_t
@@ -24,6 +25,7 @@ using std::string;
 #include <tuple>
 #include <unistd.h>                      // for fork, sleep, usleep
 #include <typeinfo>
+#include <regex>
 
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
@@ -68,6 +70,8 @@ std::string METADATA;
 bool DEBUG_FRAMES = false;
 bool DEBUG_COUT = false;
 bool OUTPUT_FRAMES = false;
+bool EMPTY_FRAMES = true;
+bool GEN_SLIDESHOW = true;
 std::string OSFPROJECT = "";
 std::string OUTPUTDIR = "Birdtracker_Output/";
 int EDGETHRESH = 10;
@@ -123,4 +127,5 @@ static int tier_two(int cnt, Mat in_frame);
 static int tier_three(int cnt, Mat in_frame, Mat old_frame);
 static int tier_four(int cnt, Mat in_frame, Mat old_frame);
 static int parse_checklist(std::string name, std::string value);
+static std::string out_frame_gen(int framecnt);
 int main(int argc, char* argv[]); 

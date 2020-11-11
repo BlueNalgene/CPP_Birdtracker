@@ -1045,6 +1045,8 @@ int parse_checklist(std::string name, std::string value) {
 	if (name == "DEBUG_COUT"
 		|| name == "DEBUG_FRAMES"
 		|| name == "OUTPUT_FRAMES"
+		|| name == "EMPTY_FRAMES"
+		|| name == "GEN_SLIDESHOW"
 		) {
 		// Define booleans
 		bool result;
@@ -1062,6 +1064,10 @@ int parse_checklist(std::string name, std::string value) {
 		} else if (name == "DEBUG_FRAMES") {
 			DEBUG_FRAMES = result;
 		} else if (name == "OUTPUT_FRAMES") {
+			OUTPUT_FRAMES = result;
+		} else if (name == "EMPTY_FRAMES") {
+			OUTPUT_FRAMES = result;
+		} else if (name == "GEN_SLIDESHOW") {
 			OUTPUT_FRAMES = result;
 		}
 	}
@@ -1178,6 +1184,38 @@ int parse_checklist(std::string name, std::string value) {
 		std::cerr << "Did not recognize entry " << name << " in config file, skipping" << std::endl;
 	}
 	return 0;
+}
+
+/**
+ * This helper function assembles the output location for frames stored by the script.
+ * 
+ * @param framecnt int of nth frame retrieved by program
+ * @return outstring the constructed path string of where to store the nth frame
+ */
+static std::string out_frame_gen(int framecnt) {
+	std::stringstream outstream;
+	outstream << OUTPUTDIR << "frames/" << std::setw(10) << std::setfill('0') << framecnt << ".png";
+	std::string outstring = outstream.str();
+	return outstring;
+}
+
+/**
+ * This helper function handles spaces in user paths.
+ * 
+ * @param instring the input string
+ * @return outstring the corrected string
+ */
+std::string space_space(std::string instring) {
+	std::string outstring;
+	for (int i = 0; i < strlen(instring.c_str()); i++) {
+		if (instring.c_str()[i] == ' ') {
+			outstring += '\\';
+			outstring += ' ';
+		} else {
+			outstring += instring.c_str()[i];
+		}
+	}
+	return outstring;
 }
 
 /**
@@ -1488,8 +1526,18 @@ int main(int argc, char* argv[]) {
 	// Get the first frame
 	cap >> frame;
 	cvtColor(frame.clone(), frame, COLOR_BGR2GRAY);
-	frame = first_frame(frame.clone(), *mm_frmcount);
+	frame = first_frame(frame.clone(), *mm_frmcount);	
 	++*mm_frmcount;
+	
+	if (OUTPUT_FRAMES) {
+		std::string output_loc = out_frame_gen(*mm_frmcount);
+		imwrite(output_loc, frame);
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "frame saved at " << output_loc << std::endl;
+			LOGGING.close();
+		}
+	}
 	
 	// Memory management init continued -----------------------------------------------------------
 	// Memory map slot for video frame
@@ -1618,6 +1666,16 @@ int main(int argc, char* argv[]) {
 			// Report that the frame was stored
 			*mm_frameavail = true;
 			
+			if (OUTPUT_FRAMES) {
+				std::string output_loc = out_frame_gen(*mm_frmcount);
+				imwrite(output_loc, frame);
+				if (DEBUG_COUT) {
+					LOGGING.open(LOGOUT, std::ios_base::app);
+					LOGGING << "frame saved at " << output_loc << std::endl;
+					LOGGING.close();
+				}
+			}
+			
 			if (DEBUG_FRAMES) {
 				imshow("fg_mask", frame);
 				waitKey(1);
@@ -1674,6 +1732,35 @@ int main(int argc, char* argv[]) {
 	}
 		
  	usleep(1000000);
+	std::cout << space_space((OUTPUTDIR + "frames/")) << std::endl;
+	if (OUTPUT_FRAMES) {
+		if (GEN_SLIDESHOW) {
+			//HACK the proper way to do this is using libav.  This is a linux hack.
+			std::string framepath = space_space((OUTPUTDIR + "frames/"));
+			std::string command;
+			command = "ffmpeg -y -framerate 30 -i " + framepath + "%10d.png " + framepath + "../output.mp4";
+			if (DEBUG_COUT) {
+				LOGGING.open(LOGOUT, std::ios_base::app);
+				LOGGING << "Beginning slideshow creation" << std::endl;
+				LOGGING.close();
+			}
+			system(command.c_str());
+			if (DEBUG_COUT) {
+				LOGGING.open(LOGOUT, std::ios_base::app);
+				LOGGING << "Slideshow created" << std::endl;
+				LOGGING.close();
+			}
+		}
+		if (EMPTY_FRAMES) {
+			if (DEBUG_COUT) {
+				LOGGING.open(LOGOUT, std::ios_base::app);
+				LOGGING << "Removing png files from frames/ directory" << std::endl;
+				LOGGING.close();
+			}
+			fs::remove_all(OUTPUTDIR + "frames/");
+		}
+	}
+	system("");
 	exit(SIG_ALERT);
  	return 0;
 }
