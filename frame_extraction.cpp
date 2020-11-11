@@ -1066,9 +1066,9 @@ int parse_checklist(std::string name, std::string value) {
 		} else if (name == "OUTPUT_FRAMES") {
 			OUTPUT_FRAMES = result;
 		} else if (name == "EMPTY_FRAMES") {
-			OUTPUT_FRAMES = result;
+			EMPTY_FRAMES = result;
 		} else if (name == "GEN_SLIDESHOW") {
-			OUTPUT_FRAMES = result;
+			GEN_SLIDESHOW = result;
 		}
 	}
 	// Int cases
