@@ -1049,6 +1049,8 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "OUTPUT_FRAMES"
 		|| name == "EMPTY_FRAMES"
 		|| name == "GEN_SLIDESHOW"
+		|| name == "SIMP_ELL"
+		|| name == "CONCAT_TIERS"
 		) {
 		// Define booleans
 		bool result;
@@ -1071,6 +1073,10 @@ int parse_checklist(std::string name, std::string value) {
 			EMPTY_FRAMES = result;
 		} else if (name == "GEN_SLIDESHOW") {
 			GEN_SLIDESHOW = result;
+		} else if (name == "SIMP_ELL") {
+			SIMP_ELL = result;
+		} else if (name == "CONCAT_TIERS") {
+			CONCAT_TIERS = result;
 		}
 	}
 	// Int cases
@@ -1218,6 +1224,276 @@ std::string space_space(std::string instring) {
 		}
 	}
 	return outstring;
+}
+
+static int generate_slideshow() {
+	//HACK the proper way to do this is using libav.  This is a linux hack.
+	std::string framepath = space_space((OUTPUTDIR + "frames/"));
+	std::string command;
+	command = "ffmpeg -y -framerate 30 -i " + framepath + "%10d.png " + framepath + "../output.mp4";
+	if (DEBUG_COUT) {
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "Beginning slideshow creation" << std::endl;
+		LOGGING.close();
+	}
+	system(command.c_str());
+	if (DEBUG_COUT) {
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "Slideshow created" << std::endl;
+		LOGGING.close();
+	}
+	return 0;
+}
+
+/**
+ * Concatenates the Tiered data files into a single file called mixed_tiers.csv
+ * This requires the linux sort function to run because sorting csv in C++ ab initio is painful
+ * 
+ * @return status
+ */
+static int concat_tiers() {
+	// Open ellipse file
+	std::ifstream t1_file(TIER1FILE);
+	if (!t1_file.is_open()) {
+		std::cerr
+		<< "Could not open Tier 1 data"
+		<< std::endl;
+		return 1;
+	}
+	// Open ellipse file
+	std::ifstream t2_file(TIER2FILE);
+	if (!t2_file.is_open()) {
+		std::cerr
+		<< "Could not open Tier 2 data"
+		<< std::endl;
+		return 2;
+	}
+	// Open ellipse file
+	std::ifstream t3_file(TIER3FILE);
+	if (!t3_file.is_open()) {
+		std::cerr
+		<< "Could not open Tier 3 data"
+		<< std::endl;
+		return 3;
+	}
+	// Open ellipse file
+	std::ifstream t4_file(TIER4FILE);
+	if (!t4_file.is_open()) {
+		std::cerr
+		<< "Could not open Tier 4 data"
+		<< std::endl;
+		return 4;
+	}
+	
+	// Prepare output file
+	std::string mix_loc = OUTPUTDIR + "data/mixed_tiers.csv";
+	std::ofstream outputfile(mix_loc);
+	outputfile.open(mix_loc);
+	outputfile.close();
+	
+	// Prepare variables
+	std::string line;
+	
+	// Read the column names and do nothing with them
+	if ((t1_file.good()) && (t2_file.good()) && (t3_file.good()) && (t4_file.good())) {
+		// Extract the first line in the file
+		std::getline(t1_file, line);
+		std::getline(t2_file, line);
+		std::getline(t3_file, line);
+		std::getline(t4_file, line);
+	}
+	
+	// Write column labels for the new file
+	outputfile.open(mix_loc);
+	if (outputfile.good()) {
+		outputfile
+		<< "frame number,x pos,y pos,radius,tier"
+		<< std::endl;
+		outputfile.close();
+	} else {
+		std::cerr
+		<< "Could not open mixed_tiers.csv output file"
+		<< std::endl;
+		return 5;
+	}
+	
+	vector <std::ifstream *> tfiles;
+	tfiles.push_back(&t1_file);
+	tfiles.push_back(&t2_file);
+	tfiles.push_back(&t3_file);
+	tfiles.push_back(&t4_file);
+	int tcnt = 1;
+	outputfile.open(mix_loc, std::ios_base::app);
+	for (auto i : tfiles) {
+		while (std::getline(*i, line)) {
+			line = line + "," + std::to_string(tcnt);
+			outputfile
+			<< line
+			<< std::endl;
+		}
+		tcnt++;
+	}
+	outputfile.close();
+	
+	//HACK these commands require a linux terminal
+	std::string commandstr;
+	commandstr = "(head -n 1 " 
+	+ mix_loc
+	+ " && tail -n +2 "
+	+ mix_loc
+	+ " | sort --field-separator=',' -n -k 1,1)"
+	+ " > "
+	+ OUTPUTDIR
+	+ "data/temp.csv";
+	if (system(commandstr.c_str())) {
+		std::cerr << "WARNING: Failed to concat tiers" << std::endl;
+		return 0;
+	}
+	
+	commandstr = "mv " + OUTPUTDIR + "data/temp.csv " + mix_loc;
+	if (system(commandstr.c_str())) {
+		std::cerr << "WARNING: Failed to move temporary file to mixed_tiers.csv" << std::endl;
+		return 0;
+	}
+	
+	return 0;
+}
+
+/**
+ * Simplifies the ellipse.csv file to only report frames where the ellispe goes off screen.
+ * Creates a new file offscreen_moon.csv
+ * 
+ * @return status
+ */
+static int off_screen_ellipse() {
+	// Open ellipse file
+	std::ifstream ellipse_file(ELLIPSEDATA);
+	if (!ellipse_file.is_open()) {
+		std::cerr
+		<< "Could not open ellipse file"
+		<< std::endl;
+		return 1;
+	}
+	
+	// Prepare output file
+	std::string simp_loc = OUTPUTDIR + "data/offscreen_moon.csv";
+	std::ofstream outputfile(simp_loc);
+	outputfile.open(simp_loc);
+	outputfile.close();
+	
+	// Prepare variables
+	std::string line;
+	
+	// Read the column names and do nothing with them
+	if (ellipse_file.good()) {
+		// Extract the first line in the file
+		std::getline(ellipse_file, line);
+	}
+	
+	// Write column labels for the new file
+	outputfile.open(simp_loc);
+	if (outputfile.good()) {
+		outputfile
+		<< "frame number,points on top edge,points on bot edge,points on left edge,points on right edge"
+		<< std::endl;
+		outputfile.close();
+	} else {
+		std::cerr
+		<< "Could not open offscreen_moon.csv output file"
+		<< std::endl;
+		return 1;
+	}
+	
+	// Read data, line by line
+	while (std::getline(ellipse_file, line)) {
+		// Create a stringstream of the current line
+		std::stringstream ss(line);
+		// Create a holder for the substrings
+		std::string token;
+		// Create holder for output string
+		std::string out_string;
+		// Keep track of the current column index
+		int col = -1;
+		bool offscreen = false;
+		// Extract each col
+		while (std::getline(ss, token, ',')) {
+			col++;
+			// Add the current integer to the 'colIdx' column's values vector
+			std::cout << token << std::endl;
+			if ((col == 6) || (col == 7) || (col == 8) || (col == 9)) {
+				if (std::stoi(token) != 0) {
+					offscreen = true;
+				}
+			}
+			if ((col == 0) || (col == 6) || (col == 7) || (col == 8)) {
+				out_string += token + ',';
+			} else if (col == 9) {
+				out_string += token + '\n';
+				if (offscreen) {
+					outputfile.open(simp_loc, std::ios_base::app);
+					outputfile
+					<< out_string;
+					outputfile.close();
+				}
+				out_string = "";
+				col = -1;
+				offscreen = false;
+			}
+			// If the next token is a comma, ignore it and move on
+			if (ss.peek() == ',') {
+				ss.ignore();
+			}
+		}
+	}
+	// Close file
+	ellipse_file.close();
+	
+	return 0;
+}
+
+/**
+ * Holder function for processes which run after the bulk of main completes
+ * 
+ * @return status
+ */
+static int post_processing() {
+	// If the program was told to output frames, what should be done with them?
+	if (OUTPUT_FRAMES) {
+		if (GEN_SLIDESHOW) {
+			if (generate_slideshow() != 0) {
+				EMPTY_FRAMES = false;
+				std::cerr
+				<< "ERROR: Failed to generate frame slideshow, retaining frame files and exiting"
+				<< std::endl;
+				return 1;
+			}
+		}
+		if (EMPTY_FRAMES) {
+			if (DEBUG_COUT) {
+				LOGGING.open(LOGOUT, std::ios_base::app);
+				LOGGING
+				<< "Removing png files from frames/ directory"
+				<< std::endl;
+				LOGGING.close();
+			}
+			fs::remove_all(OUTPUTDIR + "frames/");
+		}
+	}
+	if (CONCAT_TIERS) {
+		if (concat_tiers() != 0) {
+			std::cerr
+			<< "WARNING: Something went wrong stacking the Tier files"
+			<< std::endl;
+		}
+	}
+	if (SIMP_ELL) {
+		if (off_screen_ellipse() != 0) {
+			std::cerr
+			<< "WARNING: Something went wrong simplifying the ellipse screen edges"
+			<< std::endl;
+		}
+	}
+	return 0;
 }
 
 /**
@@ -1741,33 +2017,12 @@ int main(int argc, char* argv[]) {
 	}
 		
  	usleep(1000000);
-	std::cout << space_space((OUTPUTDIR + "frames/")) << std::endl;
-	if (OUTPUT_FRAMES) {
-		if (GEN_SLIDESHOW) {
-			//HACK the proper way to do this is using libav.  This is a linux hack.
-			std::string framepath = space_space((OUTPUTDIR + "frames/"));
-			std::string command;
-			command = "ffmpeg -y -framerate 30 -i " + framepath + "%10d.png " + framepath + "../output.mp4";
-			if (DEBUG_COUT) {
-				LOGGING.open(LOGOUT, std::ios_base::app);
-				LOGGING << "Beginning slideshow creation" << std::endl;
-				LOGGING.close();
-			}
-			system(command.c_str());
-			if (DEBUG_COUT) {
-				LOGGING.open(LOGOUT, std::ios_base::app);
-				LOGGING << "Slideshow created" << std::endl;
-				LOGGING.close();
-			}
-		}
-		if (EMPTY_FRAMES) {
-			if (DEBUG_COUT) {
-				LOGGING.open(LOGOUT, std::ios_base::app);
-				LOGGING << "Removing png files from frames/ directory" << std::endl;
-				LOGGING.close();
-			}
-			fs::remove_all(OUTPUTDIR + "frames/");
-		}
+	
+	if (post_processing() != 0) {
+		std::cerr
+		<< "Exiting frame_extraction with errors"
+		<< std::endl;
+		return 1;
 	}
 	system("");
 	exit(SIG_ALERT);
