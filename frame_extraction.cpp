@@ -56,6 +56,8 @@ static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
 			LOGGING << "shifting case 4 - move up and left" << std::endl;
 			LOGGING.close();
 		}
+		in_frame(Rect(abs(shiftx), abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
+		.copyTo(zero_mask(Rect(0, 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
 	}
 	
 	in_frame = zero_mask;
@@ -401,9 +403,9 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	outell
 	<< framecnt
 	<< ","
-	<< box.x
+	<< box.x + (box.width/2)
 	<< ","
-	<< box.y
+	<< box.y + (box.height/2)
 	<< ","
 	<< box.width
 	<< ","
@@ -491,9 +493,9 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	outell
 	<< framecnt
 	<< ","
-	<< box.x
+	<< box.x + (box.width/2)
 	<< ","
-	<< box.y
+	<< box.y + (box.height/2)
 	<< ","
 	<< box.width
 	<< ","
@@ -1639,6 +1641,16 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 			++*mm_frmcount;
+			
+			if (DEBUG_COUT) {
+				LOGGING.open(LOGOUT, std::ios_base::app);
+				LOGGING
+				<< "----------------------- frame number: "
+				<< *mm_frmcount
+				<< std::endl;
+				LOGGING.close();
+			}
+			
 			// Image processing operations
 			cvtColor(frame, frame, COLOR_BGR2GRAY);
 			frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
@@ -1646,9 +1658,6 @@ int main(int argc, char* argv[]) {
 			if (DEBUG_COUT) {
 				LOGGING.open(LOGOUT, std::ios_base::app);
 				LOGGING 
-				<< "frame number: "
-				<< *mm_frmcount
-				<< std::endl
 				<< "frame dimensions: "
 				<< frame.size().width
 				<< " x "
