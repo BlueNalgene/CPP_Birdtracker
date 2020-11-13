@@ -1419,7 +1419,6 @@ static int off_screen_ellipse() {
 		while (std::getline(ss, token, ',')) {
 			col++;
 			// Add the current integer to the 'colIdx' column's values vector
-			std::cout << token << std::endl;
 			if ((col == 6) || (col == 7) || (col == 8) || (col == 9)) {
 				if (std::stoi(token) != 0) {
 					offscreen = true;
