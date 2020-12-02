@@ -6,6 +6,7 @@
 // Includes
 #include <algorithm>
 #include <ctime>                         // for NULL
+#include <errno.h>
 //#include <exception>
 #include <tgmath.h>                      // for sin, cos, etc.
 #include <fcntl.h>
@@ -64,7 +65,10 @@ std::string TIER2FILE;
 std::string TIER3FILE;
 std::string TIER4FILE;
 std::string ELLIPSEDATA;
+std::string BOXDATA;
 std::string METADATA;
+int TC_W;
+int TC_H;
 
 // Global Variables declared in settings.cfg
 bool DEBUG_FRAMES = false;
@@ -74,10 +78,12 @@ bool EMPTY_FRAMES = true;
 bool GEN_SLIDESHOW = true;
 bool SIMP_ELL = true;
 bool CONCAT_TIERS = true;
+bool TIGHT_CROP = true;
 std::string OSFPROJECT = "";
 std::string OUTPUTDIR = "Birdtracker_Output/";
 int EDGETHRESH = 10;
 int QHE_WIDTH = 10;
+int BLACKOUT_THRESH = 51;
 double T1_AT_MAX = 255;
 int T1_AT_BLOCKSIZE = 65;
 double T1_AT_CONSTANT = 35;
@@ -114,6 +120,8 @@ static vector <int> test_edges(Mat in_frame, vector<Point> contour);
 static int min_square_dim(Mat in_frame);
 static vector <int> edge_width(vector<Point> contour);
 static vector <int> edge_height(vector<Point> contour);
+static Mat initial_crop(Mat in_frame, int framecnt);
+static int touching_edges(Mat in_frame, vector<Point> contour);
 static Mat first_frame(Mat in_frame, int framecnt);
 static Mat halo_noise_and_center(Mat in_frame, int framecnt);
 static void signal_callback_handler(int signum);
@@ -121,7 +129,7 @@ static vector<vector<Point>> fetch_dynamic_mask(Mat in_frame);
 static Mat apply_dynamic_mask(Mat in_frame, vector<vector<Point>> contours, int maskwidth);
 static int largest_contour(vector <vector<Point>> contours);
 static vector <vector<Point>> contours_only(Mat in_frame);
-static Rect box_finder(Mat in_frame);
+static Rect box_finder(Mat in_frame, int framecnt);
 static int show_usage(string name);
 static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours);
 static int tier_one(int cnt, Mat in_frame);

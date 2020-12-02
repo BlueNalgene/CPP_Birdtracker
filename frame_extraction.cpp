@@ -142,7 +142,7 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 		}
 	}
 	
-	in_frame = shift_frame(in_frame, shiftx/2, -shifty/2);
+	in_frame = shift_frame(in_frame, shiftx/2, shifty/2);
 	
 	
 	return in_frame;
@@ -166,13 +166,10 @@ static vector <int> test_edges(Mat in_frame, vector<Point> contour) {
 	}
 	
 	Rect rect  = boundingRect(contour);
-	int to_top = int(M.m01/M.m00) - rect.tl().y;
-	int to_right = rect.br().x - int(M.m10/M.m00);
-	int to_bottom = rect.br().y - int(M.m01/M.m00);
-	int to_left = int(M.m10/M.m00) - rect.tl().x;
-	
-	int xsize = rect.br().x - rect.tl().x;
-	int ysize = rect.br().y - rect.tl().y;
+	int to_top = cen.y - rect.tl().y;
+	int to_right = rect.br().x - cen.x;
+	int to_bottom = rect.br().y - cen.y;
+	int to_left = cen.x - rect.tl().x;
 	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
@@ -287,6 +284,163 @@ static vector <int> edge_height(vector<Point> contour) {
 }
 
 /**
+ * Performs an initial rough crop on the frame.  This constructs a cropped frame which contains the
+ * largest contour, but does not necessarily center the contour within the frame.  That is handled
+ * by halo_noise_and_center by determing whether the centering should use the corner_matching regime
+ * or simple centroid to centroid shifting.
+ * 
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param framecnt int of nth frame retrieved by program
+ * @return in_frame The cropped in_frame
+ */
+static Mat initial_crop(Mat in_frame, int framecnt) {
+	int oldvalue;
+	
+	// Find largest contour
+	Rect box = box_finder(in_frame, framecnt);
+	
+	// Create rect representing the image
+	Rect image_rect = Rect({}, in_frame.size());
+	
+	// Edit box corners such that we have a BOXSIZE square
+	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2),
+						(box.tl().y- (BOXSIZE - box.height)/2));
+	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x,
+						 ((BOXSIZE - box.height)/2) + box.br().y);
+	
+	// Correct for non BOXSIZE rounding errors, only expand BR since we check for invalid later
+	if (roi_br.x - roi_tl.x > BOXSIZE) {
+		oldvalue = (roi_br.x - roi_tl.x) - BOXSIZE;
+		roi_br = Point(roi_br.x - oldvalue, roi_br.y);
+	} else if (roi_br.x - roi_tl.x < BOXSIZE) {
+		oldvalue = BOXSIZE - (roi_br.x - roi_tl.x);
+		roi_br = Point(roi_br.x + oldvalue, roi_br.y);
+	}
+	if (roi_br.y - roi_tl.y > BOXSIZE) {
+		oldvalue = (roi_br.y - roi_tl.y) - BOXSIZE;
+		roi_br = Point(roi_br.x, roi_br.y - oldvalue);
+	} else if (roi_br.y - roi_tl.y < BOXSIZE) {
+		oldvalue = BOXSIZE - (roi_br.y - roi_tl.y);
+		roi_br = Point(roi_br.x, roi_br.y + oldvalue);
+	}
+	
+	// Correct for invalid values in the new box
+	if (roi_tl.x < 0) {
+		oldvalue = -(roi_tl.x);
+		roi_tl = Point(0, roi_tl.y);
+		roi_br = Point(roi_br.x - oldvalue, roi_br.y);
+	}
+	if (roi_tl.y < 0) {
+		oldvalue = -(roi_tl.y);
+		roi_tl = Point(roi_tl.x, 0);
+		roi_br = Point(roi_br.x, roi_br.y - oldvalue);
+	}
+	if (roi_br.x > in_frame.cols) {
+		oldvalue = roi_br.x - in_frame.cols;
+		roi_tl = Point(roi_tl.x - oldvalue, roi_tl.y);
+		roi_br = Point(roi_br.x - oldvalue, roi_tl.y);
+	}
+	if (roi_br.y > in_frame.rows) {
+		oldvalue = roi_br.y - in_frame.rows;
+		roi_tl = Point(roi_tl.x, roi_tl.y - oldvalue);
+		roi_br = Point(roi_br.x, roi_br.y - oldvalue);
+	}
+	
+	// Make this our region of interest.
+	Rect roi = Rect(roi_tl, roi_br);
+	
+	// Find intersection, i.e. valid crop region
+	Rect intersection = image_rect & roi;
+	
+	// Adjust the intersection to have the correct BOXSIZE
+	intersection = Rect(Point(intersection.x, intersection.y), Size(BOXSIZE, BOXSIZE));
+	
+	// Move intersection to the result coordinate space
+	Rect inter_roi = intersection - roi.tl();
+	
+	// Crop the image to the intersection
+	Mat precrop = in_frame(intersection);
+	
+	// If we have positive coordinates, then blackout the region.  If not, just pass the precrop along
+	if ((inter_roi.x > 0) || (inter_roi.y > 0)) {
+		// Create black image and copy intersection
+		Mat zero_mask = Mat::zeros(Size(BOXSIZE, BOXSIZE), in_frame.type());
+		// Assign a rectangular region in precrop...
+		precrop(Rect(Point(0, 0), 
+				Size(BOXSIZE-inter_roi.x, BOXSIZE-inter_roi.y)
+				))
+		// ...and copy the black masked moon there.
+		.copyTo(zero_mask(
+			Rect(
+				Point(inter_roi.x, inter_roi.y),
+				Size(BOXSIZE-inter_roi.x, BOXSIZE-inter_roi.y)
+			)
+		));
+		
+		in_frame = zero_mask;
+	} else {
+		// If negative values exist, whatever, just pass it along and call it a day.
+		in_frame = precrop;
+	}
+	
+	return in_frame;
+}
+
+/**
+ * This function tests the input contour boundaries against the boundaries of the frame.  It returns a
+ * integer value representing the edge(s) which is/are touched by the contour.  If no edges are touched,
+ * this function returns zero.  A negative return value indicates error.  Here is a table of potential
+ * return values:
+ * - -1 : error status
+ * - 0 : no edge touching
+ * - 1 : touching left edge only
+ * - 2 : touching right edge only
+ * - 3 : touching top and left edge
+ * - 4 : touching bottom and left edge
+ * - 5 : touching top and right edge
+ * - 6 : touching bottom and right edge
+ * 
+ * 
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param contour OpenCV contour, a vector of int int points
+ * @return touching_status an integer value representing if and which edge of the frame is touched
+ * by the contour.  Returns negative status values if something went wrong.
+ */
+static int touching_edges(Mat in_frame, vector<Point> contour) {
+	// fetch the boundary rectangle for our large contour
+	Rect box = boundingRect(contour);
+	
+	if (box.tl().x == 0) {
+		if (box.tl().y == 0) {
+			return 3;
+		} else if (box.br().y == in_frame.rows) {
+			return 4;
+		} else {
+			return 1;
+		}
+	} else if (box.br().x == in_frame.cols) {
+		if (box.tl().y == 0) {
+			return 5;
+		} else if (box.br().y == in_frame.rows) {
+			return 6;
+		} else {
+			return 2;
+		}
+	} else {
+		if (box.tl().y == 0) {
+			return 7;
+		} else if (box.br().y == in_frame.rows) {
+			return 8;
+		} else {
+			return 0;
+		}
+	}
+	
+	// This should never be reached
+	return -1;
+}
+
+/**
  * This function is a special case of the frame preparation steps.  It outputs many of the initial
  * values which are used later (globals that start with the ORIG_ template) and omits some of the
  * masking steps not possible on the first frame.
@@ -296,8 +450,16 @@ static vector <int> edge_height(vector<Point> contour) {
  * @return in_frame The modified in_frame from the input params
  */
 static Mat first_frame(Mat in_frame, int framecnt) {
+	Mat temp_frame;
+	
+	// Determine the minimum dimensions of the input video
 	min_square_dim(in_frame);
 	
+	// Do a first pass/rough crop
+	in_frame = initial_crop(in_frame.clone(), framecnt);
+	// Make sure the black of night stays black so we can get the edge of the moon
+	threshold(in_frame.clone(), temp_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
+	// Get contours
 	vector <vector<Point>> contours = contours_only(in_frame);
 	
 	if (DEBUG_COUT) {
@@ -309,6 +471,7 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 		LOGGING.close();
 	}
 	
+	// Find which contour is the largest
 	int largest_contour_index = largest_contour(contours);
 	
 	// Store original area and perimeter of first frame
@@ -317,7 +480,6 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	ORIG_PERI = arcLength(contours[largest_contour_index], true);
 	ORIG_VERT = box.height;
 	ORIG_HORZ = box.width;
-	
 	ORIG_TL = box.tl();
 	ORIG_BR = box.br();
 	
@@ -328,11 +490,9 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 		<< "box height: " << box.height << std::endl
 		<< "box x: " << box.x << std::endl
 		<< "box y: " << box.y << std::endl
-		<< "box angle: " << box.area() << std::endl;
+		<< "box area: " << box.area() << std::endl;
 		LOGGING.close();
 	}
-	
-	framecnt = framecnt + 1;
 	
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
@@ -438,27 +598,14 @@ static Mat first_frame(Mat in_frame, int framecnt) {
  * @return in_frame The modified in_frame from the input params
  */
 static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
-	// Find largest ellipse
-	Rect box = box_finder(in_frame);
+	Mat temp_frame;
 	
-	// Create rect representing the image
-	Rect image_rect = Rect({}, in_frame.size());
-	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2), (box.tl().y- (BOXSIZE - box.height)/2));
-	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x, ((BOXSIZE - box.height)/2) + box.br().y);
-	Rect roi = Rect(roi_tl, roi_br);
-
-	// Find intersection, i.e. valid crop region
-	Rect intersection = image_rect & roi;
-
-	// Move intersection to the result coordinate space
-	Rect inter_roi = intersection - roi.tl();
-
-	// Create black image and copy intersection
-	Mat crop = Mat::zeros(Size(BOXSIZE, BOXSIZE), in_frame.type());
-	in_frame(intersection).copyTo(crop(inter_roi));
-	in_frame = crop;
+	// Do a first pass/rough crop
+	in_frame = initial_crop(in_frame.clone(), framecnt);
+	// Make sure the black of night stays black so we can get the edge of the moon
+	threshold(in_frame.clone(), temp_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
 	
-	vector <vector<Point>> contours = contours_only(in_frame);
+	vector <vector<Point>> contours = contours_only(temp_frame);
 	int largest = largest_contour(contours);
 	vector <int> outplus = test_edges(in_frame, contours[largest]);
 	
@@ -467,8 +614,9 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	int edge_lef = 0;
 	int edge_rig = 0;
 	
+	Rect box = boundingRect(contours[largest]);
+	
 	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
-		
 		if (DEBUG_COUT) {
 			LOGGING.open(LOGOUT, std::ios_base::app);
 			LOGGING << "Activating Corner Matching" << std::endl;
@@ -485,7 +633,32 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 			edge_lef = local_edge[0];
 			edge_rig = local_edge[1];
 		}
+	} else {
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "Centering Traditionally" << std::endl;
+			LOGGING.close();
+		}
+		// Traditional centering
+		
+		// Generate masks
+		Mat mask(Size(in_frame.rows, in_frame.cols), in_frame.type(), Scalar(0));
+		Mat zero_mask(Size(BOXSIZE, BOXSIZE), in_frame.type(), Scalar(0));
+		// Apply contour to mask
+		drawContours(mask, contours, largest, 255, FILLED);
+		// Create a mat with just the moon
+		Mat item(in_frame(box));
+		// Transfer item to mask
+		item.copyTo(item, mask(box));
+		// Calculate the center
+		Point center(BOXSIZE/2, BOXSIZE/2);
+		Rect center_box(center.x - box.width/2, center.y - box.height/2, box.width, box.height);
+		// Copy the item mask to the centered box on our zero mask
+		item.copyTo(zero_mask(center_box));
+		// done
+		in_frame = zero_mask;
 	}
+		
 	
 	// Open the outfile to append list of major ellipses
 	std::ofstream outell;
@@ -609,9 +782,10 @@ static vector <vector<Point>> contours_only(Mat in_frame) {
  * This function finds the bounding box for the largest contour and reports on its properties.
  *
  * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param framecnt int of nth frame retrieved by program
  * @return box OpenCV Rect object bounding the largest contour (presumably the moon)
  */
-static Rect box_finder(Mat in_frame) {
+static Rect box_finder(Mat in_frame, int framecnt) {
 	
 	vector <vector<Point>> contours = contours_only(in_frame);
 	
@@ -629,17 +803,21 @@ static Rect box_finder(Mat in_frame) {
 	// Find the bounding box for the large contour
 	Rect box = boundingRect(contours[largest_contour_index]);
 
-	if (DEBUG_COUT) {
-		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING
-		<< "box tr: " << box.tl() << std::endl
-		<< "box bl: " << box.br() << std::endl
-		<< "box x: " << box.x << std::endl
-		<< "box y: " << box.y << std::endl
-		<< "box width: " << box.width << std::endl
-		<< "box height: " << box.height << std::endl
-		<< "box area: " << box.area() << std::endl;
-		LOGGING.close();
+	if (OUTPUT_FRAMES && TIGHT_CROP) {
+		std::ofstream outfile;
+		outfile.open(BOXDATA, std::ios_base::app);
+		outfile
+		<< framecnt << ","
+		<< box.tl().x << ","
+		<< box.tl().y << ","
+		<< box.br().x << ","
+		<< box.br().y << ","
+		<< box.x << ","
+		<< box.y << ","
+		<< box.width << ","
+		<< box.height << ","
+		<< box.area() << std::endl;
+		outfile.close();
 	}
 	
 	
@@ -1051,6 +1229,7 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "GEN_SLIDESHOW"
 		|| name == "SIMP_ELL"
 		|| name == "CONCAT_TIERS"
+		|| name == "TIGHT_CROP"
 		) {
 		// Define booleans
 		bool result;
@@ -1077,12 +1256,15 @@ int parse_checklist(std::string name, std::string value) {
 			SIMP_ELL = result;
 		} else if (name == "CONCAT_TIERS") {
 			CONCAT_TIERS = result;
+		} else if (name == "TIGHT_CROP") {
+			TIGHT_CROP = result;
 		}
 	}
 	// Int cases
 	else if (
 		name == "EDGETHRESH"
 		|| name == "QHE_WIDTH"
+		|| name == "BLACKOUT_THRESH"
 		|| name == "T1_AT_BLOCKSIZE"
 		|| name == "T1_DYMASK"
 		|| name == "T2_AT_BLOCKSIZE"
@@ -1103,6 +1285,8 @@ int parse_checklist(std::string name, std::string value) {
 			EDGETHRESH = result;
 		} else if (name == "QHE_WIDTH") {
 			QHE_WIDTH = result;
+		} else if (name == "BLACKOUT_THRESH") {
+			BLACKOUT_THRESH = result;
 		} else if (name == "T1_AT_BLOCKSIZE") {
 			T1_AT_BLOCKSIZE = result;
 		} else if (name == "T1_DYMASK") {
@@ -1215,25 +1399,184 @@ static std::string out_frame_gen(int framecnt) {
  */
 std::string space_space(std::string instring) {
 	std::string outstring;
-	for (int i = 0; i < strlen(instring.c_str()); i++) {
-		if (instring.c_str()[i] == ' ') {
+	for (int i = 0; i < instring.size(); i++) {
+		if (instring[i] == ' ') {
 			outstring += '\\';
 			outstring += ' ';
 		} else {
-			outstring += instring.c_str()[i];
+			outstring += instring[i];
 		}
 	}
 	return outstring;
 }
 
+ static int edit_contours_for_crop() {
+ 	std::string line;
+	std::string temp_loc = OUTPUTDIR + "data/temp.csv";
+	vector <std::string> tfiles;
+	tfiles.push_back(TIER1FILE);
+	tfiles.push_back(TIER2FILE);
+	tfiles.push_back(TIER3FILE);
+	tfiles.push_back(TIER4FILE);
+	int tcnt = 1;
+	
+	std::cout << "TC_W, TC_H: " << TC_W << ", " << TC_H << std::endl;
+	std::cout << "TC_W, TC_H: " << (BOXSIZE - TC_W)/2 << ", " << (BOXSIZE - TC_H)/2 << std::endl;
+	
+	for (auto i : tfiles) {
+		std::ifstream infile(i);
+		if (!infile.is_open()) {
+			std::cerr
+			<< "WARNING: Could not open tier file: "
+			<< i
+			<< std::endl;
+			return 1;
+		}
+		
+		// Skip header of input file.
+		if (infile.good()) {
+			// Extract the first line in the file
+			std::getline(infile, line);
+		}
+		
+		// Create output file with headers.
+		std::ofstream outputfile(temp_loc);
+		std::cout << "opened file: " << temp_loc << std::endl;
+		if (outputfile.good()) {
+			outputfile
+			<< "frame number,x pos,y pos,radius"
+			<< std::endl;
+		} else {
+			std::cerr
+			<< "Could not open temp.csv output file"
+			<< std::endl;
+			return 2;
+		}
+		outputfile.close();
+		
+		usleep(1000000);
+		
+		// Read lines of the input file
+		int val;
+		outputfile.open(temp_loc, std::ios_base::app);
+		while (std::getline(infile, line)) {
+			// Create a stringstream of the current line
+			std::stringstream ss(line);
+			// Create a holder for the substrings
+			std::string token;
+			// Keep track of the current column index
+			int col = -1;
+			// Extract each col
+			while (std::getline(ss, token, ',')) {
+				col++;
+				if (col == 1) {
+					val = std::stoi(token) - (BOXSIZE - TC_W)/2;
+					token = std::to_string(val);
+					outputfile << token << ",";
+				} else if (col == 2) {
+					val = std::stoi(token) - (BOXSIZE - TC_H)/2;
+					token = std::to_string(val);
+					outputfile << token << ",";
+				} else if (col == 3) {
+					outputfile << token << std::endl;
+					col = -1;
+				} else {
+					outputfile << token << ",";
+				}
+				
+				// If the next token is a comma, ignore it and move on
+				if (ss.peek() == ',') {
+					ss.ignore();
+				}
+			}
+		}
+		infile.close();
+		outputfile.close();
+		
+		if (std::remove(i.c_str()) != 0) {
+			std::cerr << "Failure to remove file " << space_space(i) << " with error " << strerror(errno) << std::endl;
+		}
+		std::cout << "rm\'d " << i << std::endl;
+		std::cout << "mv\'ing " << temp_loc << " to " << i << std::endl;
+		
+		if (std::rename(temp_loc.c_str(), i.c_str()) < 0) {
+			std::cerr << "Could not move temp.csv to Tier location using rename with error: " << strerror(errno) << std::endl;
+			return 3;
+		}
+		
+	}
+	
+	return 0;
+}
+
+/**
+ * Determines the maximum width and height of the moon bounding box encountered in the video.
+ * 
+ * @return out_vec a vector of ints including the maximum width and height of the moon.
+ */
+static int get_max_ellipse_params() {
+	// Open box file
+	std::ifstream box_file(BOXDATA);
+	if (!box_file.is_open()) {
+		std::cerr
+		<< "WARNING: Could not open box file"
+		<< std::endl;
+	}
+	
+	// Prepare variables
+	std::string line;
+	int running_size = 0;
+	
+	// Read the column names and do nothing with them
+	if (box_file.good()) {
+		// Extract the first line in the file
+		std::getline(box_file, line);
+	}
+	
+	while (std::getline(box_file, line)) {
+		// Create a stringstream of the current line
+		std::stringstream ss(line);
+		// Create a holder for the substrings
+		std::string token;
+		// Keep track of the current column index
+		int col = -1;
+		// Extract each col
+		while (std::getline(ss, token, ',')) {
+			col++;
+			// Add the current integer to the 'colIdx' column's values vector
+			if (col == 7) {
+				if (running_size < std::stoi(token)) {
+					running_size = std::stoi(token);
+				}
+			} else if (col == 8) {
+				if (running_size < std::stoi(token)) {
+					running_size = std::stoi(token);
+				}
+			} else if (col == 9) {
+				col = -1;
+			}
+			// If the next token is a comma, ignore it and move on
+			if (ss.peek() == ',') {
+				ss.ignore();
+			}
+		}
+	}
+	// Close file
+	box_file.close();
+	
+	return running_size;
+}
+
 static int generate_slideshow() {
 	//HACK the proper way to do this is using libav.  This is a linux hack.
 	std::string framepath = space_space((OUTPUTDIR + "frames/"));
+	std::string temppath = OUTPUTDIR + "temp.mp4";
+	std::string outpath = OUTPUTDIR + "output.mp4";
 	std::string command;
-	command = "ffmpeg -y -framerate 30 -i " + framepath + "%10d.png " + framepath + "../output.mp4";
+	command = "ffmpeg -y -hide_banner -loglevel warning -framerate 30 -i " + framepath + "%10d.png " + framepath + "../output.mp4";
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING << "Beginning slideshow creation" << std::endl;
+		LOGGING << "Beginning slideshow generation" << std::endl;
 		LOGGING.close();
 	}
 	system(command.c_str());
@@ -1241,6 +1584,42 @@ static int generate_slideshow() {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING << "Slideshow created" << std::endl;
 		LOGGING.close();
+	}
+	if (TIGHT_CROP) {
+		int max_box;
+		max_box = get_max_ellipse_params();
+		if (max_box == 0) {
+			std::cerr << "Max ellipse apparently is 0.  Something is wrong." << std::endl;
+			return 1;
+		}
+		std::cout << "Max Box: " << max_box << std::endl;
+		TC_W = std::min(max_box + 5, BOXSIZE);
+		TC_H = TC_W;
+		int center_x = BOXSIZE/2 - TC_W/2;
+		int center_y = BOXSIZE/2 - TC_H/2;
+		command = "ffmpeg -y -hide_banner -loglevel warning -i " + framepath + "../output.mp4 -vf \"crop=" + std::to_string(TC_W) + ":" + std::to_string(TC_H) + ":" + std::to_string(center_x) + ":" + std::to_string(center_y) + "\" " + framepath + "../temp.mp4";
+		std::cout
+		<< "-------------------------------------------------------------------------"
+		<< std::endl << command << std::endl
+		<< "-------------------------------------------------------------------------"
+		<< std::endl;
+		system(command.c_str());
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "Slideshow given a tight crop" << std::endl;
+			LOGGING.close();
+		}
+		if (fs::file_size("./Birdtracker_Output/temp.mp4") > 0) {
+			if (std::rename(temppath.c_str(), outpath.c_str()) != 0) {
+				std::cerr << "Failed to move temp.mp4 to output.mp4 with error: "
+				<< strerror(errno) << std::endl;
+			}
+		} else {
+			if (std::remove(temppath.c_str()) != 0) {
+				std::cerr << "Failed to remove old temp.mp4 file with error: "
+				<< strerror(errno) << std::endl;
+			}
+		}
 	}
 	return 0;
 }
@@ -1252,7 +1631,7 @@ static int generate_slideshow() {
  * @return status
  */
 static int concat_tiers() {
-	// Open ellipse file
+	// Open Tier 1 file
 	std::ifstream t1_file(TIER1FILE);
 	if (!t1_file.is_open()) {
 		std::cerr
@@ -1260,7 +1639,7 @@ static int concat_tiers() {
 		<< std::endl;
 		return 1;
 	}
-	// Open ellipse file
+	// Open Tier 2 file
 	std::ifstream t2_file(TIER2FILE);
 	if (!t2_file.is_open()) {
 		std::cerr
@@ -1268,7 +1647,7 @@ static int concat_tiers() {
 		<< std::endl;
 		return 2;
 	}
-	// Open ellipse file
+	// Open Tier 3 file
 	std::ifstream t3_file(TIER3FILE);
 	if (!t3_file.is_open()) {
 		std::cerr
@@ -1276,7 +1655,7 @@ static int concat_tiers() {
 		<< std::endl;
 		return 3;
 	}
-	// Open ellipse file
+	// Open Tier 4 file
 	std::ifstream t4_file(TIER4FILE);
 	if (!t4_file.is_open()) {
 		std::cerr
@@ -1325,6 +1704,7 @@ static int concat_tiers() {
 	int tcnt = 1;
 	outputfile.open(mix_loc, std::ios_base::app);
 	for (auto i : tfiles) {
+		std::cout << "Concat begin on file: " << tcnt << std::endl;
 		while (std::getline(*i, line)) {
 			line = line + "," + std::to_string(tcnt);
 			outputfile
@@ -1338,21 +1718,23 @@ static int concat_tiers() {
 	//HACK these commands require a linux terminal
 	std::string commandstr;
 	commandstr = "(head -n 1 " 
-	+ mix_loc
+	+ space_space(mix_loc)
 	+ " && tail -n +2 "
-	+ mix_loc
+	+ space_space(mix_loc)
 	+ " | sort --field-separator=',' -n -k 1,1)"
 	+ " > "
-	+ OUTPUTDIR
+	+ space_space(OUTPUTDIR)
 	+ "data/temp.csv";
-	if (system(commandstr.c_str())) {
-		std::cerr << "WARNING: Failed to concat tiers" << std::endl;
+	std::cout << "Concat command string: " << commandstr << std::endl;
+	if (system(commandstr.c_str()) != 0) {
+		std::cerr << "WARNING: Failed to concat tiers with error: "
+		<< strerror(errno) << std::endl;
 		return 0;
 	}
 	
-	commandstr = "mv " + OUTPUTDIR + "data/temp.csv " + mix_loc;
-	if (system(commandstr.c_str())) {
-		std::cerr << "WARNING: Failed to move temporary file to mixed_tiers.csv" << std::endl;
+	if (std::rename((OUTPUTDIR + "data/temp.csv").c_str(), mix_loc.c_str()) != 0) {
+		std::cerr << "WARNING: Failed to move temporary file to mixed_tiers.csv with error: "
+		<< strerror(errno) << std::endl;
 		return 0;
 	}
 	
@@ -1466,6 +1848,13 @@ static int post_processing() {
 				<< std::endl;
 				return 1;
 			}
+			if (edit_contours_for_crop() != 0) {
+				EMPTY_FRAMES = false;
+				std::cerr
+				<< "ERROR: Failed to edit contours to match tight crop requirements"
+				<< std::endl;
+				return 2;
+			}
 		}
 		if (EMPTY_FRAMES) {
 			if (DEBUG_COUT) {
@@ -1498,8 +1887,8 @@ static int post_processing() {
 /**
  * Main loop
  *
- * @param argc
- * @param argv
+ * @param argc number of input arguments
+ * @param argv contents of input arguments
  * @return status
  */
 int main(int argc, char* argv[]) {
@@ -1619,7 +2008,7 @@ int main(int argc, char* argv[]) {
 	
 	// Config Handler -----------------------------------------------------------------------------
 	
-    std::ifstream cFile (config_file);
+	std::ifstream cFile (config_file);
 	if (cFile.is_open()) {
 		std::string line;
 		while(getline(cFile, line)){
@@ -1674,8 +2063,11 @@ int main(int argc, char* argv[]) {
 	TIER2FILE = OUTPUTDIR + "data/Tier2.csv";
 	TIER3FILE = OUTPUTDIR + "data/Tier3.csv";
 	TIER4FILE = OUTPUTDIR + "data/Tier4.csv";
-	ELLIPSEDATA  = OUTPUTDIR + "data/ellipses.csv";
+	ELLIPSEDATA = OUTPUTDIR + "data/ellipses.csv";
 	METADATA = OUTPUTDIR + "data/metadata.csv";
+	if (OUTPUT_FRAMES && TIGHT_CROP) {
+		BOXDATA = OUTPUTDIR + "data/boxes.csv";
+	}
 	
 	outfile.open(TIER1FILE);
 	outfile
@@ -1758,6 +2150,32 @@ int main(int argc, char* argv[]) {
 	}
 	metafile.close();
 	
+	if (OUTPUT_FRAMES && TIGHT_CROP) {
+		outfile.open(BOXDATA);
+		outfile
+		<< "frame number"
+		<< ","
+		<< "box tl x"
+		<< ","
+		<< "box tl y"
+		<< ","
+		<< "box br x"
+		<< ","
+		<< "box br y"
+		<< ","
+		<< "box x"
+		<< ","
+		<< "box y"
+		<< ","
+		<< "box width"
+		<< ","
+		<< "box height"
+		<< ","
+		<< "box area"
+		<< std::endl;
+		outfile.close();
+	}
+	
 	// Instance and Assign ------------------------------------------------------------------------
 	// Memory map variables we want to share across forks
 	// mm_gotframe reports that the frame acquisition was completed
@@ -1800,10 +2218,47 @@ int main(int argc, char* argv[]) {
 	VideoCapture cap(input_file); // open the default camera
 	if (!cap.isOpened())  // check if we succeeded
 		return -1;
+	
+	// Get the first frame with a clear moon
+	bool running = true;
+	while (running) {
+		cap >> frame;
+		if (frame.empty()) {
+			std::cerr << "ERROR: Could not find a frame without the moon touching the edge.  Exiting"
+			<< std::endl
+			<< "If the video looks good to you and you see this message, increase the value of "
+			<< "BLACKOUT_THRESH in the settings.cfg file, and re-run."
+			<< std::endl;
+			return -1;
+		}
+		Mat temp_frame;
+		*mm_frmcount++;
+		cvtColor(frame.clone(), frame, COLOR_BGR2GRAY);
+		threshold(frame.clone(), temp_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
+		vector <vector<Point>> contours = contours_only(temp_frame);
+		int largest = largest_contour(contours);
+		int val = touching_edges(frame, contours[largest]);
+		if (val == 0) {
+			running = false;
+		}
+	}
+	
+	// Process this frame to establish initial values
+	frame = first_frame(frame.clone(), *mm_frmcount);
+	if (DEBUG_COUT) {
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "passed first frame, used frame " << *mm_frmcount << "as corners" << std::endl;
+		LOGGING.close();
+	}
+	// Release and restart the video from the beginning.
+	cap.release();
+	*mm_frmcount = -1;
+	cap.open(input_file);
+	if (!cap.isOpened())  // check if we succeeded
+		return -1;
+	
 	// Get the first frame
 	cap >> frame;
-	cvtColor(frame.clone(), frame, COLOR_BGR2GRAY);
-	frame = first_frame(frame.clone(), *mm_frmcount);	
 	++*mm_frmcount;
 	
 	if (OUTPUT_FRAMES) {
@@ -2014,9 +2469,9 @@ int main(int argc, char* argv[]) {
 			
 		}
 	}
-		
  	usleep(1000000);
 	
+	BOXSIZE = 1080;
 	if (post_processing() != 0) {
 		std::cerr
 		<< "Exiting frame_extraction with errors"
