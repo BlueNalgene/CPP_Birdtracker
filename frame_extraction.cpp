@@ -84,63 +84,63 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 	int shiftx = 0;
 	int shifty = 0;
 	
-	Point local_tl = boundingRect(contour).tl();
-	Point local_br = boundingRect(contour).br();
-	
-	if (DEBUG_COUT) {
-		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING
-		<< "PLUSX: " << plusx << " PLUSY: " << plusy << std::endl
-		<< "LOCAL_TL = (" << local_tl.x << ", " << local_tl.y << ")" << std::endl
-		<< "LOCAL_BR = (" << local_br.x << ", " << local_br.y << ")" << std::endl
-		<< "ORIG_TL = (" << ORIG_TL.x << ", " << ORIG_TL.y << ")" << std::endl
-		<< "ORIG_BR = (" << ORIG_BR.x << ", " << ORIG_BR.y << ")" << std::endl;
-		LOGGING.close();
-	}
-	
-	if ((abs(plusx) > EDGETHRESH) && (abs(plusx) > EDGETHRESH)) {
-		if (plusx > 0) {
-			if (plusy > 0) {
-				// +x, +y (touching right and bottom edges)
-				shiftx = (local_tl.x - ORIG_TL.x);
-				shifty = (local_tl.y - ORIG_TL.y);
-			} else {
-				// +x, -y (touching right and top edges)
-				shiftx = (local_tl.x - ORIG_TL.x);
-				shifty = (local_br.y - ORIG_BR.y);
-			}
-		} else {
-			if (plusy > 0) {
-				// -x, +y (touching left and bottom edges)
-				shiftx = (local_br.x - ORIG_BR.x);
-				shifty = (local_tl.y - ORIG_TL.y);
-			} else {
-				// -x, -y (touching left and top edges)
-				shiftx = (local_br.x - ORIG_BR.x);
-				shifty = (local_br.y - ORIG_BR.y);
-			}
-		}
-	} else if (abs(plusx) > EDGETHRESH) {
-		if (plusx > 0) {
-			// +x (touching right edge)
-			shiftx = (local_tl.x - ORIG_TL.x);
-			
-		} else {
-			// -x (touching left edge)
-			shiftx = (local_br.x - ORIG_BR.x);
-			
-		}
-	} else if (abs(plusy) > EDGETHRESH) {
-		if (plusy > 0) {
-			// +y (touching bottom edge)
-			shifty = (local_tl.y - ORIG_TL.y);
-			
-		} else {
-			// -y (touching top edge)
-			shifty = (local_br.y - ORIG_BR.y);
-			
-		}
-	}
+// 	Point local_tl = boundingRect(contour).tl();
+// 	Point local_br = boundingRect(contour).br();
+// 	
+// 	if (DEBUG_COUT) {
+// 		LOGGING.open(LOGOUT, std::ios_base::app);
+// 		LOGGING
+// 		<< "PLUSX: " << plusx << " PLUSY: " << plusy << std::endl
+// 		<< "LOCAL_TL = (" << local_tl.x << ", " << local_tl.y << ")" << std::endl
+// 		<< "LOCAL_BR = (" << local_br.x << ", " << local_br.y << ")" << std::endl
+// 		<< "ORIG_TL = (" << ORIG_TL.x << ", " << ORIG_TL.y << ")" << std::endl
+// 		<< "ORIG_BR = (" << ORIG_BR.x << ", " << ORIG_BR.y << ")" << std::endl;
+// 		LOGGING.close();
+// 	}
+// 	
+// 	if ((abs(plusx) > EDGETHRESH) && (abs(plusx) > EDGETHRESH)) {
+// 		if (plusx > 0) {
+// 			if (plusy > 0) {
+// 				// +x, +y (touching right and bottom edges)
+// 				shiftx = (local_tl.x - ORIG_TL.x);
+// 				shifty = (local_tl.y - ORIG_TL.y);
+// 			} else {
+// 				// +x, -y (touching right and top edges)
+// 				shiftx = (local_tl.x - ORIG_TL.x);
+// 				shifty = (local_br.y - ORIG_BR.y);
+// 			}
+// 		} else {
+// 			if (plusy > 0) {
+// 				// -x, +y (touching left and bottom edges)
+// 				shiftx = (local_br.x - ORIG_BR.x);
+// 				shifty = (local_tl.y - ORIG_TL.y);
+// 			} else {
+// 				// -x, -y (touching left and top edges)
+// 				shiftx = (local_br.x - ORIG_BR.x);
+// 				shifty = (local_br.y - ORIG_BR.y);
+// 			}
+// 		}
+// 	} else if (abs(plusx) > EDGETHRESH) {
+// 		if (plusx > 0) {
+// 			// +x (touching right edge)
+// 			shiftx = (local_tl.x - ORIG_TL.x);
+// 			
+// 		} else {
+// 			// -x (touching left edge)
+// 			shiftx = (local_br.x - ORIG_BR.x);
+// 			
+// 		}
+// 	} else if (abs(plusy) > EDGETHRESH) {
+// 		if (plusy > 0) {
+// 			// +y (touching bottom edge)
+// 			shifty = (local_tl.y - ORIG_TL.y);
+// 			
+// 		} else {
+// 			// -y (touching top edge)
+// 			shifty = (local_br.y - ORIG_BR.y);
+// 			
+// 		}
+// 	}
 	
 	in_frame = shift_frame(in_frame, shiftx/2, shifty/2);
 	
@@ -156,42 +156,41 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
  * @param contour OpenCV contour, a vector of int int points
  * @return outplus integer vector of horizontal and vertical deviation of the primary contour
  */
-static vector <int> test_edges(Mat in_frame, vector<Point> contour) {
-	Moments M = moments(contour);
-	Point cen(int(M.m10/M.m00), int(M.m01/M.m00));
-	if (DEBUG_COUT) {
-		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING << "centroid: " << cen << std::endl;
-		LOGGING.close();
-	}
-	
-	Rect rect  = boundingRect(contour);
-	int to_top = cen.y - rect.tl().y;
-	int to_right = rect.br().x - cen.x;
-	int to_bottom = rect.br().y - cen.y;
-	int to_left = cen.x - rect.tl().x;
-	
-	if (DEBUG_COUT) {
-		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING
-		<< to_top
-		<< ","
-		<< to_right
-		<< ","
-		<< to_bottom
-		<< ","
-		<< to_left
-		<< std::endl;
-		LOGGING.close();
-	}
-	
+static vector <int> test_edges(Mat in_frame, vector<Point> contour, int te_ret) {
 	int plusx = 0;
 	int plusy = 0;
-	if (to_top != to_bottom) {
-		plusy = to_top - to_bottom;
-	}
-	if (to_left != to_right) {
-		plusx = to_left - to_right;
+	
+	// Fetch the boundary of this primary contour
+	Rect rect  = boundingRect(contour);
+	/*
+	 * Cases:
+	 * -1 : error
+	 *  0 : no edge touching
+	 *  1 : touching left edge only
+	 *  2 : touching right edge only
+	 *  3 : touching top and left edge
+	 *  4 : touching bottom and left edge
+	 *  5 : touching top and right edge
+	 *  6 : touching bottom and right edge
+	 *  7 : touching top only
+	 *  8 : touching bottom only
+	 */
+	if ((te_ret == 1) || (te_ret == 3) || (te_ret == 7)) {
+		//touching left edge only
+		plusx = rect.br().x - ORIG_BR.x;
+		plusy = rect.br().y - ORIG_BR.y;
+	} else if ((te_ret == 2) || (te_ret == 6) || (te_ret == 8)) {
+		//touching right edge only
+		plusx = rect.tl().x - ORIG_TL.x;
+		plusy = rect.tl().y - ORIG_TL.y;
+	} else if (te_ret == 4) {
+		//touching bottom and left edge
+		plusx = -(ORIG_TL.x + (ORIG_HORZ - rect.width));
+		plusy = (BOXSIZE - ORIG_BR.y) + (ORIG_VERT - rect.height);
+	} else if (te_ret == 5) {
+		//touching top and right edge
+		plusx = (BOXSIZE - ORIG_TL.x) - rect.width;
+		plusy = -(ORIG_BR.y - rect.height);
 	}
 	
 	if (DEBUG_COUT) {
@@ -440,6 +439,32 @@ static int touching_edges(Mat in_frame, vector<Point> contour) {
 	return -1;
 }
 
+static Mat traditional_centering(Mat in_frame, vector <vector<Point>> contours, int largest, Rect box) {
+	// Generate masks
+	Mat mask(Size(in_frame.rows, in_frame.cols), in_frame.type(), Scalar(0));
+	Mat zero_mask(Size(BOXSIZE, BOXSIZE), in_frame.type(), Scalar(0));
+	// Create a mat with just the moon
+	Mat item(in_frame(box));
+	
+	// Apply contour to mask
+	drawContours(mask, contours, largest, 255, FILLED);
+	
+	// Transfer item to mask
+	item.copyTo(item, mask(box));
+	
+	// Calculate the center
+	Point center(BOXSIZE/2, BOXSIZE/2);
+	Rect center_box(center.x - box.width/2, center.y - box.height/2, box.width, box.height);
+	
+	// Copy the item mask to the centered box on our zero mask
+	item.copyTo(zero_mask(center_box));
+	
+	// done
+	in_frame = zero_mask;
+	
+	return in_frame;
+}
+
 /**
  * This function is a special case of the frame preparation steps.  It outputs many of the initial
  * values which are used later (globals that start with the ORIG_ template) and omits some of the
@@ -449,7 +474,7 @@ static int touching_edges(Mat in_frame, vector<Point> contour) {
  * @param framecnt int of nth frame retrieved by program
  * @return in_frame The modified in_frame from the input params
  */
-static Mat first_frame(Mat in_frame, int framecnt) {
+static int first_frame(Mat in_frame, int framecnt) {
 	Mat temp_frame;
 	
 	// Determine the minimum dimensions of the input video
@@ -494,23 +519,25 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 		LOGGING.close();
 	}
 	
-	// Create rect representing the image
-	Rect image_rect = Rect({}, in_frame.size());
-	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2), (box.tl().y- (BOXSIZE - box.height)/2));
-	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x, ((BOXSIZE - box.height)/2) + box.br().y);
-	Rect roi = Rect(roi_tl, roi_br);
+// 	// Create rect representing the image
+// 	Rect image_rect = Rect({}, in_frame.size());
+// 	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2), (box.tl().y- (BOXSIZE - box.height)/2));
+// 	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x, ((BOXSIZE - box.height)/2) + box.br().y);
+// 	Rect roi = Rect(roi_tl, roi_br);
+// 
+// 	// Find intersection, i.e. valid crop region
+// 	Rect intersection = image_rect & roi;
+// 
+// 	// Move intersection to the result coordinate space
+// 	Rect inter_roi = intersection - roi.tl();
+// 
+// 	// Create black image and copy intersection
+// 	Mat crop = Mat::zeros(roi.size(), in_frame.type());
+// 	in_frame(intersection).copyTo(crop(inter_roi));
+// 	
+// 	in_frame = crop;
 
-	// Find intersection, i.e. valid crop region
-	Rect intersection = image_rect & roi;
-
-	// Move intersection to the result coordinate space
-	Rect inter_roi = intersection - roi.tl();
-
-	// Create black image and copy intersection
-	Mat crop = Mat::zeros(roi.size(), in_frame.type());
-	in_frame(intersection).copyTo(crop(inter_roi));
-	
-	in_frame = crop;
+// 	in_frame = traditional_centering(in_frame.clone(), contours, largest_contour_index, box);
 	
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
@@ -537,26 +564,26 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	}
 	
 	
-	vector <int> outplus = test_edges(in_frame, contours[largest_contour_index]);
-	
-	int edge_top = 0;
-	int edge_bot = 0;
-	int edge_lef = 0;
-	int edge_rig = 0;
-	
-	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
-		if ((outplus[0] > 0) || (outplus[0] < 0)) {
-			vector <int> local_edge = edge_width(contours[largest_contour_index]);
-			edge_top = local_edge[0];
-			edge_bot = local_edge[1];
-		}
-		if ((outplus[1] > 0) || (outplus[1] < 0)) {
-			vector <int> local_edge = edge_height(contours[largest_contour_index]);
-			edge_lef = local_edge[0];
-			edge_rig = local_edge[1];
-		}
-	}
-	
+// 	vector <int> outplus = test_edges(in_frame, contours[largest_contour_index]);
+// 	
+// 	int edge_top = 0;
+// 	int edge_bot = 0;
+// 	int edge_lef = 0;
+// 	int edge_rig = 0;
+// 	
+// 	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
+// 		if ((outplus[0] > 0) || (outplus[0] < 0)) {
+// 			vector <int> local_edge = edge_width(contours[largest_contour_index]);
+// 			edge_top = local_edge[0];
+// 			edge_bot = local_edge[1];
+// 		}
+// 		if ((outplus[1] > 0) || (outplus[1] < 0)) {
+// 			vector <int> local_edge = edge_height(contours[largest_contour_index]);
+// 			edge_lef = local_edge[0];
+// 			edge_rig = local_edge[1];
+// 		}
+// 	}
+/*	
 	// Open the outfile to append list of major ellipses
 	std::ofstream outell;
 	outell.open(ELLIPSEDATA, std::ios_base::app);
@@ -581,9 +608,10 @@ static Mat first_frame(Mat in_frame, int framecnt) {
 	<< ","
 	<< edge_rig
 	<< std::endl;
-	outell.close();
+	outell.close();*/
 	
-	return in_frame;
+// 	return in_frame;
+	return 0;
 }
 
 /**
@@ -607,22 +635,23 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	
 	vector <vector<Point>> contours = contours_only(temp_frame);
 	int largest = largest_contour(contours);
-	vector <int> outplus = test_edges(in_frame, contours[largest]);
+	Rect box = boundingRect(contours[largest]);
 	
 	int edge_top = 0;
 	int edge_bot = 0;
 	int edge_lef = 0;
 	int edge_rig = 0;
+	int te_ret = touching_edges(in_frame, contours[largest]);
 	
-	Rect box = boundingRect(contours[largest]);
-	
-	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
+	if (te_ret > 0) {
+// 	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
 		if (DEBUG_COUT) {
 			LOGGING.open(LOGOUT, std::ios_base::app);
 			LOGGING << "Activating Corner Matching" << std::endl;
 			LOGGING.close();
 		}
-		in_frame = corner_matching(in_frame, contours[largest], outplus[0], outplus[1]);
+		vector <int> outplus = test_edges(in_frame, contours[largest], te_ret);
+		in_frame = shift_frame(in_frame, outplus[0], outplus[1]);
 		if ((outplus[0] > 0) || (outplus[0] < 0)) {
 			vector <int> local_edge = edge_width(contours[largest]);
 			edge_top = local_edge[0];
@@ -633,30 +662,16 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 			edge_lef = local_edge[0];
 			edge_rig = local_edge[1];
 		}
-	} else {
+	} else if (te_ret == 0) {
 		if (DEBUG_COUT) {
 			LOGGING.open(LOGOUT, std::ios_base::app);
 			LOGGING << "Centering Traditionally" << std::endl;
 			LOGGING.close();
 		}
 		// Traditional centering
-		
-		// Generate masks
-		Mat mask(Size(in_frame.rows, in_frame.cols), in_frame.type(), Scalar(0));
-		Mat zero_mask(Size(BOXSIZE, BOXSIZE), in_frame.type(), Scalar(0));
-		// Apply contour to mask
-		drawContours(mask, contours, largest, 255, FILLED);
-		// Create a mat with just the moon
-		Mat item(in_frame(box));
-		// Transfer item to mask
-		item.copyTo(item, mask(box));
-		// Calculate the center
-		Point center(BOXSIZE/2, BOXSIZE/2);
-		Rect center_box(center.x - box.width/2, center.y - box.height/2, box.width, box.height);
-		// Copy the item mask to the centered box on our zero mask
-		item.copyTo(zero_mask(center_box));
-		// done
-		in_frame = zero_mask;
+		in_frame = traditional_centering(in_frame.clone(), contours, largest, box);
+	} else {
+		std::cerr << "WARNING: Returned improper value when testing touching edges" << std::endl;
 	}
 		
 	
@@ -2244,7 +2259,7 @@ int main(int argc, char* argv[]) {
 	}
 	
 	// Process this frame to establish initial values
-	frame = first_frame(frame.clone(), *mm_frmcount);
+	first_frame(frame.clone(), *mm_frmcount);
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING << "passed first frame, used frame " << *mm_frmcount << "as corners" << std::endl;
