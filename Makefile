@@ -3,12 +3,6 @@
 OBJS=frame_extractor.o
 BIN=g++ frame_extraction.cpp
 
-# OBJSTWO=frame_viewer.o
-# BINTWO=g++ frame_viewer.cpp
-
-BINTHREE=g++ test.cpp
-OBJSTHREE=test.o
-
 # CFLAGS+=-Wfatal-errors
 # CFLAGS+=-Wall -g -O3
 CFLAGS+=-std=c++17
@@ -25,7 +19,3 @@ INCLUDES+=-I/opt/vc/include/interface/vmcs_host/linux
 all:
 	@rm -f $(OBJS)
 	$(BIN) $(CFLAGS) $(LDFLAGS) $(RPATH) $(INCLUDES) -o $(OBJS)
-# 	@rm -f $(OBJSTWO)
-# 	$(BINTWO) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $(OBJSTWO)
-	@rm -f $(OBJSTHREE)
-	$(BINTHREE) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $(OBJSTHREE)
