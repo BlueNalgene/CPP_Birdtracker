@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['tier_5ffour',['tier_four',['../frame__extraction_8cpp.html#a1835862c7afe0c2ea6a51fc984bc49e7',1,'frame_extraction.cpp']]],
-  ['tier_5fone',['tier_one',['../frame__extraction_8cpp.html#a4f9b7b156d48ad3f147ff2b4edc01509',1,'frame_extraction.cpp']]],
-  ['tier_5fthree',['tier_three',['../frame__extraction_8cpp.html#a7e416aa918214bbc26d5a68f7da0138d',1,'frame_extraction.cpp']]],
-  ['tier_5ftwo',['tier_two',['../frame__extraction_8cpp.html#ad19a4b05d920662cf30fbbdfc56264c3',1,'frame_extraction.cpp']]]
+  ['edge_5fheight',['edge_height',['../frame__extraction_8cpp.html#a3eefea9d7b7944b3c17145bf1f42ca1f',1,'edge_height(vector&lt; Point &gt; contour):&#160;frame_extraction.cpp'],['../frame__extraction_8hpp.html#a3eefea9d7b7944b3c17145bf1f42ca1f',1,'edge_height(vector&lt; Point &gt; contour):&#160;frame_extraction.hpp']]],
+  ['edge_5fwidth',['edge_width',['../frame__extraction_8cpp.html#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1',1,'edge_width(vector&lt; Point &gt; contour):&#160;frame_extraction.cpp'],['../frame__extraction_8hpp.html#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1',1,'edge_width(vector&lt; Point &gt; contour):&#160;frame_extraction.hpp']]],
+  ['edit_5fcontours_5ffor_5fcrop',['edit_contours_for_crop',['../frame__extraction_8cpp.html#a7e01b11733281d89519fef4c5abf705c',1,'frame_extraction.cpp']]]
 ];

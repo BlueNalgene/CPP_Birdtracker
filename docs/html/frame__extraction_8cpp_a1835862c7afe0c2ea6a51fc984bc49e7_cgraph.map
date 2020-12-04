@@ -1,0 +1,7 @@
+<map id="tier_four" name="tier_four">
+<area shape="rect" id="node2" href="$frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="123,36,270,62"/>
+<area shape="rect" id="node3" href="$frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="323,10,425,37"/>
+<area shape="rect" id="node4" href="$frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="319,86,429,113"/>
+<area shape="rect" id="node5" href="$frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="123,137,271,164"/>
+<area shape="rect" id="node6" href="$frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="141,188,253,214"/>
+</map>

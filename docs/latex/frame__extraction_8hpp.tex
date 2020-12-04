@@ -24,16 +24,14 @@
 {\ttfamily \#include $<$vector$>$}\newline
 {\ttfamily \#include \char`\"{}opencv2/opencv.\+hpp\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}opencv2/ximgproc.\+hpp\char`\"{}}\newline
-Include dependency graph for frame\+\_\+extraction.\+hpp\+:
-\nopagebreak
+Include dependency graph for frame\+\_\+extraction.\+hpp\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=350pt]{frame__extraction_8hpp__incl}
 \end{center}
 \end{figure}
-This graph shows which files directly or indirectly include this file\+:
-\nopagebreak
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -43,7 +41,67 @@ This graph shows which files directly or indirectly include this file\+:
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
+static Mat \hyperlink{frame__extraction_8hpp_afae27f2c8807b9a09243b93d512b504c}{shift\+\_\+frame} (Mat in\+\_\+frame, int shiftx, int shifty)
+\item 
+static Mat \hyperlink{frame__extraction_8hpp_a19b6b938855c1060791509f406645605}{corner\+\_\+matching} (Mat in\+\_\+frame, vector$<$ Point $>$ contour, int plusx, int plusy)
+\item 
+static vector$<$ int $>$ \hyperlink{frame__extraction_8hpp_a5ef2b91877d44dada29b478b53744af6}{test\+\_\+edges} (Mat in\+\_\+frame, vector$<$ Point $>$ contour, int te\+\_\+ret)
+\item 
+static int \hyperlink{frame__extraction_8hpp_a8b5c97016e3cad4475344f33f288bed4}{min\+\_\+square\+\_\+dim} (Mat in\+\_\+frame)
+\item 
+static vector$<$ int $>$ \hyperlink{frame__extraction_8hpp_a3ac94b4b4ad476fbcdd1ac7bc26b1fe1}{edge\+\_\+width} (vector$<$ Point $>$ contour)
+\item 
+static vector$<$ int $>$ \hyperlink{frame__extraction_8hpp_a3eefea9d7b7944b3c17145bf1f42ca1f}{edge\+\_\+height} (vector$<$ Point $>$ contour)
+\item 
+static Mat \hyperlink{frame__extraction_8hpp_a0c6a52eef18d1f84207a52ef5880aba4}{initial\+\_\+crop} (Mat in\+\_\+frame, int framecnt)
+\item 
+static int \hyperlink{frame__extraction_8hpp_a032ee30a958a27cdb3d5b419953ab584}{touching\+\_\+edges} (Mat in\+\_\+frame, vector$<$ Point $>$ contour)
+\item 
+static Mat \hyperlink{frame__extraction_8hpp_a8f336c75968d8ab7d3aa3c5c8ff74dbb}{traditional\+\_\+centering} (Mat in\+\_\+frame, vector$<$ vector$<$ Point $>$$>$ contours, int largest, Rect box)
+\item 
+static int \hyperlink{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}{first\+\_\+frame} (Mat in\+\_\+frame, int framecnt)
+\item 
+static Mat \hyperlink{frame__extraction_8hpp_a020638e44cbbdfbe5a689c61c4bec371}{halo\+\_\+noise\+\_\+and\+\_\+center} (Mat in\+\_\+frame, int framecnt)
+\item 
+static void \hyperlink{frame__extraction_8hpp_aade1bdfa6306f0627b8a1fe204aacfab}{signal\+\_\+callback\+\_\+handler} (int signum)
+\item 
+static vector$<$ vector$<$ Point $>$ $>$ \hyperlink{frame__extraction_8hpp_a510acbf4ec2b1b348a2c1ca1de901677}{fetch\+\_\+dynamic\+\_\+mask} (Mat in\+\_\+frame)
+\item 
+static Mat \hyperlink{frame__extraction_8hpp_a09f4cf8817c686df6a1992baf222b97a}{apply\+\_\+dynamic\+\_\+mask} (Mat in\+\_\+frame, vector$<$ vector$<$ Point $>$$>$ contours, int maskwidth)
+\item 
+static int \hyperlink{frame__extraction_8hpp_abc90f05608032b4730869812a513267f}{largest\+\_\+contour} (vector$<$ vector$<$ Point $>$$>$ contours)
+\item 
+static vector$<$ vector$<$ Point $>$ $>$ \hyperlink{frame__extraction_8hpp_a5a1b727e663ec81191fd584338c88227}{contours\+\_\+only} (Mat in\+\_\+frame)
+\item 
+static Rect \hyperlink{frame__extraction_8hpp_a3995b1d757f31ef679b1767386d65e4b}{box\+\_\+finder} (Mat in\+\_\+frame, bool do\+\_\+thresh)
+\item 
+static int \hyperlink{frame__extraction_8hpp_a3fe52ab2a13802c64a500f3b3fac618c}{box\+\_\+data} (Rect box, int framecnt)
+\item 
+static int \hyperlink{frame__extraction_8hpp_a5c53b5dffc43d3917a312ade756e53ee}{show\+\_\+usage} (string name)
+\item 
+static vector$<$ vector$<$ Point $>$ $>$ \hyperlink{frame__extraction_8hpp_a1005043d0919694aa2b5ec4fac47bc14}{quiet\+\_\+halo\+\_\+elim} (vector$<$ vector$<$ Point $>$$>$ contours)
+\item 
+static int \hyperlink{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e}{tier\+\_\+one} (int cnt, Mat in\+\_\+frame)
+\item 
+static int \hyperlink{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f}{tier\+\_\+two} (int cnt, Mat in\+\_\+frame)
+\item 
+static int \hyperlink{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4}{tier\+\_\+three} (int cnt, Mat in\+\_\+frame, Mat old\+\_\+frame)
+\item 
+static int \hyperlink{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5}{tier\+\_\+four} (int cnt, Mat in\+\_\+frame, Mat old\+\_\+frame)
+\item 
+static int \hyperlink{frame__extraction_8hpp_ae3f0a97a7bf6dcfbb91ffdbc9997841f}{parse\+\_\+checklist} (std\+::string name, std\+::string value)
+\item 
+static std\+::string \hyperlink{frame__extraction_8hpp_ae5b18af36c3bf024f8a2dc5c4fe4242b}{out\+\_\+frame\+\_\+gen} (int framecnt)
+\item 
 std\+::string \hyperlink{frame__extraction_8hpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1}{space\+\_\+space} (std\+::string instring)
+\item 
+static int \hyperlink{frame__extraction_8hpp_a272c8275ab7a0918c5e6c9acf9afda50}{generate\+\_\+slideshow} ()
+\item 
+static int \hyperlink{frame__extraction_8hpp_a579a6e5cf9846789c07a88e72ef4a7a7}{concat\+\_\+tiers} ()
+\item 
+static int \hyperlink{frame__extraction_8hpp_aaf7c365254fb30ce3015aded4fdf1c9d}{off\+\_\+screen\+\_\+ellipse} ()
+\item 
+static int \hyperlink{frame__extraction_8hpp_a34a2b5ae307c281071a717fc2d1fb0c6}{post\+\_\+processing} ()
 \item 
 int \hyperlink{frame__extraction_8hpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
 \end{DoxyCompactItemize}
@@ -177,6 +235,90 @@ int \hyperlink{frame__extraction_8hpp_a25e7cae5e0555d85c848342cfa92686c}{T4\+\_\
 
 
 \subsection{Function Documentation}
+\mbox{\Hypertarget{frame__extraction_8hpp_a09f4cf8817c686df6a1992baf222b97a}\label{frame__extraction_8hpp_a09f4cf8817c686df6a1992baf222b97a}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!apply\+\_\+dynamic\+\_\+mask@{apply\+\_\+dynamic\+\_\+mask}}
+\index{apply\+\_\+dynamic\+\_\+mask@{apply\+\_\+dynamic\+\_\+mask}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{apply\+\_\+dynamic\+\_\+mask()}{apply\_dynamic\_mask()}}
+{\footnotesize\ttfamily static Mat apply\+\_\+dynamic\+\_\+mask (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{vector$<$ vector$<$ Point $>$$>$}]{contours,  }\item[{int}]{maskwidth }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a3fe52ab2a13802c64a500f3b3fac618c}\label{frame__extraction_8hpp_a3fe52ab2a13802c64a500f3b3fac618c}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!box\+\_\+data@{box\+\_\+data}}
+\index{box\+\_\+data@{box\+\_\+data}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{box\+\_\+data()}{box\_data()}}
+{\footnotesize\ttfamily static int box\+\_\+data (\begin{DoxyParamCaption}\item[{Rect}]{box,  }\item[{int}]{framecnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a3995b1d757f31ef679b1767386d65e4b}\label{frame__extraction_8hpp_a3995b1d757f31ef679b1767386d65e4b}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!box\+\_\+finder@{box\+\_\+finder}}
+\index{box\+\_\+finder@{box\+\_\+finder}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{box\+\_\+finder()}{box\_finder()}}
+{\footnotesize\ttfamily static Rect box\+\_\+finder (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{bool}]{do\+\_\+thresh }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a579a6e5cf9846789c07a88e72ef4a7a7}\label{frame__extraction_8hpp_a579a6e5cf9846789c07a88e72ef4a7a7}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!concat\+\_\+tiers@{concat\+\_\+tiers}}
+\index{concat\+\_\+tiers@{concat\+\_\+tiers}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{concat\+\_\+tiers()}{concat\_tiers()}}
+{\footnotesize\ttfamily static int concat\+\_\+tiers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a5a1b727e663ec81191fd584338c88227}\label{frame__extraction_8hpp_a5a1b727e663ec81191fd584338c88227}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!contours\+\_\+only@{contours\+\_\+only}}
+\index{contours\+\_\+only@{contours\+\_\+only}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{contours\+\_\+only()}{contours\_only()}}
+{\footnotesize\ttfamily static vector$<$vector$<$Point$>$ $>$ contours\+\_\+only (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a19b6b938855c1060791509f406645605}\label{frame__extraction_8hpp_a19b6b938855c1060791509f406645605}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!corner\+\_\+matching@{corner\+\_\+matching}}
+\index{corner\+\_\+matching@{corner\+\_\+matching}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{corner\+\_\+matching()}{corner\_matching()}}
+{\footnotesize\ttfamily static Mat corner\+\_\+matching (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{vector$<$ Point $>$}]{contour,  }\item[{int}]{plusx,  }\item[{int}]{plusy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a3eefea9d7b7944b3c17145bf1f42ca1f}\label{frame__extraction_8hpp_a3eefea9d7b7944b3c17145bf1f42ca1f}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!edge\+\_\+height@{edge\+\_\+height}}
+\index{edge\+\_\+height@{edge\+\_\+height}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{edge\+\_\+height()}{edge\_height()}}
+{\footnotesize\ttfamily static vector$<$int$>$ edge\+\_\+height (\begin{DoxyParamCaption}\item[{vector$<$ Point $>$}]{contour }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a3ac94b4b4ad476fbcdd1ac7bc26b1fe1}\label{frame__extraction_8hpp_a3ac94b4b4ad476fbcdd1ac7bc26b1fe1}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!edge\+\_\+width@{edge\+\_\+width}}
+\index{edge\+\_\+width@{edge\+\_\+width}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{edge\+\_\+width()}{edge\_width()}}
+{\footnotesize\ttfamily static vector$<$int$>$ edge\+\_\+width (\begin{DoxyParamCaption}\item[{vector$<$ Point $>$}]{contour }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a510acbf4ec2b1b348a2c1ca1de901677}\label{frame__extraction_8hpp_a510acbf4ec2b1b348a2c1ca1de901677}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!fetch\+\_\+dynamic\+\_\+mask@{fetch\+\_\+dynamic\+\_\+mask}}
+\index{fetch\+\_\+dynamic\+\_\+mask@{fetch\+\_\+dynamic\+\_\+mask}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{fetch\+\_\+dynamic\+\_\+mask()}{fetch\_dynamic\_mask()}}
+{\footnotesize\ttfamily static vector$<$vector$<$Point$>$ $>$ fetch\+\_\+dynamic\+\_\+mask (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}\label{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!first\+\_\+frame@{first\+\_\+frame}}
+\index{first\+\_\+frame@{first\+\_\+frame}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{first\+\_\+frame()}{first\_frame()}}
+{\footnotesize\ttfamily static int first\+\_\+frame (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{int}]{framecnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a272c8275ab7a0918c5e6c9acf9afda50}\label{frame__extraction_8hpp_a272c8275ab7a0918c5e6c9acf9afda50}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!generate\+\_\+slideshow@{generate\+\_\+slideshow}}
+\index{generate\+\_\+slideshow@{generate\+\_\+slideshow}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{generate\+\_\+slideshow()}{generate\_slideshow()}}
+{\footnotesize\ttfamily static int generate\+\_\+slideshow (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a020638e44cbbdfbe5a689c61c4bec371}\label{frame__extraction_8hpp_a020638e44cbbdfbe5a689c61c4bec371}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!halo\+\_\+noise\+\_\+and\+\_\+center@{halo\+\_\+noise\+\_\+and\+\_\+center}}
+\index{halo\+\_\+noise\+\_\+and\+\_\+center@{halo\+\_\+noise\+\_\+and\+\_\+center}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{halo\+\_\+noise\+\_\+and\+\_\+center()}{halo\_noise\_and\_center()}}
+{\footnotesize\ttfamily static Mat halo\+\_\+noise\+\_\+and\+\_\+center (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{int}]{framecnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a0c6a52eef18d1f84207a52ef5880aba4}\label{frame__extraction_8hpp_a0c6a52eef18d1f84207a52ef5880aba4}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!initial\+\_\+crop@{initial\+\_\+crop}}
+\index{initial\+\_\+crop@{initial\+\_\+crop}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{initial\+\_\+crop()}{initial\_crop()}}
+{\footnotesize\ttfamily static Mat initial\+\_\+crop (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{int}]{framecnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_abc90f05608032b4730869812a513267f}\label{frame__extraction_8hpp_abc90f05608032b4730869812a513267f}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!largest\+\_\+contour@{largest\+\_\+contour}}
+\index{largest\+\_\+contour@{largest\+\_\+contour}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{largest\+\_\+contour()}{largest\_contour()}}
+{\footnotesize\ttfamily static int largest\+\_\+contour (\begin{DoxyParamCaption}\item[{vector$<$ vector$<$ Point $>$$>$}]{contours }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
 \mbox{\Hypertarget{frame__extraction_8hpp_a0ddf1224851353fc92bfbff6f499fa97}\label{frame__extraction_8hpp_a0ddf1224851353fc92bfbff6f499fa97}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!main@{main}}
 \index{main@{main}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
@@ -200,7 +342,96 @@ Here is the call graph for this function\+:
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=274pt]{frame__extraction_8hpp_a0ddf1224851353fc92bfbff6f499fa97_cgraph}
+\includegraphics[height=550pt]{frame__extraction_8hpp_a0ddf1224851353fc92bfbff6f499fa97_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{frame__extraction_8hpp_a8b5c97016e3cad4475344f33f288bed4}\label{frame__extraction_8hpp_a8b5c97016e3cad4475344f33f288bed4}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!min\+\_\+square\+\_\+dim@{min\+\_\+square\+\_\+dim}}
+\index{min\+\_\+square\+\_\+dim@{min\+\_\+square\+\_\+dim}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{min\+\_\+square\+\_\+dim()}{min\_square\_dim()}}
+{\footnotesize\ttfamily static int min\+\_\+square\+\_\+dim (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_aaf7c365254fb30ce3015aded4fdf1c9d}\label{frame__extraction_8hpp_aaf7c365254fb30ce3015aded4fdf1c9d}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!off\+\_\+screen\+\_\+ellipse@{off\+\_\+screen\+\_\+ellipse}}
+\index{off\+\_\+screen\+\_\+ellipse@{off\+\_\+screen\+\_\+ellipse}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{off\+\_\+screen\+\_\+ellipse()}{off\_screen\_ellipse()}}
+{\footnotesize\ttfamily static int off\+\_\+screen\+\_\+ellipse (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_ae5b18af36c3bf024f8a2dc5c4fe4242b}\label{frame__extraction_8hpp_ae5b18af36c3bf024f8a2dc5c4fe4242b}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!out\+\_\+frame\+\_\+gen@{out\+\_\+frame\+\_\+gen}}
+\index{out\+\_\+frame\+\_\+gen@{out\+\_\+frame\+\_\+gen}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{out\+\_\+frame\+\_\+gen()}{out\_frame\_gen()}}
+{\footnotesize\ttfamily static std\+::string out\+\_\+frame\+\_\+gen (\begin{DoxyParamCaption}\item[{int}]{framecnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_ae3f0a97a7bf6dcfbb91ffdbc9997841f}\label{frame__extraction_8hpp_ae3f0a97a7bf6dcfbb91ffdbc9997841f}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!parse\+\_\+checklist@{parse\+\_\+checklist}}
+\index{parse\+\_\+checklist@{parse\+\_\+checklist}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{parse\+\_\+checklist()}{parse\_checklist()}}
+{\footnotesize\ttfamily static int parse\+\_\+checklist (\begin{DoxyParamCaption}\item[{std\+::string}]{name,  }\item[{std\+::string}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+This function handles the strings and values parsed from the settings.\+cfg file and assigns them to the global values.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & String obtained while parsing the settings.\+cfg file \\
+\hline
+{\em value} & The value associated with name from settings.\+cfg file \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=239pt]{frame__extraction_8hpp_ae3f0a97a7bf6dcfbb91ffdbc9997841f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{frame__extraction_8hpp_a34a2b5ae307c281071a717fc2d1fb0c6}\label{frame__extraction_8hpp_a34a2b5ae307c281071a717fc2d1fb0c6}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!post\+\_\+processing@{post\+\_\+processing}}
+\index{post\+\_\+processing@{post\+\_\+processing}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{post\+\_\+processing()}{post\_processing()}}
+{\footnotesize\ttfamily static int post\+\_\+processing (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a1005043d0919694aa2b5ec4fac47bc14}\label{frame__extraction_8hpp_a1005043d0919694aa2b5ec4fac47bc14}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!quiet\+\_\+halo\+\_\+elim@{quiet\+\_\+halo\+\_\+elim}}
+\index{quiet\+\_\+halo\+\_\+elim@{quiet\+\_\+halo\+\_\+elim}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{quiet\+\_\+halo\+\_\+elim()}{quiet\_halo\_elim()}}
+{\footnotesize\ttfamily static vector$<$vector$<$Point$>$ $>$ quiet\+\_\+halo\+\_\+elim (\begin{DoxyParamCaption}\item[{vector$<$ vector$<$ Point $>$$>$}]{contours }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_afae27f2c8807b9a09243b93d512b504c}\label{frame__extraction_8hpp_afae27f2c8807b9a09243b93d512b504c}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!shift\+\_\+frame@{shift\+\_\+frame}}
+\index{shift\+\_\+frame@{shift\+\_\+frame}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{shift\+\_\+frame()}{shift\_frame()}}
+{\footnotesize\ttfamily static Mat shift\+\_\+frame (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{int}]{shiftx,  }\item[{int}]{shifty }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a5c53b5dffc43d3917a312ade756e53ee}\label{frame__extraction_8hpp_a5c53b5dffc43d3917a312ade756e53ee}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!show\+\_\+usage@{show\+\_\+usage}}
+\index{show\+\_\+usage@{show\+\_\+usage}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{show\+\_\+usage()}{show\_usage()}}
+{\footnotesize\ttfamily static int show\+\_\+usage (\begin{DoxyParamCaption}\item[{string}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_aade1bdfa6306f0627b8a1fe204aacfab}\label{frame__extraction_8hpp_aade1bdfa6306f0627b8a1fe204aacfab}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!signal\+\_\+callback\+\_\+handler@{signal\+\_\+callback\+\_\+handler}}
+\index{signal\+\_\+callback\+\_\+handler@{signal\+\_\+callback\+\_\+handler}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{signal\+\_\+callback\+\_\+handler()}{signal\_callback\_handler()}}
+{\footnotesize\ttfamily static void signal\+\_\+callback\+\_\+handler (\begin{DoxyParamCaption}\item[{int}]{signum }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+This is a helper function to handle terminal signals. This shuts down the various forks properly when an interrupt is caught.
+
+
+\begin{DoxyParams}{Parameters}
+{\em signum} & signal number passed to this function. Only handles 2. \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=274pt]{frame__extraction_8hpp_aade1bdfa6306f0627b8a1fe204aacfab_icgraph}
 \end{center}
 \end{figure}
 \mbox{\Hypertarget{frame__extraction_8hpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1}\label{frame__extraction_8hpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1}} 
@@ -219,6 +450,172 @@ This helper function handles spaces in user paths.
 \begin{DoxyReturn}{Returns}
 outstring the corrected string 
 \end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{frame__extraction_8hpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{frame__extraction_8hpp_a5ef2b91877d44dada29b478b53744af6}\label{frame__extraction_8hpp_a5ef2b91877d44dada29b478b53744af6}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!test\+\_\+edges@{test\+\_\+edges}}
+\index{test\+\_\+edges@{test\+\_\+edges}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{test\+\_\+edges()}{test\_edges()}}
+{\footnotesize\ttfamily static vector$<$int$>$ test\+\_\+edges (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{vector$<$ Point $>$}]{contour,  }\item[{int}]{te\+\_\+ret }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5}\label{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!tier\+\_\+four@{tier\+\_\+four}}
+\index{tier\+\_\+four@{tier\+\_\+four}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{tier\+\_\+four()}{tier\_four()}}
+{\footnotesize\ttfamily static int tier\+\_\+four (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame,  }\item[{Mat}]{old\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+This is the fourth pass to detect valid contours in a frame. The parameters of the function are set in the T4 section of settings.\+cfg. This is the Un\+Canny method for detecting motion. The steps are essentially the backward operation of the steps taken during Canny filtering. The current frame is subtracted from the previous frame, and this output is threholded. The thresholded image is then passed through directional Sobel filters to separate the x and y components. These components are squared, added to each other, and square rooted. The output is rescaled to match the input value ranges, and a Gaussian blur is applied. Since this output is messy, the blurry image is processed using Zhang-\/\+Suen thinning to get distinct edges. Any details lost between the blurring and thinning steps reduce noise. Contours are then detected in the normal way.
+
+
+\begin{DoxyParams}{Parameters}
+{\em framecnt} & int of nth frame retrieved by program \\
+\hline
+{\em in\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format \\
+\hline
+{\em old\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format, stored from previous cycle \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=206pt]{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e}\label{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!tier\+\_\+one@{tier\+\_\+one}}
+\index{tier\+\_\+one@{tier\+\_\+one}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{tier\+\_\+one()}{tier\_one()}}
+{\footnotesize\ttfamily static int tier\+\_\+one (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+This is the first pass to detect valid contours in a frame. The parameters of the function are set in the T1 section of settings.\+cfg. Contours are detected based on a relatively strict Open\+CV adaptive\+Threshold function. These should be gauranteed \char`\"{}hits\char`\"{}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em framecnt} & int of nth frame retrieved by program \\
+\hline
+{\em in\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=205pt]{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4}\label{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!tier\+\_\+three@{tier\+\_\+three}}
+\index{tier\+\_\+three@{tier\+\_\+three}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{tier\+\_\+three()}{tier\_three()}}
+{\footnotesize\ttfamily static int tier\+\_\+three (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame,  }\item[{Mat}]{old\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+This is the third pass to detect valid contours in a frame. The parameters of the function are set in the T3 section of settings.\+cfg. The detector performs an isotropic Laplacian on the current frame and the previous frame (settings.\+cfg can be modified for anisotropic Laplacian). The outputs are blurred and recombined. Values passing a cutoff threshold are retained and the contours are detected.
+
+
+\begin{DoxyParams}{Parameters}
+{\em framecnt} & int of nth frame retrieved by program \\
+\hline
+{\em in\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format \\
+\hline
+{\em old\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format, stored from previous cycle \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=211pt]{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f}\label{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!tier\+\_\+two@{tier\+\_\+two}}
+\index{tier\+\_\+two@{tier\+\_\+two}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{tier\+\_\+two()}{tier\_two()}}
+{\footnotesize\ttfamily static int tier\+\_\+two (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+This is the second pass to detect valid contours in a frame. The parameters of the function are set in the T2 section of settings.\+cfg. Contours are detected based on a relatively loose Open\+CV adaptive\+Threshold function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em framecnt} & int of nth frame retrieved by program \\
+\hline
+{\em in\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=205pt]{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{frame__extraction_8hpp_a032ee30a958a27cdb3d5b419953ab584}\label{frame__extraction_8hpp_a032ee30a958a27cdb3d5b419953ab584}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!touching\+\_\+edges@{touching\+\_\+edges}}
+\index{touching\+\_\+edges@{touching\+\_\+edges}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{touching\+\_\+edges()}{touching\_edges()}}
+{\footnotesize\ttfamily static int touching\+\_\+edges (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{vector$<$ Point $>$}]{contour }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_a8f336c75968d8ab7d3aa3c5c8ff74dbb}\label{frame__extraction_8hpp_a8f336c75968d8ab7d3aa3c5c8ff74dbb}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!traditional\+\_\+centering@{traditional\+\_\+centering}}
+\index{traditional\+\_\+centering@{traditional\+\_\+centering}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{traditional\+\_\+centering()}{traditional\_centering()}}
+{\footnotesize\ttfamily static Mat traditional\+\_\+centering (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{vector$<$ vector$<$ Point $>$$>$}]{contours,  }\item[{int}]{largest,  }\item[{Rect}]{box }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
 
 
 \subsection{Variable Documentation}
@@ -246,7 +643,7 @@ Holder for the location of the box data output C\+SV \mbox{\Hypertarget{frame__e
 \subsubsection{\texorpdfstring{B\+O\+X\+S\+I\+ZE}{BOXSIZE}}
 {\footnotesize\ttfamily int B\+O\+X\+S\+I\+ZE}
 
-Minimum dimension of the raw input frame from the video. Set by min\+\_\+square\+\_\+dim() e.\+g. for a 1920x1080 video this will be 1080. \mbox{\Hypertarget{frame__extraction_8hpp_a8e15ce073c27310f8852293c1e63adff}\label{frame__extraction_8hpp_a8e15ce073c27310f8852293c1e63adff}} 
+Minimum dimension of the raw input frame from the video. Set by \hyperlink{frame__extraction_8hpp_a8b5c97016e3cad4475344f33f288bed4}{min\+\_\+square\+\_\+dim()} e.\+g. for a 1920x1080 video this will be 1080. \mbox{\Hypertarget{frame__extraction_8hpp_a8e15ce073c27310f8852293c1e63adff}\label{frame__extraction_8hpp_a8e15ce073c27310f8852293c1e63adff}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!C\+O\+N\+C\+A\+T\+\_\+\+T\+I\+E\+RS@{C\+O\+N\+C\+A\+T\+\_\+\+T\+I\+E\+RS}}
 \index{C\+O\+N\+C\+A\+T\+\_\+\+T\+I\+E\+RS@{C\+O\+N\+C\+A\+T\+\_\+\+T\+I\+E\+RS}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{C\+O\+N\+C\+A\+T\+\_\+\+T\+I\+E\+RS}{CONCAT\_TIERS}}
@@ -324,37 +721,37 @@ Minor version number \mbox{\Hypertarget{frame__extraction_8hpp_adb6bb14924c1a640
 \subsubsection{\texorpdfstring{O\+R\+I\+G\+\_\+\+A\+R\+EA}{ORIG\_AREA}}
 {\footnotesize\ttfamily double O\+R\+I\+G\+\_\+\+A\+R\+EA}
 
-Area of the largest contour in the first \char`\"{}good\char`\"{} frame, determined by first\+\_\+frame() \mbox{\Hypertarget{frame__extraction_8hpp_a71965c5a7e184f68831392f8082a0db6}\label{frame__extraction_8hpp_a71965c5a7e184f68831392f8082a0db6}} 
+Area of the largest contour in the first \char`\"{}good\char`\"{} frame, determined by \hyperlink{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}{first\+\_\+frame()} \mbox{\Hypertarget{frame__extraction_8hpp_a71965c5a7e184f68831392f8082a0db6}\label{frame__extraction_8hpp_a71965c5a7e184f68831392f8082a0db6}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!O\+R\+I\+G\+\_\+\+BR@{O\+R\+I\+G\+\_\+\+BR}}
 \index{O\+R\+I\+G\+\_\+\+BR@{O\+R\+I\+G\+\_\+\+BR}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{O\+R\+I\+G\+\_\+\+BR}{ORIG\_BR}}
 {\footnotesize\ttfamily Point O\+R\+I\+G\+\_\+\+BR}
 
-xy coorindates of the bottom right corner of the moon in the first \char`\"{}good\char`\"{} frame, determined by first\+\_\+frame() \mbox{\Hypertarget{frame__extraction_8hpp_a54ec76f9d069579b86e56b160a7da402}\label{frame__extraction_8hpp_a54ec76f9d069579b86e56b160a7da402}} 
+xy coorindates of the bottom right corner of the moon in the first \char`\"{}good\char`\"{} frame, determined by \hyperlink{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}{first\+\_\+frame()} \mbox{\Hypertarget{frame__extraction_8hpp_a54ec76f9d069579b86e56b160a7da402}\label{frame__extraction_8hpp_a54ec76f9d069579b86e56b160a7da402}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!O\+R\+I\+G\+\_\+\+H\+O\+RZ@{O\+R\+I\+G\+\_\+\+H\+O\+RZ}}
 \index{O\+R\+I\+G\+\_\+\+H\+O\+RZ@{O\+R\+I\+G\+\_\+\+H\+O\+RZ}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{O\+R\+I\+G\+\_\+\+H\+O\+RZ}{ORIG\_HORZ}}
 {\footnotesize\ttfamily int O\+R\+I\+G\+\_\+\+H\+O\+RZ}
 
-Width of the largest contour in the first \char`\"{}good\char`\"{} frame, determined by first\+\_\+frame() \mbox{\Hypertarget{frame__extraction_8hpp_ac5f19d11a403b7ad0b79666f4a9e45be}\label{frame__extraction_8hpp_ac5f19d11a403b7ad0b79666f4a9e45be}} 
+Width of the largest contour in the first \char`\"{}good\char`\"{} frame, determined by \hyperlink{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}{first\+\_\+frame()} \mbox{\Hypertarget{frame__extraction_8hpp_ac5f19d11a403b7ad0b79666f4a9e45be}\label{frame__extraction_8hpp_ac5f19d11a403b7ad0b79666f4a9e45be}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!O\+R\+I\+G\+\_\+\+P\+E\+RI@{O\+R\+I\+G\+\_\+\+P\+E\+RI}}
 \index{O\+R\+I\+G\+\_\+\+P\+E\+RI@{O\+R\+I\+G\+\_\+\+P\+E\+RI}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{O\+R\+I\+G\+\_\+\+P\+E\+RI}{ORIG\_PERI}}
 {\footnotesize\ttfamily double O\+R\+I\+G\+\_\+\+P\+E\+RI}
 
-Perimeter of the largest contour in the first \char`\"{}good\char`\"{} frame, determined by first\+\_\+frame() \mbox{\Hypertarget{frame__extraction_8hpp_acb578913128994d581db4f656ec6ae00}\label{frame__extraction_8hpp_acb578913128994d581db4f656ec6ae00}} 
+Perimeter of the largest contour in the first \char`\"{}good\char`\"{} frame, determined by \hyperlink{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}{first\+\_\+frame()} \mbox{\Hypertarget{frame__extraction_8hpp_acb578913128994d581db4f656ec6ae00}\label{frame__extraction_8hpp_acb578913128994d581db4f656ec6ae00}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!O\+R\+I\+G\+\_\+\+TL@{O\+R\+I\+G\+\_\+\+TL}}
 \index{O\+R\+I\+G\+\_\+\+TL@{O\+R\+I\+G\+\_\+\+TL}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{O\+R\+I\+G\+\_\+\+TL}{ORIG\_TL}}
 {\footnotesize\ttfamily Point O\+R\+I\+G\+\_\+\+TL}
 
-xy coorindates of the top left corner of the moon in the first \char`\"{}good\char`\"{} frame, determined by first\+\_\+frame() \mbox{\Hypertarget{frame__extraction_8hpp_a4c815601b99b16edcc7a1982e70f0e9e}\label{frame__extraction_8hpp_a4c815601b99b16edcc7a1982e70f0e9e}} 
+xy coorindates of the top left corner of the moon in the first \char`\"{}good\char`\"{} frame, determined by \hyperlink{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}{first\+\_\+frame()} \mbox{\Hypertarget{frame__extraction_8hpp_a4c815601b99b16edcc7a1982e70f0e9e}\label{frame__extraction_8hpp_a4c815601b99b16edcc7a1982e70f0e9e}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!O\+R\+I\+G\+\_\+\+V\+E\+RT@{O\+R\+I\+G\+\_\+\+V\+E\+RT}}
 \index{O\+R\+I\+G\+\_\+\+V\+E\+RT@{O\+R\+I\+G\+\_\+\+V\+E\+RT}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{O\+R\+I\+G\+\_\+\+V\+E\+RT}{ORIG\_VERT}}
 {\footnotesize\ttfamily int O\+R\+I\+G\+\_\+\+V\+E\+RT}
 
-Height of the largest contour in the first \char`\"{}good\char`\"{} frame, determined by first\+\_\+frame() \mbox{\Hypertarget{frame__extraction_8hpp_acfbb0cca61124eb6def3b6b423ea126c}\label{frame__extraction_8hpp_acfbb0cca61124eb6def3b6b423ea126c}} 
+Height of the largest contour in the first \char`\"{}good\char`\"{} frame, determined by \hyperlink{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}{first\+\_\+frame()} \mbox{\Hypertarget{frame__extraction_8hpp_acfbb0cca61124eb6def3b6b423ea126c}\label{frame__extraction_8hpp_acfbb0cca61124eb6def3b6b423ea126c}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!O\+S\+F\+P\+R\+O\+J\+E\+CT@{O\+S\+F\+P\+R\+O\+J\+E\+CT}}
 \index{O\+S\+F\+P\+R\+O\+J\+E\+CT@{O\+S\+F\+P\+R\+O\+J\+E\+CT}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{O\+S\+F\+P\+R\+O\+J\+E\+CT}{OSFPROJECT}}

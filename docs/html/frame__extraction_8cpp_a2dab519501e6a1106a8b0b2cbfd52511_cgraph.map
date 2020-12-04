@@ -1,0 +1,7 @@
+<map id="first_frame" name="first_frame">
+<area shape="rect" id="node2" href="$frame__extraction_8cpp.html#a8b5c97016e3cad4475344f33f288bed4" title="min_square_dim" alt="" coords="137,5,255,32"/>
+<area shape="rect" id="node3" href="$frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="154,107,238,133"/>
+<area shape="rect" id="node5" href="$frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="437,81,540,108"/>
+<area shape="rect" id="node6" href="$frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="433,132,544,159"/>
+<area shape="rect" id="node4" href="$frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="303,107,385,133"/>
+</map>

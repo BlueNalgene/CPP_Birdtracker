@@ -77,8 +77,46 @@ Include dependency graph for frame_extraction.cpp:</div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:afae27f2c8807b9a09243b93d512b504c"><td class="memItemLeft" align="right" valign="top">static Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#afae27f2c8807b9a09243b93d512b504c">shift_frame</a> (Mat in_frame, int shiftx, int shifty)</td></tr>
+<tr class="separator:afae27f2c8807b9a09243b93d512b504c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19b6b938855c1060791509f406645605"><td class="memItemLeft" align="right" valign="top">static Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a19b6b938855c1060791509f406645605">corner_matching</a> (Mat in_frame, vector&lt; Point &gt; contour, int plusx, int plusy)</td></tr>
+<tr class="separator:a19b6b938855c1060791509f406645605"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ef2b91877d44dada29b478b53744af6"><td class="memItemLeft" align="right" valign="top">static vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a5ef2b91877d44dada29b478b53744af6">test_edges</a> (Mat in_frame, vector&lt; Point &gt; contour, int te_ret)</td></tr>
+<tr class="separator:a5ef2b91877d44dada29b478b53744af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b5c97016e3cad4475344f33f288bed4"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a8b5c97016e3cad4475344f33f288bed4">min_square_dim</a> (Mat in_frame)</td></tr>
+<tr class="separator:a8b5c97016e3cad4475344f33f288bed4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ac94b4b4ad476fbcdd1ac7bc26b1fe1"><td class="memItemLeft" align="right" valign="top">static vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1">edge_width</a> (vector&lt; Point &gt; contour)</td></tr>
+<tr class="separator:a3ac94b4b4ad476fbcdd1ac7bc26b1fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eefea9d7b7944b3c17145bf1f42ca1f"><td class="memItemLeft" align="right" valign="top">static vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a3eefea9d7b7944b3c17145bf1f42ca1f">edge_height</a> (vector&lt; Point &gt; contour)</td></tr>
+<tr class="separator:a3eefea9d7b7944b3c17145bf1f42ca1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c6a52eef18d1f84207a52ef5880aba4"><td class="memItemLeft" align="right" valign="top">static Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4">initial_crop</a> (Mat in_frame, int framecnt)</td></tr>
+<tr class="separator:a0c6a52eef18d1f84207a52ef5880aba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a032ee30a958a27cdb3d5b419953ab584"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a032ee30a958a27cdb3d5b419953ab584">touching_edges</a> (Mat in_frame, vector&lt; Point &gt; contour)</td></tr>
+<tr class="separator:a032ee30a958a27cdb3d5b419953ab584"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f336c75968d8ab7d3aa3c5c8ff74dbb"><td class="memItemLeft" align="right" valign="top">static Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a8f336c75968d8ab7d3aa3c5c8ff74dbb">traditional_centering</a> (Mat in_frame, vector&lt; vector&lt; Point &gt;&gt; contours, int largest, Rect box)</td></tr>
+<tr class="separator:a8f336c75968d8ab7d3aa3c5c8ff74dbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dab519501e6a1106a8b0b2cbfd52511"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511">first_frame</a> (Mat in_frame, int framecnt)</td></tr>
+<tr class="separator:a2dab519501e6a1106a8b0b2cbfd52511"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a020638e44cbbdfbe5a689c61c4bec371"><td class="memItemLeft" align="right" valign="top">static Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371">halo_noise_and_center</a> (Mat in_frame, int framecnt)</td></tr>
+<tr class="separator:a020638e44cbbdfbe5a689c61c4bec371"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89a8322bea357674e81ba9cbdefe0378"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a89a8322bea357674e81ba9cbdefe0378">signal_callback_handler</a> (int signum)</td></tr>
 <tr class="separator:a89a8322bea357674e81ba9cbdefe0378"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a510acbf4ec2b1b348a2c1ca1de901677"><td class="memItemLeft" align="right" valign="top">static vector&lt; vector&lt; Point &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677">fetch_dynamic_mask</a> (Mat in_frame)</td></tr>
+<tr class="separator:a510acbf4ec2b1b348a2c1ca1de901677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09f4cf8817c686df6a1992baf222b97a"><td class="memItemLeft" align="right" valign="top">static Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a">apply_dynamic_mask</a> (Mat in_frame, vector&lt; vector&lt; Point &gt;&gt; contours, int maskwidth)</td></tr>
+<tr class="separator:a09f4cf8817c686df6a1992baf222b97a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc90f05608032b4730869812a513267f"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f">largest_contour</a> (vector&lt; vector&lt; Point &gt;&gt; contours)</td></tr>
+<tr class="separator:abc90f05608032b4730869812a513267f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a1b727e663ec81191fd584338c88227"><td class="memItemLeft" align="right" valign="top">static vector&lt; vector&lt; Point &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227">contours_only</a> (Mat in_frame)</td></tr>
+<tr class="separator:a5a1b727e663ec81191fd584338c88227"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3995b1d757f31ef679b1767386d65e4b"><td class="memItemLeft" align="right" valign="top">static Rect&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b">box_finder</a> (Mat in_frame, bool do_thresh)</td></tr>
+<tr class="separator:a3995b1d757f31ef679b1767386d65e4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fe52ab2a13802c64a500f3b3fac618c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a3fe52ab2a13802c64a500f3b3fac618c">box_data</a> (Rect box, int framecnt)</td></tr>
+<tr class="separator:a3fe52ab2a13802c64a500f3b3fac618c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c53b5dffc43d3917a312ade756e53ee"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a5c53b5dffc43d3917a312ade756e53ee">show_usage</a> (string name)</td></tr>
+<tr class="separator:a5c53b5dffc43d3917a312ade756e53ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1005043d0919694aa2b5ec4fac47bc14"><td class="memItemLeft" align="right" valign="top">static vector&lt; vector&lt; Point &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14">quiet_halo_elim</a> (vector&lt; vector&lt; Point &gt;&gt; contours)</td></tr>
+<tr class="separator:a1005043d0919694aa2b5ec4fac47bc14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f9b7b156d48ad3f147ff2b4edc01509"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a4f9b7b156d48ad3f147ff2b4edc01509">tier_one</a> (int framecnt, Mat in_frame)</td></tr>
 <tr class="separator:a4f9b7b156d48ad3f147ff2b4edc01509"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad19a4b05d920662cf30fbbdfc56264c3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#ad19a4b05d920662cf30fbbdfc56264c3">tier_two</a> (int framecnt, Mat in_frame)</td></tr>
@@ -89,12 +127,885 @@ Functions</h2></td></tr>
 <tr class="separator:a1835862c7afe0c2ea6a51fc984bc49e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaee2ca25c5f0d375d48ec5b88dd6c1b3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#aaee2ca25c5f0d375d48ec5b88dd6c1b3">parse_checklist</a> (std::string name, std::string value)</td></tr>
 <tr class="separator:aaee2ca25c5f0d375d48ec5b88dd6c1b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5b18af36c3bf024f8a2dc5c4fe4242b"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#ae5b18af36c3bf024f8a2dc5c4fe4242b">out_frame_gen</a> (int framecnt)</td></tr>
+<tr class="separator:ae5b18af36c3bf024f8a2dc5c4fe4242b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6aa2b943656a2bdc7bbb9a4f9e1adcd1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a6aa2b943656a2bdc7bbb9a4f9e1adcd1">space_space</a> (std::string instring)</td></tr>
 <tr class="separator:a6aa2b943656a2bdc7bbb9a4f9e1adcd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e01b11733281d89519fef4c5abf705c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a7e01b11733281d89519fef4c5abf705c">edit_contours_for_crop</a> ()</td></tr>
+<tr class="separator:a7e01b11733281d89519fef4c5abf705c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3cfeeb43523e31ac7eebd51dbf58f9c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#ae3cfeeb43523e31ac7eebd51dbf58f9c">get_max_ellipse_params</a> ()</td></tr>
+<tr class="separator:ae3cfeeb43523e31ac7eebd51dbf58f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a272c8275ab7a0918c5e6c9acf9afda50"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a272c8275ab7a0918c5e6c9acf9afda50">generate_slideshow</a> ()</td></tr>
+<tr class="separator:a272c8275ab7a0918c5e6c9acf9afda50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a579a6e5cf9846789c07a88e72ef4a7a7"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a579a6e5cf9846789c07a88e72ef4a7a7">concat_tiers</a> ()</td></tr>
+<tr class="separator:a579a6e5cf9846789c07a88e72ef4a7a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf7c365254fb30ce3015aded4fdf1c9d"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#aaf7c365254fb30ce3015aded4fdf1c9d">off_screen_ellipse</a> ()</td></tr>
+<tr class="separator:aaf7c365254fb30ce3015aded4fdf1c9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34a2b5ae307c281071a717fc2d1fb0c6"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6">post_processing</a> ()</td></tr>
+<tr class="separator:a34a2b5ae307c281071a717fc2d1fb0c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
 <tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a09f4cf8817c686df6a1992baf222b97a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09f4cf8817c686df6a1992baf222b97a">&#9670;&nbsp;</a></span>apply_dynamic_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Mat apply_dynamic_mask </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; vector&lt; Point &gt;&gt;&#160;</td>
+          <td class="paramname"><em>contours</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maskwidth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function masks out the edges of the input frame based on the contour. The maskwidth determines how much to mask out.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">contours</td><td>vector of OpenCV vectors of int-int point contour edges </td></tr>
+    <tr><td class="paramname">maskwidth</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>in_frame The modified in_frame from the input params </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a09f4cf8817c686df6a1992baf222b97a_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a09f4cf8817c686df6a1992baf222b97a_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a09f4cf8817c686df6a1992baf222b97a_icgraph" id="frame__extraction_8cpp_a09f4cf8817c686df6a1992baf222b97a_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#ae11f912f6b32c3d1d721dd94d516080e" title="tier_one" alt="" coords="205,5,273,32"/>
+<area shape="rect" id="node4" href="frame__extraction_8hpp.html#a65db50ecbbc291087ce1f3f9577ab44f" title="tier_two" alt="" coords="205,56,273,83"/>
+<area shape="rect" id="node5" href="frame__extraction_8hpp.html#ae7aad51af21259176b3a70562e0609b4" title="tier_three" alt="" coords="201,107,277,133"/>
+<area shape="rect" id="node6" href="frame__extraction_8hpp.html#a9f92f407caae6f336f0497d00ea27af5" title="tier_four" alt="" coords="205,157,274,184"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="325,81,376,108"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a3fe52ab2a13802c64a500f3b3fac618c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fe52ab2a13802c64a500f3b3fac618c">&#9670;&nbsp;</a></span>box_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int box_data </td>
+          <td>(</td>
+          <td class="paramtype">Rect&#160;</td>
+          <td class="paramname"><em>box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>framecnt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">framecnt</td><td>int of nth frame retrieved by program </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a3fe52ab2a13802c64a500f3b3fac618c_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a3fe52ab2a13802c64a500f3b3fac618c_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a3fe52ab2a13802c64a500f3b3fac618c_icgraph" id="frame__extraction_8cpp_a3fe52ab2a13802c64a500f3b3fac618c_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="128,5,283,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="331,5,381,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a3995b1d757f31ef679b1767386d65e4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3995b1d757f31ef679b1767386d65e4b">&#9670;&nbsp;</a></span>box_finder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Rect box_finder </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>do_thresh</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function finds the bounding box for the largest contour and reports on its properties.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>box OpenCV Rect object bounding the largest contour (presumably the moon) </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_cgraph" id="frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="140,5,243,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="136,56,247,83"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_icgraph" id="frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="136,5,220,32"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="268,56,423,83"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511" title="first_frame" alt="" coords="303,5,387,32"/>
+<area shape="rect" id="node4" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="471,31,521,57"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a579a6e5cf9846789c07a88e72ef4a7a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a579a6e5cf9846789c07a88e72ef4a7a7">&#9670;&nbsp;</a></span>concat_tiers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int concat_tiers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Concatenates the Tiered data files into a single file called mixed_tiers.csv This requires the linux sort function to run because sorting csv in C++ ab initio is painful</p>
+<dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7_cgraph" id="frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a6aa2b943656a2bdc7bbb9a4f9e1adcd1" title="space_space" alt="" coords="147,5,245,32"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7_icgraph" id="frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="147,5,264,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="312,5,363,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5a1b727e663ec81191fd584338c88227"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a1b727e663ec81191fd584338c88227">&#9670;&nbsp;</a></span>contours_only()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static vector&lt;vector&lt;Point&gt; &gt; contours_only </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function returns the contours from an image. It really only needs to exist because repeatedly declaring the unused hierarchy is tedious.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>vector of int-int OpenCV Point vectors for each contour detected in the in_frame </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a5a1b727e663ec81191fd584338c88227_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a5a1b727e663ec81191fd584338c88227_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a5a1b727e663ec81191fd584338c88227_icgraph" id="frame__extraction_8cpp_a5a1b727e663ec81191fd584338c88227_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511" title="first_frame" alt="" coords="518,61,602,87"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="685,213,736,239"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="483,137,637,163"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="156,314,303,341"/>
+<area shape="rect" id="node6" href="frame__extraction_8hpp.html#ae11f912f6b32c3d1d721dd94d516080e" title="tier_one" alt="" coords="359,213,427,239"/>
+<area shape="rect" id="node7" href="frame__extraction_8hpp.html#a65db50ecbbc291087ce1f3f9577ab44f" title="tier_two" alt="" coords="359,263,427,290"/>
+<area shape="rect" id="node8" href="frame__extraction_8hpp.html#ae7aad51af21259176b3a70562e0609b4" title="tier_three" alt="" coords="355,314,431,341"/>
+<area shape="rect" id="node9" href="frame__extraction_8hpp.html#a9f92f407caae6f336f0497d00ea27af5" title="tier_four" alt="" coords="358,365,427,391"/>
+<area shape="rect" id="node10" href="frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="188,111,271,138"/>
+<area shape="rect" id="node11" href="frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="351,61,435,87"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a19b6b938855c1060791509f406645605"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19b6b938855c1060791509f406645605">&#9670;&nbsp;</a></span>corner_matching()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Mat corner_matching </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>contour</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>plusx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>plusy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If the moon cannot be centered properly using moment methods, this function is called. Here, the corner of the bounding box around the moon in the input frame is matched to the corners detected in the first frame. If the first frame of the video was centered properly, this will produce an output frame which deviates less from the intended centering function. This helps to reduce noise in when the contours are detected across all tiers. Corner matching is determined by comparison against the maximum allowable edge length declared by EDGETHRESH from settings.cfg. If this threshold is violated, corner matching will occur. Otherwise, traditional centering will occur.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">contour</td><td>OpenCV contour, a vector of int int points </td></tr>
+    <tr><td class="paramname">plusx</td><td>horizontal deviation of contour in pixels </td></tr>
+    <tr><td class="paramname">plusy</td><td>vertical deviation of contour in pixels </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>in_frame The modified in_frame from the input params </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a19b6b938855c1060791509f406645605_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a19b6b938855c1060791509f406645605_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a19b6b938855c1060791509f406645605_cgraph" id="frame__extraction_8cpp_a19b6b938855c1060791509f406645605_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#afae27f2c8807b9a09243b93d512b504c" title="shift_frame" alt="" coords="172,5,259,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a3eefea9d7b7944b3c17145bf1f42ca1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3eefea9d7b7944b3c17145bf1f42ca1f">&#9670;&nbsp;</a></span>edge_height()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static vector&lt;int&gt; edge_height </td>
+          <td>(</td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>contour</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function determines the length of the extreme left and right edges of the moon contour.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">contour</td><td>OpenCV contour, a vector of int int points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>local_vec integer vector of the left and right edge length of the moon </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a3eefea9d7b7944b3c17145bf1f42ca1f_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a3eefea9d7b7944b3c17145bf1f42ca1f_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a3eefea9d7b7944b3c17145bf1f42ca1f_icgraph" id="frame__extraction_8cpp_a3eefea9d7b7944b3c17145bf1f42ca1f_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="145,5,300,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="348,5,399,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a3ac94b4b4ad476fbcdd1ac7bc26b1fe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1">&#9670;&nbsp;</a></span>edge_width()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static vector&lt;int&gt; edge_width </td>
+          <td>(</td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>contour</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function determines the length of the extreme top and bottom edges of the moon contour.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">contour</td><td>OpenCV contour, a vector of int int points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>local_vec integer vector of the top and bottom edge length of the moon </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a3ac94b4b4ad476fbcdd1ac7bc26b1fe1_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a3ac94b4b4ad476fbcdd1ac7bc26b1fe1_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a3ac94b4b4ad476fbcdd1ac7bc26b1fe1_icgraph" id="frame__extraction_8cpp_a3ac94b4b4ad476fbcdd1ac7bc26b1fe1_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="141,5,296,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="344,5,395,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a7e01b11733281d89519fef4c5abf705c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e01b11733281d89519fef4c5abf705c">&#9670;&nbsp;</a></span>edit_contours_for_crop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int edit_contours_for_crop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a7e01b11733281d89519fef4c5abf705c_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a7e01b11733281d89519fef4c5abf705c_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a7e01b11733281d89519fef4c5abf705c_cgraph" id="frame__extraction_8cpp_a7e01b11733281d89519fef4c5abf705c_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a6aa2b943656a2bdc7bbb9a4f9e1adcd1" title="space_space" alt="" coords="208,5,307,32"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a7e01b11733281d89519fef4c5abf705c_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a7e01b11733281d89519fef4c5abf705c_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a7e01b11733281d89519fef4c5abf705c_icgraph" id="frame__extraction_8cpp_a7e01b11733281d89519fef4c5abf705c_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="208,5,325,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="373,5,424,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a510acbf4ec2b1b348a2c1ca1de901677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a510acbf4ec2b1b348a2c1ca1de901677">&#9670;&nbsp;</a></span>fetch_dynamic_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static vector&lt;vector&lt;Point&gt; &gt; fetch_dynamic_mask </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function fetches the largest contour to be used as a mask later on. If no contour is found, negative values are returned in the output to be handled later.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>output nested vector of int-int OpenCV points </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a510acbf4ec2b1b348a2c1ca1de901677_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a510acbf4ec2b1b348a2c1ca1de901677_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a510acbf4ec2b1b348a2c1ca1de901677_cgraph" id="frame__extraction_8cpp_a510acbf4ec2b1b348a2c1ca1de901677_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="204,5,307,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="200,56,311,83"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a510acbf4ec2b1b348a2c1ca1de901677_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a510acbf4ec2b1b348a2c1ca1de901677_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a510acbf4ec2b1b348a2c1ca1de901677_icgraph" id="frame__extraction_8cpp_a510acbf4ec2b1b348a2c1ca1de901677_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#ae11f912f6b32c3d1d721dd94d516080e" title="tier_one" alt="" coords="204,5,272,32"/>
+<area shape="rect" id="node4" href="frame__extraction_8hpp.html#a65db50ecbbc291087ce1f3f9577ab44f" title="tier_two" alt="" coords="204,56,272,83"/>
+<area shape="rect" id="node5" href="frame__extraction_8hpp.html#ae7aad51af21259176b3a70562e0609b4" title="tier_three" alt="" coords="200,107,276,133"/>
+<area shape="rect" id="node6" href="frame__extraction_8hpp.html#a9f92f407caae6f336f0497d00ea27af5" title="tier_four" alt="" coords="203,157,273,184"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="324,81,375,108"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a2dab519501e6a1106a8b0b2cbfd52511"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dab519501e6a1106a8b0b2cbfd52511">&#9670;&nbsp;</a></span>first_frame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int first_frame </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>framecnt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function is a special case of the frame preparation steps. It outputs many of the initial values which are used later (globals that start with the ORIG_ template) and omits some of the masking steps not possible on the first frame.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">framecnt</td><td>int of nth frame retrieved by program </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>in_frame The modified in_frame from the input params </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a2dab519501e6a1106a8b0b2cbfd52511_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a2dab519501e6a1106a8b0b2cbfd52511_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a2dab519501e6a1106a8b0b2cbfd52511_cgraph" id="frame__extraction_8cpp_a2dab519501e6a1106a8b0b2cbfd52511_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a8b5c97016e3cad4475344f33f288bed4" title="min_square_dim" alt="" coords="137,5,255,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="154,107,238,133"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="437,81,540,108"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="433,132,544,159"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="303,107,385,133"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a2dab519501e6a1106a8b0b2cbfd52511_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a2dab519501e6a1106a8b0b2cbfd52511_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a2dab519501e6a1106a8b0b2cbfd52511_icgraph" id="frame__extraction_8cpp_a2dab519501e6a1106a8b0b2cbfd52511_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="137,5,188,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a272c8275ab7a0918c5e6c9acf9afda50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a272c8275ab7a0918c5e6c9acf9afda50">&#9670;&nbsp;</a></span>generate_slideshow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int generate_slideshow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a272c8275ab7a0918c5e6c9acf9afda50_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a272c8275ab7a0918c5e6c9acf9afda50_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a272c8275ab7a0918c5e6c9acf9afda50_cgraph" id="frame__extraction_8cpp_a272c8275ab7a0918c5e6c9acf9afda50_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a6aa2b943656a2bdc7bbb9a4f9e1adcd1" title="space_space" alt="" coords="225,5,323,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#ae3cfeeb43523e31ac7eebd51dbf58f9c" title="get_max_ellipse_params" alt="" coords="191,56,357,83"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a272c8275ab7a0918c5e6c9acf9afda50_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a272c8275ab7a0918c5e6c9acf9afda50_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a272c8275ab7a0918c5e6c9acf9afda50_icgraph" id="frame__extraction_8cpp_a272c8275ab7a0918c5e6c9acf9afda50_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="191,5,308,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="356,5,407,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae3cfeeb43523e31ac7eebd51dbf58f9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3cfeeb43523e31ac7eebd51dbf58f9c">&#9670;&nbsp;</a></span>get_max_ellipse_params()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int get_max_ellipse_params </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Determines the maximum width and height of the moon bounding box encountered in the video.</p>
+<dl class="section return"><dt>Returns</dt><dd>out_vec a vector of ints including the maximum width and height of the moon. </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_ae3cfeeb43523e31ac7eebd51dbf58f9c_icgraph.png" border="0" usemap="#frame__extraction_8cpp_ae3cfeeb43523e31ac7eebd51dbf58f9c_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_ae3cfeeb43523e31ac7eebd51dbf58f9c_icgraph" id="frame__extraction_8cpp_ae3cfeeb43523e31ac7eebd51dbf58f9c_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a272c8275ab7a0918c5e6c9acf9afda50" title="generate_slideshow" alt="" coords="220,5,357,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="405,5,523,32"/>
+<area shape="rect" id="node4" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="571,5,621,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a020638e44cbbdfbe5a689c61c4bec371"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a020638e44cbbdfbe5a689c61c4bec371">&#9670;&nbsp;</a></span>halo_noise_and_center()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Mat halo_noise_and_center </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>framecnt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function finds the largest contour (presumably the edge of the moon) and attempts to center the cropped image based on the centroid of the contour. It calls corner_matching in cases where the centroid is not an appropriate method for centering. Data from this ellipse are stored in the ellipse.csv file. A small portion of the edge of the moon contour is removed to keep out the noisest portions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">framecnt</td><td>int of nth frame retrieved by program </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>in_frame The modified in_frame from the input params </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_cgraph" id="frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="235,51,319,77"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="395,76,477,103"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="529,45,632,72"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="525,108,636,135"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a032ee30a958a27cdb3d5b419953ab584" title="touching_edges" alt="" coords="221,203,334,229"/>
+<area shape="rect" id="node7" href="frame__extraction_8cpp.html#a5ef2b91877d44dada29b478b53744af6" title="test_edges" alt="" coords="234,253,321,280"/>
+<area shape="rect" id="node8" href="frame__extraction_8cpp.html#afae27f2c8807b9a09243b93d512b504c" title="shift_frame" alt="" coords="234,304,321,331"/>
+<area shape="rect" id="node9" href="frame__extraction_8cpp.html#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1" title="edge_width" alt="" coords="233,355,321,381"/>
+<area shape="rect" id="node10" href="frame__extraction_8cpp.html#a3eefea9d7b7944b3c17145bf1f42ca1f" title="edge_height" alt="" coords="231,405,323,432"/>
+<area shape="rect" id="node11" href="frame__extraction_8cpp.html#a8f336c75968d8ab7d3aa3c5c8ff74dbb" title="traditional_centering" alt="" coords="208,456,347,483"/>
+<area shape="rect" id="node12" href="frame__extraction_8cpp.html#a3fe52ab2a13802c64a500f3b3fac618c" title="box_data" alt="" coords="240,507,315,533"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_icgraph" id="frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="208,5,259,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a0c6a52eef18d1f84207a52ef5880aba4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c6a52eef18d1f84207a52ef5880aba4">&#9670;&nbsp;</a></span>initial_crop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Mat initial_crop </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>framecnt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Performs an initial rough crop on the frame. This constructs a cropped frame which contains the largest contour, but does not necessarily center the contour within the frame. That is handled by halo_noise_and_center by determing whether the centering should use the corner_matching regime or simple centroid to centroid shifting.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">framecnt</td><td>int of nth frame retrieved by program </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>in_frame The cropped in_frame </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_cgraph" id="frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="137,31,220,57"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="272,5,375,32"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="268,56,379,83"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_icgraph" id="frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511" title="first_frame" alt="" coords="173,5,257,32"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="137,56,292,83"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="340,31,391,57"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="abc90f05608032b4730869812a513267f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc90f05608032b4730869812a513267f">&#9670;&nbsp;</a></span>largest_contour()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int largest_contour </td>
+          <td>(</td>
+          <td class="paramtype">vector&lt; vector&lt; Point &gt;&gt;&#160;</td>
+          <td class="paramname"><em>contours</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function returns the index of the largest contour in a list of contours so it can be accessed in future functions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">contours</td><td>vector of OpenCV vectors of int-int point contour edges </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>largest_contour_index integer index of the largest contour in a vector of contour vectors </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_abc90f05608032b4730869812a513267f_icgraph.png" border="0" usemap="#frame__extraction_8cpp_abc90f05608032b4730869812a513267f_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_abc90f05608032b4730869812a513267f_icgraph" id="frame__extraction_8cpp_abc90f05608032b4730869812a513267f_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511" title="first_frame" alt="" coords="526,64,610,91"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="693,216,744,243"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="491,140,645,167"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="164,292,311,319"/>
+<area shape="rect" id="node6" href="frame__extraction_8hpp.html#ae11f912f6b32c3d1d721dd94d516080e" title="tier_one" alt="" coords="367,267,435,293"/>
+<area shape="rect" id="node7" href="frame__extraction_8hpp.html#a65db50ecbbc291087ce1f3f9577ab44f" title="tier_two" alt="" coords="367,216,435,243"/>
+<area shape="rect" id="node8" href="frame__extraction_8hpp.html#ae7aad51af21259176b3a70562e0609b4" title="tier_three" alt="" coords="363,368,439,395"/>
+<area shape="rect" id="node9" href="frame__extraction_8hpp.html#a9f92f407caae6f336f0497d00ea27af5" title="tier_four" alt="" coords="366,317,435,344"/>
+<area shape="rect" id="node10" href="frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="196,89,279,116"/>
+<area shape="rect" id="node12" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="181,343,293,369"/>
+<area shape="rect" id="node11" href="frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="359,64,443,91"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a0ddf1224851353fc92bfbff6f499fa97"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0ddf1224851353fc92bfbff6f499fa97">&#9670;&nbsp;</a></span>main()</h2>
 
@@ -135,6 +1046,158 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="frame__extraction_8cpp_a0ddf1224851353fc92bfbff6f499fa97_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a0ddf1224851353fc92bfbff6f499fa97_cgraph" alt=""/></div>
 <map name="frame__extraction_8cpp_a0ddf1224851353fc92bfbff6f499fa97_cgraph" id="frame__extraction_8cpp_a0ddf1224851353fc92bfbff6f499fa97_cgraph">
 <area shape="rect" id="node2" href="frame__extraction_8cpp.html#a89a8322bea357674e81ba9cbdefe0378" title="signal_callback_handler" alt="" coords="104,5,264,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5c53b5dffc43d3917a312ade756e53ee" title="show_usage" alt="" coords="137,56,231,83"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#aaee2ca25c5f0d375d48ec5b88dd6c1b3" title="parse_checklist" alt="" coords="127,107,241,133"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="733,639,836,665"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="729,867,840,893"/>
+<area shape="rect" id="node7" href="frame__extraction_8cpp.html#a032ee30a958a27cdb3d5b419953ab584" title="touching_edges" alt="" coords="333,360,446,387"/>
+<area shape="rect" id="node8" href="frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511" title="first_frame" alt="" coords="142,259,226,285"/>
+<area shape="rect" id="node12" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="107,563,261,589"/>
+<area shape="rect" id="node19" href="frame__extraction_8cpp.html#ae5b18af36c3bf024f8a2dc5c4fe4242b" title="out_frame_gen" alt="" coords="130,664,238,691"/>
+<area shape="rect" id="node20" href="frame__extraction_8cpp.html#a4f9b7b156d48ad3f147ff2b4edc01509" title="tier_one" alt="" coords="355,867,423,893"/>
+<area shape="rect" id="node24" href="frame__extraction_8cpp.html#ad19a4b05d920662cf30fbbdfc56264c3" title="tier_two" alt="" coords="355,1019,423,1045"/>
+<area shape="rect" id="node25" href="frame__extraction_8cpp.html#a7e416aa918214bbc26d5a68f7da0138d" title="tier_three" alt="" coords="351,917,427,944"/>
+<area shape="rect" id="node26" href="frame__extraction_8cpp.html#a1835862c7afe0c2ea6a51fc984bc49e7" title="tier_four" alt="" coords="355,968,424,995"/>
+<area shape="rect" id="node27" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="125,1297,243,1324"/>
+<area shape="rect" id="node9" href="frame__extraction_8cpp.html#a8b5c97016e3cad4475344f33f288bed4" title="min_square_dim" alt="" coords="331,208,448,235"/>
+<area shape="rect" id="node10" href="frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="347,309,431,336"/>
+<area shape="rect" id="node11" href="frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="557,411,639,437"/>
+<area shape="rect" id="node13" href="frame__extraction_8cpp.html#a5ef2b91877d44dada29b478b53744af6" title="test_edges" alt="" coords="346,563,433,589"/>
+<area shape="rect" id="node14" href="frame__extraction_8cpp.html#afae27f2c8807b9a09243b93d512b504c" title="shift_frame" alt="" coords="346,613,433,640"/>
+<area shape="rect" id="node15" href="frame__extraction_8cpp.html#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1" title="edge_width" alt="" coords="345,664,433,691"/>
+<area shape="rect" id="node16" href="frame__extraction_8cpp.html#a3eefea9d7b7944b3c17145bf1f42ca1f" title="edge_height" alt="" coords="343,715,435,741"/>
+<area shape="rect" id="node17" href="frame__extraction_8cpp.html#a8f336c75968d8ab7d3aa3c5c8ff74dbb" title="traditional_centering" alt="" coords="320,765,459,792"/>
+<area shape="rect" id="node18" href="frame__extraction_8cpp.html#a3fe52ab2a13802c64a500f3b3fac618c" title="box_data" alt="" coords="352,512,427,539"/>
+<area shape="rect" id="node21" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="525,943,671,969"/>
+<area shape="rect" id="node22" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="524,841,672,868"/>
+<area shape="rect" id="node23" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="542,993,654,1020"/>
+<area shape="rect" id="node28" href="frame__extraction_8cpp.html#a272c8275ab7a0918c5e6c9acf9afda50" title="generate_slideshow" alt="" coords="321,1348,458,1375"/>
+<area shape="rect" id="node31" href="frame__extraction_8cpp.html#a7e01b11733281d89519fef4c5abf705c" title="edit_contours_for_crop" alt="" coords="312,1247,467,1273"/>
+<area shape="rect" id="node32" href="frame__extraction_8cpp.html#a579a6e5cf9846789c07a88e72ef4a7a7" title="concat_tiers" alt="" coords="343,1297,436,1324"/>
+<area shape="rect" id="node33" href="frame__extraction_8cpp.html#aaf7c365254fb30ce3015aded4fdf1c9d" title="off_screen_ellipse" alt="" coords="326,1399,453,1425"/>
+<area shape="rect" id="node29" href="frame__extraction_8cpp.html#a6aa2b943656a2bdc7bbb9a4f9e1adcd1" title="space_space" alt="" coords="549,1297,647,1324"/>
+<area shape="rect" id="node30" href="frame__extraction_8cpp.html#ae3cfeeb43523e31ac7eebd51dbf58f9c" title="get_max_ellipse_params" alt="" coords="515,1348,681,1375"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a8b5c97016e3cad4475344f33f288bed4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b5c97016e3cad4475344f33f288bed4">&#9670;&nbsp;</a></span>min_square_dim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int min_square_dim </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function stores the BOXSIZE variable globally. BOXSIZE is the shortest side of the input image dimensions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a8b5c97016e3cad4475344f33f288bed4_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a8b5c97016e3cad4475344f33f288bed4_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a8b5c97016e3cad4475344f33f288bed4_icgraph" id="frame__extraction_8cpp_a8b5c97016e3cad4475344f33f288bed4_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511" title="first_frame" alt="" coords="171,5,255,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="303,5,353,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="aaf7c365254fb30ce3015aded4fdf1c9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf7c365254fb30ce3015aded4fdf1c9d">&#9670;&nbsp;</a></span>off_screen_ellipse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int off_screen_ellipse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Simplifies the ellipse.csv file to only report frames where the ellispe goes off screen. Creates a new file offscreen_moon.csv</p>
+<dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_aaf7c365254fb30ce3015aded4fdf1c9d_icgraph.png" border="0" usemap="#frame__extraction_8cpp_aaf7c365254fb30ce3015aded4fdf1c9d_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_aaf7c365254fb30ce3015aded4fdf1c9d_icgraph" id="frame__extraction_8cpp_aaf7c365254fb30ce3015aded4fdf1c9d_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="180,5,297,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="345,5,396,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae5b18af36c3bf024f8a2dc5c4fe4242b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5b18af36c3bf024f8a2dc5c4fe4242b">&#9670;&nbsp;</a></span>out_frame_gen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::string out_frame_gen </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>framecnt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This helper function assembles the output location for frames stored by the script.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">framecnt</td><td>int of nth frame retrieved by program </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>outstring the constructed path string of where to store the nth frame </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_ae5b18af36c3bf024f8a2dc5c4fe4242b_icgraph.png" border="0" usemap="#frame__extraction_8cpp_ae5b18af36c3bf024f8a2dc5c4fe4242b_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_ae5b18af36c3bf024f8a2dc5c4fe4242b_icgraph" id="frame__extraction_8cpp_ae5b18af36c3bf024f8a2dc5c4fe4242b_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="161,5,212,32"/>
 </map>
 </div>
 
@@ -174,6 +1237,220 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_aaee2ca25c5f0d375d48ec5b88dd6c1b3_icgraph.png" border="0" usemap="#frame__extraction_8cpp_aaee2ca25c5f0d375d48ec5b88dd6c1b3_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_aaee2ca25c5f0d375d48ec5b88dd6c1b3_icgraph" id="frame__extraction_8cpp_aaee2ca25c5f0d375d48ec5b88dd6c1b3_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="167,5,217,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a34a2b5ae307c281071a717fc2d1fb0c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34a2b5ae307c281071a717fc2d1fb0c6">&#9670;&nbsp;</a></span>post_processing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int post_processing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Holder function for processes which run after the bulk of main completes</p>
+<dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a34a2b5ae307c281071a717fc2d1fb0c6_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a34a2b5ae307c281071a717fc2d1fb0c6_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a34a2b5ae307c281071a717fc2d1fb0c6_cgraph" id="frame__extraction_8cpp_a34a2b5ae307c281071a717fc2d1fb0c6_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a272c8275ab7a0918c5e6c9acf9afda50" title="generate_slideshow" alt="" coords="179,107,317,133"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a7e01b11733281d89519fef4c5abf705c" title="edit_contours_for_crop" alt="" coords="171,5,325,32"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a579a6e5cf9846789c07a88e72ef4a7a7" title="concat_tiers" alt="" coords="201,56,295,83"/>
+<area shape="rect" id="node7" href="frame__extraction_8cpp.html#aaf7c365254fb30ce3015aded4fdf1c9d" title="off_screen_ellipse" alt="" coords="185,157,311,184"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a6aa2b943656a2bdc7bbb9a4f9e1adcd1" title="space_space" alt="" coords="407,56,506,83"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#ae3cfeeb43523e31ac7eebd51dbf58f9c" title="get_max_ellipse_params" alt="" coords="373,107,540,133"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a34a2b5ae307c281071a717fc2d1fb0c6_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a34a2b5ae307c281071a717fc2d1fb0c6_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a34a2b5ae307c281071a717fc2d1fb0c6_icgraph" id="frame__extraction_8cpp_a34a2b5ae307c281071a717fc2d1fb0c6_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="171,5,221,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a1005043d0919694aa2b5ec4fac47bc14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1005043d0919694aa2b5ec4fac47bc14">&#9670;&nbsp;</a></span>quiet_halo_elim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static vector&lt;vector&lt;Point&gt; &gt; quiet_halo_elim </td>
+          <td>(</td>
+          <td class="paramtype">vector&lt; vector&lt; Point &gt;&gt;&#160;</td>
+          <td class="paramname"><em>contours</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function removes contours which are near to the edge of the moon halo. This is a quiet kind of masking which does not alter the image, rather it quietly makes contours in violation `disappear'. The distance from the moon edge which is to be masked is determined by QHE_WIDTH from settings.cfg.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">contours</td><td>vector of OpenCV vectors of int-int point contour edges </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>out_contours vector of OpenCV int-int Point vectors representing valid contours </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a1005043d0919694aa2b5ec4fac47bc14_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a1005043d0919694aa2b5ec4fac47bc14_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a1005043d0919694aa2b5ec4fac47bc14_cgraph" id="frame__extraction_8cpp_a1005043d0919694aa2b5ec4fac47bc14_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="165,5,276,32"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a1005043d0919694aa2b5ec4fac47bc14_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a1005043d0919694aa2b5ec4fac47bc14_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a1005043d0919694aa2b5ec4fac47bc14_icgraph" id="frame__extraction_8cpp_a1005043d0919694aa2b5ec4fac47bc14_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#ae11f912f6b32c3d1d721dd94d516080e" title="tier_one" alt="" coords="169,5,237,32"/>
+<area shape="rect" id="node4" href="frame__extraction_8hpp.html#a65db50ecbbc291087ce1f3f9577ab44f" title="tier_two" alt="" coords="169,56,237,83"/>
+<area shape="rect" id="node5" href="frame__extraction_8hpp.html#ae7aad51af21259176b3a70562e0609b4" title="tier_three" alt="" coords="165,107,241,133"/>
+<area shape="rect" id="node6" href="frame__extraction_8hpp.html#a9f92f407caae6f336f0497d00ea27af5" title="tier_four" alt="" coords="169,157,238,184"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="289,81,340,108"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="afae27f2c8807b9a09243b93d512b504c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afae27f2c8807b9a09243b93d512b504c">&#9670;&nbsp;</a></span>shift_frame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Mat shift_frame </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>shiftx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>shifty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function performs a shifting crop of the input image based on the values shiftx and shifty. The output image will always have BOXOUT dimensions determined from the size of the original image's shortest side.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">shiftx</td><td>number of pixels the cropped image should be shifted in the horizontal direction </td></tr>
+    <tr><td class="paramname">shifty</td><td>number of pixels the cropped image should be shifted in the vertical direction </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>in_frame The modified in_frame from the input params </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_afae27f2c8807b9a09243b93d512b504c_icgraph.png" border="0" usemap="#frame__extraction_8cpp_afae27f2c8807b9a09243b93d512b504c_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_afae27f2c8807b9a09243b93d512b504c_icgraph" id="frame__extraction_8cpp_afae27f2c8807b9a09243b93d512b504c_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a19b6b938855c1060791509f406645605" title="corner_matching" alt="" coords="158,5,277,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="140,56,295,83"/>
+<area shape="rect" id="node4" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="343,56,393,83"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5c53b5dffc43d3917a312ade756e53ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c53b5dffc43d3917a312ade756e53ee">&#9670;&nbsp;</a></span>show_usage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int show_usage </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This is a helper function called using -h in terminal.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a5c53b5dffc43d3917a312ade756e53ee_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a5c53b5dffc43d3917a312ade756e53ee_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a5c53b5dffc43d3917a312ade756e53ee_icgraph" id="frame__extraction_8cpp_a5c53b5dffc43d3917a312ade756e53ee_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="148,5,199,32"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -233,6 +1510,78 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>outstring the corrected string </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1_icgraph" id="frame__extraction_8cpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a7e01b11733281d89519fef4c5abf705c" title="edit_contours_for_crop" alt="" coords="152,5,307,32"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a272c8275ab7a0918c5e6c9acf9afda50" title="generate_slideshow" alt="" coords="161,56,298,83"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a579a6e5cf9846789c07a88e72ef4a7a7" title="concat_tiers" alt="" coords="183,107,276,133"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="355,56,472,83"/>
+<area shape="rect" id="node4" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="520,56,571,83"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5ef2b91877d44dada29b478b53744af6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ef2b91877d44dada29b478b53744af6">&#9670;&nbsp;</a></span>test_edges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static vector&lt;int&gt; test_edges </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>contour</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>te_ret</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function tests the moon contour to determine the degree of shift required to center it in a frame.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">contour</td><td>OpenCV contour, a vector of int int points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>outplus integer vector of horizontal and vertical deviation of the primary contour </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a5ef2b91877d44dada29b478b53744af6_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a5ef2b91877d44dada29b478b53744af6_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a5ef2b91877d44dada29b478b53744af6_icgraph" id="frame__extraction_8cpp_a5ef2b91877d44dada29b478b53744af6_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="140,5,295,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="343,5,393,32"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -277,6 +1626,26 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a1835862c7afe0c2ea6a51fc984bc49e7_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a1835862c7afe0c2ea6a51fc984bc49e7_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a1835862c7afe0c2ea6a51fc984bc49e7_cgraph" id="frame__extraction_8cpp_a1835862c7afe0c2ea6a51fc984bc49e7_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="123,36,270,62"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="323,10,425,37"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="319,86,429,113"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="123,137,271,164"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="141,188,253,214"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a1835862c7afe0c2ea6a51fc984bc49e7_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a1835862c7afe0c2ea6a51fc984bc49e7_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a1835862c7afe0c2ea6a51fc984bc49e7_icgraph" id="frame__extraction_8cpp_a1835862c7afe0c2ea6a51fc984bc49e7_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="123,5,173,32"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -314,6 +1683,26 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a4f9b7b156d48ad3f147ff2b4edc01509_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a4f9b7b156d48ad3f147ff2b4edc01509_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a4f9b7b156d48ad3f147ff2b4edc01509_cgraph" id="frame__extraction_8cpp_a4f9b7b156d48ad3f147ff2b4edc01509_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="122,36,269,62"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="321,10,424,37"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="317,86,428,113"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="121,137,269,164"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="139,188,251,214"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a4f9b7b156d48ad3f147ff2b4edc01509_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a4f9b7b156d48ad3f147ff2b4edc01509_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a4f9b7b156d48ad3f147ff2b4edc01509_icgraph" id="frame__extraction_8cpp_a4f9b7b156d48ad3f147ff2b4edc01509_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="121,5,172,32"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -358,6 +1747,26 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a7e416aa918214bbc26d5a68f7da0138d_cgraph.png" border="0" usemap="#frame__extraction_8cpp_a7e416aa918214bbc26d5a68f7da0138d_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a7e416aa918214bbc26d5a68f7da0138d_cgraph" id="frame__extraction_8cpp_a7e416aa918214bbc26d5a68f7da0138d_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="130,35,277,62"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="329,10,432,37"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="325,86,436,113"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="129,137,277,163"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="147,187,259,214"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a7e416aa918214bbc26d5a68f7da0138d_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a7e416aa918214bbc26d5a68f7da0138d_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a7e416aa918214bbc26d5a68f7da0138d_icgraph" id="frame__extraction_8cpp_a7e416aa918214bbc26d5a68f7da0138d_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="129,5,180,32"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -395,6 +1804,146 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>status </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_ad19a4b05d920662cf30fbbdfc56264c3_cgraph.png" border="0" usemap="#frame__extraction_8cpp_ad19a4b05d920662cf30fbbdfc56264c3_cgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_ad19a4b05d920662cf30fbbdfc56264c3_cgraph" id="frame__extraction_8cpp_ad19a4b05d920662cf30fbbdfc56264c3_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="122,36,269,62"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="321,10,424,37"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="317,86,428,113"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="121,137,269,164"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="139,188,251,214"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_ad19a4b05d920662cf30fbbdfc56264c3_icgraph.png" border="0" usemap="#frame__extraction_8cpp_ad19a4b05d920662cf30fbbdfc56264c3_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_ad19a4b05d920662cf30fbbdfc56264c3_icgraph" id="frame__extraction_8cpp_ad19a4b05d920662cf30fbbdfc56264c3_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="121,5,172,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a032ee30a958a27cdb3d5b419953ab584"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a032ee30a958a27cdb3d5b419953ab584">&#9670;&nbsp;</a></span>touching_edges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int touching_edges </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>contour</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function tests the input contour boundaries against the boundaries of the frame. It returns a integer value representing the edge(s) which is/are touched by the contour. If no edges are touched, this function returns zero. A negative return value indicates error. Here is a table of potential return values:</p><ul>
+<li>-1 : error status</li>
+<li>0 : no edge touching</li>
+<li>1 : touching left edge only</li>
+<li>2 : touching right edge only</li>
+<li>3 : touching top and left edge</li>
+<li>4 : touching bottom and left edge</li>
+<li>5 : touching top and right edge</li>
+<li>6 : touching bottom and right edge</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">contour</td><td>OpenCV contour, a vector of int int points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>touching_status an integer value representing if and which edge of the frame is touched by the contour. Returns negative status values if something went wrong. </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a032ee30a958a27cdb3d5b419953ab584_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a032ee30a958a27cdb3d5b419953ab584_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a032ee30a958a27cdb3d5b419953ab584_icgraph" id="frame__extraction_8cpp_a032ee30a958a27cdb3d5b419953ab584_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="167,5,321,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="369,31,420,57"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a8f336c75968d8ab7d3aa3c5c8ff74dbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f336c75968d8ab7d3aa3c5c8ff74dbb">&#9670;&nbsp;</a></span>traditional_centering()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Mat traditional_centering </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; vector&lt; Point &gt;&gt;&#160;</td>
+          <td class="paramname"><em>contours</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>largest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Rect&#160;</td>
+          <td class="paramname"><em>box</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="frame__extraction_8cpp_a8f336c75968d8ab7d3aa3c5c8ff74dbb_icgraph.png" border="0" usemap="#frame__extraction_8cpp_a8f336c75968d8ab7d3aa3c5c8ff74dbb_icgraph" alt=""/></div>
+<map name="frame__extraction_8cpp_a8f336c75968d8ab7d3aa3c5c8ff74dbb_icgraph" id="frame__extraction_8cpp_a8f336c75968d8ab7d3aa3c5c8ff74dbb_icgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="192,5,347,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="395,5,445,32"/>
+</map>
+</div>
 
 </div>
 </div>
