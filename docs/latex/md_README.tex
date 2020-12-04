@@ -141,7 +141,7 @@ The following options are available for command line switches\+:
 {\ttfamily -\/-\/version} &{\ttfamily -\/v} &none &Print version info to terminal \\\cline{1-4}
 {\ttfamily -\/-\/input} &{\ttfamily -\/i} &path to vid file&Specify path to input video \\\cline{1-4}
 {\ttfamily -\/-\/config-\/file}&{\ttfamily -\/c} &path to config &Specify config file \\\cline{1-4}
-{\ttfamily -\/-\/osf-\/path} &{\ttfamily -\/osf} &url to osf vid &Speify path to osf video \\\cline{1-4}
+{\ttfamily -\/-\/osf-\/path} &{\ttfamily -\/osf} &url to osf vid &Specify path to osf video \\\cline{1-4}
 \end{longtabu}
 The \char`\"{}\+Short Command\char`\"{} is just a helpful shorter version to replace the full command. Using either the {\ttfamily -\/-\/help} or {\ttfamily -\/-\/version} commands will print the relevant info to the terminal and exit, without running the full program. Each command or input must be separated by a space.
 
@@ -192,8 +192,9 @@ nano /home/$USER/.bashrc
 \begin{DoxyCode}
 export OSF\_PASSWORD=[your password goes here]
 \end{DoxyCode}
- This is the safest way to access according to the O\+S\+F\+Client maintainers, and I did not write this part of the code. Your milage may vary.
-\item Finally, you need to know the path to your file including the O\+SF repo ID and the storage name. The repository ID is a 5-\/digit alphanumeric code you can see when you got to the browser version of the site (osf.\+io/12345). If you are using the defult O\+SF storage servers, you need to include the text \char`\"{}osfstorage\char`\"{} at the beginning of your path in the terminal. If you are using another storage server, please let me know what you have to use!
+ This is the safest way to access according to the O\+S\+F\+Client maintainers, and I did not write this part of the code. Your milage may vary. If you are using a shared computer, be sure to remove your password when you are done.
+\item You need to know the path to your file including the O\+SF repo ID and the storage name. The repository ID is a 5-\/digit alphanumeric code you can see when you got to the browser version of the site (osf.\+io/12345). This value must be written to the string {\ttfamily O\+S\+F\+P\+R\+O\+J\+E\+CT} in settings.\+cfg.
+\item If you are using the defult O\+SF storage servers, you need to include the text \char`\"{}osfstorage\char`\"{} at the beginning of your path in the terminal. If you are using another storage server, please let me know what you have to use!
 \end{DoxyItemize}
 
 \subsubsection*{Valid Input File Formats}
@@ -201,6 +202,146 @@ export OSF\_PASSWORD=[your password goes here]
 The best choice for file format is M\+P4, as that is what everything is configured in the code to use. Other formats, such as the raw H264 video format which is output by Lun\+Aero, are converted to M\+P4 prior to starting the run. This video conversion may add time to your run, so consider this if you run this on shared systems with restricted time access.
 
 Video conversion is done using {\ttfamily ffmpeg}, and this program is thus a prerequisite for use. If you are on a Linux system, you probably have {\ttfamily ffmpeg} installed already though. So don\textquotesingle{}t sweat it.
+
+\subsection*{Behind the Curtain\+: What C\+P\+P\+\_\+\+Birdtracker does}
+
+This program executes birdtracking efficiently by splitting tasks between C\+PU threads using the {\ttfamily fork()} command. Data which are shared between the forks such as frame numbers and matrices, is shared using memory mapping such that they can be accessed easily using pointers. The {\ttfamily wait} command is used to sync across forks, and the script executes code concurrently. When all frames of the video are completed, the data are passed through post-\/processing and the program exits. A simplified flowchart explains the process visually\+:
+
+
+\begin{DoxyCode}
+                    /-------\(\backslash\)
+                    | start |
+                    \(\backslash\)-------/
+                        |
+                   +---------+
+                   | startup |
+                   +---------+
+                        |
+                 +-------------+
+                 | pre-process |
+                 +-------------+
+                        |
+                   +--------+
+                   | fork() |
+                   +--------+
+                        |
+           +------------+
+           |            |
+       +-------+    +------+
+       | fetch |  ->| sync | <------------------------\(\backslash\)
+   +-->| next  |  | +------+                           \(\backslash\)
+   |   | frame |  |     |                               \(\backslash\)
+   |   +-------+  | +--------+                           \(\backslash\)
+   |       |      | | fork() |                            \(\backslash\)
+   |   +-------+  | +--------+                             \(\backslash\)
+   |   | cycle |  |         |                               \(\backslash\)
+   |   | frame |  |         +------------------------+       \(\backslash\)
+   |   | buffer|  |         |                        |        \(\backslash\)
+   |   +-------+  |         |                   +--------+    |
+   |       |      |    +--------+               | cycle  |    |
+   |   +-------+ /     | Tier 1 |               | frame  |    |
+   |   |  wait |/      +--------+               | buf 2  |    |
+   |   +-------+            |                   +--------+    |
+   |       |           +--------+                    |        |
+   |       ^           | Tier 2 |               +--------+    |
+no |      / \(\backslash\)          +--------+               | Tier 3 |    |
+   |     /   \(\backslash\)              |                   +--------+    |
+   |    /     \(\backslash\)         +-------+                    |        |while
+   |\_\_\_/ video \(\backslash\)        | wait/ |               +--------+    |loop
+       \(\backslash\) done? /        |  sync |               | Tier 4 |    |
+        \(\backslash\)     /         +-------+               +--------+    |
+         \(\backslash\)   /              |                        |        |
+          \(\backslash\) /               \(\backslash\)                    +-------+    |
+           v                 \(\backslash\)                   | wait/ |    |
+       yes |                  \(\backslash\)                  |  sync |    |
+           |                   \(\backslash\)                 +-------+    |
+   +--------------+             \(\backslash\)                 |           /
+   | post-process |              \(\backslash\)                /          /
+   +--------------+               \(\backslash\)              /          /
+           |                       \(\backslash\)            /          /
+           |                        \(\backslash\)          /          /
+           |                         \(\backslash\)        /          /
+           |                          \(\backslash\)      /          /
+           |                          +------+         /
+           |                          | kill |--------/
+           |                          | fork |
+           |                          +------+
+        /-----\(\backslash\)
+        | end |
+        \(\backslash\)-----/
+\end{DoxyCode}
+
+
+Individual steps with more detail, but still simplified\+:
+
+
+\begin{DoxyItemize}
+\item startup\+:
+\begin{DoxyItemize}
+\item Parses the input commands
+\item Redefines globals based on values from settings.\+cfg
+\item Creates directories/empty data files
+\item Instance and assign initial values to simple memory mapped regions
+\end{DoxyItemize}
+\item pre-\/process
+\begin{DoxyItemize}
+\item Load the video
+\item Find the first frame where the moon is not touching the edge of the screen
+\item Record initial values
+\item Instance and assign initial values to complext memory mapped regions (frame buffers)
+\item Prepare for fork()
+\end{DoxyItemize}
+\item F\+O\+RK T\+W\+I\+CE (three concurrent threads)
+\begin{DoxyItemize}
+\item fork0
+\begin{DoxyItemize}
+\item Check for exit command and sync status
+\item Coordinate sync values across forks
+\item Fetch the next frame
+\item Prep frame (color conversion and cropping)
+\item Store frame to the first buffer
+\item Wait for sync.
+\end{DoxyItemize}
+\item fork1
+\begin{DoxyItemize}
+\item Check for exit command and sync status
+\item Run Tier 1 and Tier 2 calculations
+\item Wait for sync
+\end{DoxyItemize}
+\item fork2
+\begin{DoxyItemize}
+\item Check for exit command and sync status
+\item Cycle first frame buffer with second frame buffer such that we have frame n and n-\/1 stored in the memory.
+\item Run Tier 3 and Tier 4 calculations (requires n and n-\/1 frames)
+\item Wait for sync
+\end{DoxyItemize}
+\end{DoxyItemize}
+\item Kill unused fork and continue loop
+\item If at end of the frames, kill all forks.
+\item post-\/process
+\begin{DoxyItemize}
+\item Create slideshow
+\item Concat data
+\item Crop slideshow
+\end{DoxyItemize}
+\item Cleanup and Exit
+\end{DoxyItemize}
+
+\subsubsection*{Image Processing}
+
+While there are a few image processing functions peppered through the code, most of these are simple color conversions and cropping. The meat of the image processing occurs within the \char`\"{}\+Tiers\char`\"{}. This is where contours of silhouettes crossing the moon are detected. They all operate on the same frames, but some \char`\"{}\+Tiers\char`\"{} offer different capabilities. Each have strengths and weaknesses.
+
+
+\begin{DoxyItemize}
+\item Tier 1\+: Strict adaptive threshold. In perfect conditions, this finds the majority of the large silhouettes. As the video becomes less perfect, the regime breaks down.
+\item Tier 2\+: Loose adaptive threshold. In perfect conditions, this finds most of the smaller silhouettes which may be missed by Tier 1. However, it produces much more noise. As the video becomes less perfect, the regime breaks down.
+\item Tier 3\+: Isotropic Laplacian filter. This is a very noisy filter which compares differences in the Laplacian across two frames. The result is blurred prior to detection, but much of the noise remains.
+\item Tier 4\+: Un\+Canny filter. This experimental filter attempts to perform the steps used in the classic Canny filter backwards...across two frames. The Sobel and power steps of the Canny filter occur on each frame (n and n-\/1), then are added, rooted, and blurred. The result is passed through an edge thinner and the silhouettes are detected.
+\end{DoxyItemize}
+
+See the descriptions and code in the documentation \href{https://bluenalgene.github.io/CPP_Birdtracker/html/frame__extraction_8cpp.html}{\tt here}.
+
+Each Tier process has values which may be manipulated in {\ttfamily settings.\+cfg} to customize the behavior during runtime.
 
 \subsubsection*{Estimating Run Time}
 
@@ -212,7 +353,7 @@ Why does it take so long? Most of the computation time is spent opening and clos
 
 This program outputs several files during the run. The files are stored by default in the folder {\ttfamily Birdtracker\+\_\+\+Output}. Data files are stored in the {\ttfamily data} directory, if the settings are configured to output the frames, a {\ttfamily frames} directory is created containing {\ttfamily png} images of each frame in the video, this will also create an {\ttfamily output.\+mp4} slideshow of the frames.
 
-\subsubsection*{Output File Manifest}
+\subsubsection*{The Data}
 
 The data files in the {\ttfamily data} directory are as follows\+:
 
@@ -243,43 +384,30 @@ offscreen\+\_\+moon.\+csv &Number of pixels where the moon is touching the scree
 \item metadata.\+csv -\/ This file lists properties of the input video. Currently, that just includes the path to the input video.
 \item boxes.\+csv -\/ This comma separated values (csv) file is mostly used for internal calculations. It is retained for diagnostic conveneince. The contents are values calculated which describe the location and size of the boundary points of the largest contour on each frame (presumably, this is the moon).
 \item ellipses.\+csv -\/ This csv file lists properties of the largest contour on the screen more relevant to lunar calculations. Includes information such as the major and minor axis of the contour, area, and edges which touch the side of the screen.
-\item Tier1.\+csv -\/ This csv lists all of the silhouettes detected using the stricter version of the {\ttfamily adaptive\+Threshold} method.
+\item Tier1.\+csv -\/ This csv lists all of the silhouettes detected using the stricter version of the {\ttfamily adaptive\+Threshold} method. See \href{https://bluenalgene.github.io/CPP_Birdtracker/html/frame__extraction_8cpp.html#a4f9b7b156d48ad3f147ff2b4edc01509}{\tt tier\+\_\+one()}
+\item Tier2.\+csv -\/ This csv lists all of the silhouettes detected using the more lenient version of the {\ttfamily adaptive\+Threshold} method.
+\item Tier3.\+csv -\/ This csv lists all of the silhouettes detected using isotropic Laplacian matching between frames.
+\item Tier4.\+csv -\/ This csv lists all of the silhouettes detected using a new filter we are calling \char`\"{}\+Un\+Canny\char`\"{}, which is a reverse operation of the Canny filter between two frames.
+\item mixed\+\_\+tiers.\+csv -\/ This csv is a convenience file which inclues everything from Tier$\ast$.csv in frame order. An additional column indicates which Tier method the line was generated from. Only created if {\ttfamily C\+O\+N\+C\+A\+T\+\_\+\+T\+I\+E\+RS} is set to {\ttfamily true}.
+\item offscreen\+\_\+moon.\+csv -\/ This csv is a convenience file which edits down ellipses.\+csv to only report frames with non-\/zero values in one or more of the screen edge columns. Only created if {\ttfamily S\+I\+M\+P\+\_\+\+E\+LL} is set to {\ttfamily true}.
 \end{DoxyItemize}
 
 \subsubsection*{The Video}
+
+If the {\ttfamily O\+U\+T\+P\+U\+T\+\_\+\+F\+R\+A\+M\+ES} value in settings is set to {\ttfamily true}, the Birdtracker will output every cropped frame to the {\ttfamily frames} directory as a {\ttfamily png} file with the naming format based on the frame number. These frames will remain in the directory unless the setting {\ttfamily E\+M\+P\+T\+Y\+\_\+\+F\+R\+A\+M\+ES} is set to {\ttfamily true}.
+
+If the program is outputting frames, and {\ttfamily G\+E\+N\+\_\+\+S\+L\+I\+D\+E\+S\+H\+OW} is set to {\ttfamily true}, the frames will be contatenated into a slideshow saved as {\ttfamily output.\+mp4}.
+
+If the program generates a slideshow, and {\ttfamily T\+I\+G\+H\+T\+\_\+\+C\+R\+OP} is set to {\ttfamily true}, the output video will be modified at the end of the run to crop each frame to a smaller size. The size of these frames is based on the extreme edges of the moon as reported in {\ttfamily boxes.\+csv} + 10 pixels. The cropped video is saved as {\ttfamily output.\+mp4}.
 
 \subsection*{When Something Goes Wrong}
 
 Something always goes wrong. It is the way of things. When something inevitably does go wrong with Lun\+Aero program, you should first check the logs. If the setting {\ttfamily D\+E\+B\+U\+G\+\_\+\+C\+O\+UT} in {\ttfamily settings.\+cfg} is set to {\ttfamily true} the program will attempt to save a log file in the same directory where the videos are saved for each run. This is very detailed, so searching for keywords like {\ttfamily W\+A\+R\+N\+I\+NG} and {\ttfamily E\+R\+R\+OR} are suggested.
 
-\subsubsection*{Something Went Wrong... and I can\textquotesingle{}t find a log file}
-
-If there is no log file saved where you would expect it and you have checked that your debug settings are correct, there may have been a problem when writing the log file. Did you see a little notification pop up near the top right of the screen? If you see one of those, it means there was a problem before the log file could be written. Check that you have the correct drive name saved to {\ttfamily D\+R\+I\+V\+E\+\_\+\+N\+A\+ME} in the settings. Check to see if the path looks correct. In terminal type
-
-
-\begin{DoxyCode}
-ls /media/pi/
-\end{DoxyCode}
- In the output you should see {\ttfamily D\+R\+I\+V\+E\+\_\+\+N\+A\+ME}. If you also see something which looks like {\ttfamily D\+R\+I\+V\+E\+\_\+\+N\+A\+ME}\+\_\+1, then something went wrong mounting the drive. Safely eject and disconnect all drives on the Raspberry Pi. Run the {\ttfamily ls} command again. If you still see {\ttfamily D\+R\+I\+V\+E\+\_\+\+N\+A\+ME} variants W\+I\+TH T\+HE D\+R\+I\+VE N\+OT C\+O\+N\+N\+E\+C\+T\+ED, you need to remove them.
-
-
-\begin{DoxyCode}
-sudo rm -r /path/to/offending/drive
-\end{DoxyCode}
-
-
-Be careful with that command. If drives are still connected, you risk data loss by using it. Once the offending false mount points are removed, try connecting your drive again.
-
-This problem usually occurs when drives are incorrectly removed and re-\/mounted. Linux is very persnickety when it comes to mounting drives. Be sure to eject prior to disconnecting a drive if the Raspberry Pi is running. It is best to have the power disconnected any time you want to remove or add a drive.
-
 \subsubsection*{Something Went Wrong...and it isn\textquotesingle{}t listed here}
 
 If you need help, raise an Issue on this {\ttfamily git} repository with descriptive information so the package maintainer can help you.
 
-\subsection*{Bird Detection Software}
-
-As of June 21st, 2019, the original Python software for tracking birds in video of the moon has been migrated to a new repository at \href{https://github.com/BlueNalgene/Birdtracker_LunAero,}{\tt https\+://github.\+com/\+Blue\+Nalgene/\+Birdtracker\+\_\+\+Lun\+Aero,} although work on this version has been discontinued in favor of C++. The new version may be found at \href{https://github.com/BlueNalgene/CPP_Birdtracker}{\tt https\+://github.\+com/\+Blue\+Nalgene/\+C\+P\+P\+\_\+\+Birdtracker} .
-
 \subsection*{What if I Want to Play with the Source Code?}
 
-The source code is documented with the {\ttfamily Doxygen} standard. Every function and most variables are heavily commented to make it easy for you. You can view the documentation online by going to\+: \href{https://bluenalgene.github.io/LunAero_C/html/index.html}{\tt https\+://bluenalgene.\+github.\+io/\+Lun\+Aero\+\_\+\+C/html/index.\+html} . 
+The source code is documented with the {\ttfamily Doxygen} standard. Every function and most variables are heavily commented to make it easy for you. You can view the documentation online by going to\+: \href{https://bluenalgene.github.io/CPP_Birdtracker/html/index.html}{\tt https\+://bluenalgene.\+github.\+io/\+C\+P\+P\+\_\+\+Birdtracker/html/index.\+html} . 

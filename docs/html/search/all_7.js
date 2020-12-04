@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['initial_5fcrop',['initial_crop',['../test_8cpp.html#af26de9edfefa1819c5623cee5c600e65',1,'test.cpp']]]
+  ['logging',['LOGGING',['../frame__extraction_8hpp.html#a8a1edfd43d430d0373c6a82630d92e19',1,'frame_extraction.hpp']]],
+  ['logout',['LOGOUT',['../frame__extraction_8hpp.html#aa44a0c0d379a7ae7b683d9154ba78049',1,'frame_extraction.hpp']]]
 ];

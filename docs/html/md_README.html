@@ -104,7 +104,7 @@ $(function() {
 <tr>
 <td><code>--config-file</code></td><td><code>-c</code> </td><td>path to config </td><td>Specify config file </td></tr>
 <tr>
-<td><code>--osf-path</code> </td><td><code>-osf</code> </td><td>url to osf vid </td><td>Speify path to osf video </td></tr>
+<td><code>--osf-path</code> </td><td><code>-osf</code> </td><td>url to osf vid </td><td>Specify path to osf video </td></tr>
 </table>
 <p>The "Short Command" is just a helpful shorter version to replace the full command. Using either the <code>--help</code> or <code>--version</code> commands will print the relevant info to the terminal and exit, without running the full program. Each command or input must be separated by a space.</p>
 <p>Each of the commands <code>--input</code>, <code>--config-file</code>, and <code>--osf-path</code> require input arguments to follow the switch. These inputs are paths to the local storage location (in the case of <code>--input</code> and <code>--config-file</code>) or a url path (in the case of <code>--osf-path</code>). If any of these switches are issued without an appropriate path argument following it, the program will crash. You may not issue both the <code>--input</code> and <code>--osf-path</code> in the same terminal command, as these switches conflict. (You can only have one source video!). You do not need to issue a <code>--config-file</code> switch if you are using the <code>settings.cfg</code> file stored in the default location.</p>
@@ -114,18 +114,83 @@ $(function() {
 <p>Run Birdtracker_CPP on videos directly from storage repositories on Open Science Framework (OSF), you need to do some extra steps to pull in the API and enable access.</p>
 <ul>
 <li>The Python package <code>OSFClient</code> must be installed on your system. To install it, use the <code>pip</code> package manager e.g.: <div class="fragment"><div class="line">pip3 install OSFClient --user</div></div><!-- fragment --></li>
-<li>You must configure OSFClient on your system if you are using a password protected repository. To do this, add an environmental variable to your terminal for the entry "OSF_PASSWORD". On my system, this is easiest by editing the <code>.bashrc</code> file to contain the export command. <div class="fragment"><div class="line">nano /home/$USER/.bashrc</div></div><!-- fragment --> scroll to the bottom and add a line <div class="fragment"><div class="line">export OSF_PASSWORD=[your password goes here]</div></div><!-- fragment --> This is the safest way to access according to the OSFClient maintainers, and I did not write this part of the code. Your milage may vary.</li>
-<li>Finally, you need to know the path to your file including the OSF repo ID and the storage name. The repository ID is a 5-digit alphanumeric code you can see when you got to the browser version of the site (osf.io/12345). If you are using the defult OSF storage servers, you need to include the text "osfstorage" at the beginning of your path in the terminal. If you are using another storage server, please let me know what you have to use!</li>
+<li>You must configure OSFClient on your system if you are using a password protected repository. To do this, add an environmental variable to your terminal for the entry "OSF_PASSWORD". On my system, this is easiest by editing the <code>.bashrc</code> file to contain the export command. <div class="fragment"><div class="line">nano /home/$USER/.bashrc</div></div><!-- fragment --> scroll to the bottom and add a line <div class="fragment"><div class="line">export OSF_PASSWORD=[your password goes here]</div></div><!-- fragment --> This is the safest way to access according to the OSFClient maintainers, and I did not write this part of the code. Your milage may vary. If you are using a shared computer, be sure to remove your password when you are done.</li>
+<li>You need to know the path to your file including the OSF repo ID and the storage name. The repository ID is a 5-digit alphanumeric code you can see when you got to the browser version of the site (osf.io/12345). This value must be written to the string <code>OSFPROJECT</code> in settings.cfg.</li>
+<li>If you are using the defult OSF storage servers, you need to include the text "osfstorage" at the beginning of your path in the terminal. If you are using another storage server, please let me know what you have to use!</li>
 </ul>
 <h3>Valid Input File Formats</h3>
 <p>The best choice for file format is MP4, as that is what everything is configured in the code to use. Other formats, such as the raw H264 video format which is output by LunAero, are converted to MP4 prior to starting the run. This video conversion may add time to your run, so consider this if you run this on shared systems with restricted time access.</p>
 <p>Video conversion is done using <code>ffmpeg</code>, and this program is thus a prerequisite for use. If you are on a Linux system, you probably have <code>ffmpeg</code> installed already though. So don't sweat it.</p>
+<h2>Behind the Curtain: What CPP_Birdtracker does</h2>
+<p>This program executes birdtracking efficiently by splitting tasks between CPU threads using the <code>fork()</code> command. Data which are shared between the forks such as frame numbers and matrices, is shared using memory mapping such that they can be accessed easily using pointers. The <code>wait</code> command is used to sync across forks, and the script executes code concurrently. When all frames of the video are completed, the data are passed through post-processing and the program exits. A simplified flowchart explains the process visually:</p>
+<div class="fragment"><div class="line">                    /-------\</div><div class="line">                    | start |</div><div class="line">                    \-------/</div><div class="line">                        |</div><div class="line">                   +---------+</div><div class="line">                   | startup |</div><div class="line">                   +---------+</div><div class="line">                        |</div><div class="line">                 +-------------+</div><div class="line">                 | pre-process |</div><div class="line">                 +-------------+</div><div class="line">                        |</div><div class="line">                   +--------+</div><div class="line">                   | fork() |</div><div class="line">                   +--------+</div><div class="line">                        |</div><div class="line">           +------------+</div><div class="line">           |            |</div><div class="line">       +-------+    +------+</div><div class="line">       | fetch |  -&gt;| sync | &lt;------------------------\</div><div class="line">   +--&gt;| next  |  | +------+                           \</div><div class="line">   |   | frame |  |     |                               \</div><div class="line">   |   +-------+  | +--------+                           \</div><div class="line">   |       |      | | fork() |                            \</div><div class="line">   |   +-------+  | +--------+                             \</div><div class="line">   |   | cycle |  |         |                               \</div><div class="line">   |   | frame |  |         +------------------------+       \</div><div class="line">   |   | buffer|  |         |                        |        \</div><div class="line">   |   +-------+  |         |                   +--------+    |</div><div class="line">   |       |      |    +--------+               | cycle  |    |</div><div class="line">   |   +-------+ /     | Tier 1 |               | frame  |    |</div><div class="line">   |   |  wait |/      +--------+               | buf 2  |    |</div><div class="line">   |   +-------+            |                   +--------+    |</div><div class="line">   |       |           +--------+                    |        |</div><div class="line">   |       ^           | Tier 2 |               +--------+    |</div><div class="line">no |      / \          +--------+               | Tier 3 |    |</div><div class="line">   |     /   \              |                   +--------+    |</div><div class="line">   |    /     \         +-------+                    |        |while</div><div class="line">   |___/ video \        | wait/ |               +--------+    |loop</div><div class="line">       \ done? /        |  sync |               | Tier 4 |    |</div><div class="line">        \     /         +-------+               +--------+    |</div><div class="line">         \   /              |                        |        |</div><div class="line">          \ /               \                    +-------+    |</div><div class="line">           v                 \                   | wait/ |    |</div><div class="line">       yes |                  \                  |  sync |    |</div><div class="line">           |                   \                 +-------+    |</div><div class="line">   +--------------+             \                 |           /</div><div class="line">   | post-process |              \                /          /</div><div class="line">   +--------------+               \              /          /</div><div class="line">           |                       \            /          /</div><div class="line">           |                        \          /          /</div><div class="line">           |                         \        /          /</div><div class="line">           |                          \      /          /</div><div class="line">           |                          +------+         /</div><div class="line">           |                          | kill |--------/</div><div class="line">           |                          | fork |</div><div class="line">           |                          +------+</div><div class="line">        /-----\</div><div class="line">        | end |</div><div class="line">        \-----/</div></div><!-- fragment --><p>Individual steps with more detail, but still simplified:</p>
+<ul>
+<li>startup:<ul>
+<li>Parses the input commands</li>
+<li>Redefines globals based on values from settings.cfg</li>
+<li>Creates directories/empty data files</li>
+<li>Instance and assign initial values to simple memory mapped regions</li>
+</ul>
+</li>
+<li>pre-process<ul>
+<li>Load the video</li>
+<li>Find the first frame where the moon is not touching the edge of the screen</li>
+<li>Record initial values</li>
+<li>Instance and assign initial values to complext memory mapped regions (frame buffers)</li>
+<li>Prepare for fork()</li>
+</ul>
+</li>
+<li>FORK TWICE (three concurrent threads)<ul>
+<li>fork0<ul>
+<li>Check for exit command and sync status</li>
+<li>Coordinate sync values across forks</li>
+<li>Fetch the next frame</li>
+<li>Prep frame (color conversion and cropping)</li>
+<li>Store frame to the first buffer</li>
+<li>Wait for sync.</li>
+</ul>
+</li>
+<li>fork1<ul>
+<li>Check for exit command and sync status</li>
+<li>Run Tier 1 and Tier 2 calculations</li>
+<li>Wait for sync</li>
+</ul>
+</li>
+<li>fork2<ul>
+<li>Check for exit command and sync status</li>
+<li>Cycle first frame buffer with second frame buffer such that we have frame n and n-1 stored in the memory.</li>
+<li>Run Tier 3 and Tier 4 calculations (requires n and n-1 frames)</li>
+<li>Wait for sync</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Kill unused fork and continue loop</li>
+<li>If at end of the frames, kill all forks.</li>
+<li>post-process<ul>
+<li>Create slideshow</li>
+<li>Concat data</li>
+<li>Crop slideshow</li>
+</ul>
+</li>
+<li>Cleanup and Exit</li>
+</ul>
+<h3>Image Processing</h3>
+<p>While there are a few image processing functions peppered through the code, most of these are simple color conversions and cropping. The meat of the image processing occurs within the "Tiers". This is where contours of silhouettes crossing the moon are detected. They all operate on the same frames, but some "Tiers" offer different capabilities. Each have strengths and weaknesses.</p>
+<ul>
+<li>Tier 1: Strict adaptive threshold. In perfect conditions, this finds the majority of the large silhouettes. As the video becomes less perfect, the regime breaks down.</li>
+<li>Tier 2: Loose adaptive threshold. In perfect conditions, this finds most of the smaller silhouettes which may be missed by Tier 1. However, it produces much more noise. As the video becomes less perfect, the regime breaks down.</li>
+<li>Tier 3: Isotropic Laplacian filter. This is a very noisy filter which compares differences in the Laplacian across two frames. The result is blurred prior to detection, but much of the noise remains.</li>
+<li>Tier 4: UnCanny filter. This experimental filter attempts to perform the steps used in the classic Canny filter backwards...across two frames. The Sobel and power steps of the Canny filter occur on each frame (n and n-1), then are added, rooted, and blurred. The result is passed through an edge thinner and the silhouettes are detected.</li>
+</ul>
+<p>See the descriptions and code in the documentation <a href="https://bluenalgene.github.io/CPP_Birdtracker/html/frame__extraction_8cpp.html">here</a>.</p>
+<p>Each Tier process has values which may be manipulated in <code>settings.cfg</code> to customize the behavior during runtime.</p>
 <h3>Estimating Run Time</h3>
 <p>On the test computer (Intel(R) Core(TM) i7-7500U CPU @ 2.70GHz), the run time of this program is approximately 7 times the length of the input video, when the video is 1920x1080 at 30fps. So a 5 minute video will run in about 35 minutes.</p>
 <p>Why does it take so long? Most of the computation time is spent opening and closing image files. This cannot be avoided.</p>
 <h2>The Output</h2>
 <p>This program outputs several files during the run. The files are stored by default in the folder <code>Birdtracker_Output</code>. Data files are stored in the <code>data</code> directory, if the settings are configured to output the frames, a <code>frames</code> directory is created containing <code>png</code> images of each frame in the video, this will also create an <code>output.mp4</code> slideshow of the frames.</p>
-<h3>Output File Manifest</h3>
+<h3>The Data</h3>
 <p>The data files in the <code>data</code> directory are as follows:</p>
 <table class="doxtable">
 <tr>
@@ -156,22 +221,23 @@ $(function() {
 <li>metadata.csv - This file lists properties of the input video. Currently, that just includes the path to the input video.</li>
 <li>boxes.csv - This comma separated values (csv) file is mostly used for internal calculations. It is retained for diagnostic conveneince. The contents are values calculated which describe the location and size of the boundary points of the largest contour on each frame (presumably, this is the moon).</li>
 <li>ellipses.csv - This csv file lists properties of the largest contour on the screen more relevant to lunar calculations. Includes information such as the major and minor axis of the contour, area, and edges which touch the side of the screen.</li>
-<li>Tier1.csv - This csv lists all of the silhouettes detected using the stricter version of the <code>adaptiveThreshold</code> method.</li>
+<li>Tier1.csv - This csv lists all of the silhouettes detected using the stricter version of the <code>adaptiveThreshold</code> method. See <a href="https://bluenalgene.github.io/CPP_Birdtracker/html/frame__extraction_8cpp.html#a4f9b7b156d48ad3f147ff2b4edc01509">tier_one()</a></li>
+<li>Tier2.csv - This csv lists all of the silhouettes detected using the more lenient version of the <code>adaptiveThreshold</code> method.</li>
+<li>Tier3.csv - This csv lists all of the silhouettes detected using isotropic Laplacian matching between frames.</li>
+<li>Tier4.csv - This csv lists all of the silhouettes detected using a new filter we are calling "UnCanny", which is a reverse operation of the Canny filter between two frames.</li>
+<li>mixed_tiers.csv - This csv is a convenience file which inclues everything from Tier*.csv in frame order. An additional column indicates which Tier method the line was generated from. Only created if <code>CONCAT_TIERS</code> is set to <code>true</code>.</li>
+<li>offscreen_moon.csv - This csv is a convenience file which edits down ellipses.csv to only report frames with non-zero values in one or more of the screen edge columns. Only created if <code>SIMP_ELL</code> is set to <code>true</code>.</li>
 </ul>
 <h3>The Video</h3>
+<p>If the <code>OUTPUT_FRAMES</code> value in settings is set to <code>true</code>, the Birdtracker will output every cropped frame to the <code>frames</code> directory as a <code>png</code> file with the naming format based on the frame number. These frames will remain in the directory unless the setting <code>EMPTY_FRAMES</code> is set to <code>true</code>.</p>
+<p>If the program is outputting frames, and <code>GEN_SLIDESHOW</code> is set to <code>true</code>, the frames will be contatenated into a slideshow saved as <code>output.mp4</code>.</p>
+<p>If the program generates a slideshow, and <code>TIGHT_CROP</code> is set to <code>true</code>, the output video will be modified at the end of the run to crop each frame to a smaller size. The size of these frames is based on the extreme edges of the moon as reported in <code>boxes.csv</code> + 10 pixels. The cropped video is saved as <code>output.mp4</code>.</p>
 <h2>When Something Goes Wrong</h2>
 <p>Something always goes wrong. It is the way of things. When something inevitably does go wrong with LunAero program, you should first check the logs. If the setting <code>DEBUG_COUT</code> in <code>settings.cfg</code> is set to <code>true</code> the program will attempt to save a log file in the same directory where the videos are saved for each run. This is very detailed, so searching for keywords like <code>WARNING</code> and <code>ERROR</code> are suggested.</p>
-<h3>Something Went Wrong... and I can't find a log file</h3>
-<p>If there is no log file saved where you would expect it and you have checked that your debug settings are correct, there may have been a problem when writing the log file. Did you see a little notification pop up near the top right of the screen? If you see one of those, it means there was a problem before the log file could be written. Check that you have the correct drive name saved to <code>DRIVE_NAME</code> in the settings. Check to see if the path looks correct. In terminal type</p>
-<div class="fragment"><div class="line">ls /media/pi/</div></div><!-- fragment --><p> In the output you should see <code>DRIVE_NAME</code>. If you also see something which looks like <code>DRIVE_NAME</code>_1, then something went wrong mounting the drive. Safely eject and disconnect all drives on the Raspberry Pi. Run the <code>ls</code> command again. If you still see <code>DRIVE_NAME</code> variants WITH THE DRIVE NOT CONNECTED, you need to remove them.</p>
-<div class="fragment"><div class="line">sudo rm -r /path/to/offending/drive</div></div><!-- fragment --><p>Be careful with that command. If drives are still connected, you risk data loss by using it. Once the offending false mount points are removed, try connecting your drive again.</p>
-<p>This problem usually occurs when drives are incorrectly removed and re-mounted. Linux is very persnickety when it comes to mounting drives. Be sure to eject prior to disconnecting a drive if the Raspberry Pi is running. It is best to have the power disconnected any time you want to remove or add a drive.</p>
 <h3>Something Went Wrong...and it isn't listed here</h3>
 <p>If you need help, raise an Issue on this <code>git</code> repository with descriptive information so the package maintainer can help you.</p>
-<h2>Bird Detection Software</h2>
-<p>As of June 21st, 2019, the original Python software for tracking birds in video of the moon has been migrated to a new repository at <a href="https://github.com/BlueNalgene/Birdtracker_LunAero,">https://github.com/BlueNalgene/Birdtracker_LunAero,</a> although work on this version has been discontinued in favor of C++. The new version may be found at <a href="https://github.com/BlueNalgene/CPP_Birdtracker">https://github.com/BlueNalgene/CPP_Birdtracker</a> .</p>
 <h2>What if I Want to Play with the Source Code?</h2>
-<p>The source code is documented with the <code>Doxygen</code> standard. Every function and most variables are heavily commented to make it easy for you. You can view the documentation online by going to: <a href="https://bluenalgene.github.io/LunAero_C/html/index.html">https://bluenalgene.github.io/LunAero_C/html/index.html</a> . </p>
+<p>The source code is documented with the <code>Doxygen</code> standard. Every function and most variables are heavily commented to make it easy for you. You can view the documentation online by going to: <a href="https://bluenalgene.github.io/CPP_Birdtracker/html/index.html">https://bluenalgene.github.io/CPP_Birdtracker/html/index.html</a> . </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
