@@ -1,0 +1,285 @@
+
+
+\section*{The Lun\+Aero Project}
+
+Lun\+Aero is a hardware and software project using Open\+CV to automatically track birds as they migrate in front of the moon. This repository contains software used to track bird silhouettes from video produced by the Lun\+Aero moontracking robot. For information on the hardware and software for the robot, please see \href{https://github.com/BlueNalgene/LunAero_C}{\tt https\+://github.\+com/\+Blue\+Nalgene/\+Lun\+Aero\+\_\+C} .
+
+Created by , working in the lab of -\/\+S-\/\+Bridge.
+
+\section*{Birdtracker\+\_\+\+C\+PP vs. Lun\+Aero}
+
+The Birdtracker\+\_\+\+C\+PP repository is an updated version of the Lun\+Aero silhouette tracking software. The previous implementation (archived at \href{https://github.com/BlueNalgene/LunAero}{\tt https\+://github.\+com/\+Blue\+Nalgene/\+Lun\+Aero}) was a Python 3 script. This updated version is C++ code designed for Linux, and includes many improvements, additional features, and is generally more mature code.
+
+\subsection*{Software Install Instructions}
+
+\subsubsection*{Option 1\+: Compile this Repository}
+
+To follow my instructions, you need to use the Linux terminal, where you can copy and paste the following scripts. To open the Linux terminal, press {\ttfamily ctrl}+{\ttfamily alt}+{\ttfamily t}.
+
+When you install this for the first time on to a Linux system, you will need certain repositories installed to make it. If you are using a Debian-\/like operating system (e.\+g. Ubuntu or Mate), use the following command in your terminal. (Note\+: this looks way more daunting than it really is, your OS will have most of these installed with a default configuration)\+:
+
+
+\begin{DoxyCode}
+sudo apt update
+sudo apt -y install git libgcc-7-dev libc6 libstdc++-7-dev libc6-dev \(\backslash\)
+libgl1 libqt5test5 libqt5opengl5 libqt5widgets5 libqt5gui5 libqt5core5a \(\backslash\)
+libdc1394-22 libavcodec-extra57 libavformat57 libavutil55 libswscale4 \(\backslash\)
+libpng16-16 libtiff5 libopenexr22 libtbb2 zlib1g libglx0 libglvnd0 \(\backslash\)
+libharfbuzz0b libicu60 libdouble-conversion1 libglib2.0-0 libraw1394-11 \(\backslash\)
+libusb-1.0-0 libswresample2 libwebp6 libcrystalhd3 libva2 libzvbi0 \(\backslash\)
+libxvidcore4 libx265-146 libx264-152 libwebpmux3 libwavpack1 libvpx5 \(\backslash\)
+libvorbisenc2 libvorbis0a libvo-amrwbenc0 libtwolame0 libtheora0 \(\backslash\)
+libspeex1 libsnappy1v5 libshine3 librsvg2-2 libcairo2 libopus0 \(\backslash\)
+libopenjp2-7 libopencore-amrwb0 libopencore-amrnb0 libmp3lame0 libgsm1 \(\backslash\)
+liblzma5 libssh-gcrypt-4 libopenmpt0 libbluray2 libgnutls30 libxml2 \(\backslash\)
+libgme0 libchromaprint1 libbz2-1.0 libx11-6 libdrm2 libvdpau1 \(\backslash\)
+libva-x11-2 libva-drm2 libjbig0 libjpeg-turbo8 libilmbase12 libfreetype6 \(\backslash\)
+libgraphite2-3 libpcre3 libudev1 libsoxr0 libnuma1 libogg0 \(\backslash\)
+libgdk-pixbuf2.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpango-1.0-0 \(\backslash\)
+libfontconfig1 libcroco3 libffi6 libpixman-1-0 libxcb-shm0 libxcb1 \(\backslash\)
+libxcb-render0 libxrender1 libxext6 libgcrypt20 libgssapi-krb5-2 \(\backslash\)
+libmpg123-0 libvorbisfile3 libp11-kit0 libidn2-0 libunistring2 \(\backslash\)
+libtasn1-6 libnettle6 libhogweed4 libgmp10 libxfixes3 libgomp1 \(\backslash\)
+libselinux1 libmount1 libthai0 libexpat1 libxau6 libxdmcp6 libgpg-error0 \(\backslash\)
+libkrb5-3 libk5crypto3 libcom-err2 libkrb5support0 libblkid1 libdatrie1 \(\backslash\)
+libbsd0 libkeyutils1 libuuid1
+\end{DoxyCode}
+
+
+Then comes the step that is actually daunting. This program requires Open\+CV compiled with {\ttfamily contrib}. This means you M\+U\+ST compile Open\+CV from source. This has been tested for Open\+CV version {\ttfamily 4.\+4.\+0-\/pre}. Older versions may not work. There are many options for compiling, I used the following on my Ubuntu box\+:
+
+
+\begin{DoxyItemize}
+\item Install prerequisites 
+\begin{DoxyCode}
+sudo apt install build-essential cmake git pkg-config libgtk-3-dev \(\backslash\)
+libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \(\backslash\)
+libxvidcore-dev libx264-dev libjpeg-dev libpng-dev libtiff-dev \(\backslash\)
+gfortran openexr libatlas-base-dev python3-dev python3-numpy \(\backslash\)
+libtbb2 libtbb-dev libdc1394-22-dev
+\end{DoxyCode}
+
+\item Download files 
+\begin{DoxyCode}
+mkdir ~/opencv\_build && cd ~/opencv\_build
+git clone https://github.com/opencv/opencv.git
+git clone https://github.com/opencv/opencv\_contrib.git
+\end{DoxyCode}
+
+\item Prep make options 
+\begin{DoxyCode}
+cd ~/opencv\_build/opencv
+mkdir build && cd build
+cmake -D CMAKE\_BUILD\_TYPE=RELEASE \(\backslash\)
+    -D CMAKE\_INSTALL\_PREFIX=/usr/local \(\backslash\)
+    -D INSTALL\_C\_EXAMPLES=ON \(\backslash\)
+    -D INSTALL\_PYTHON\_EXAMPLES=ON \(\backslash\)
+    -D OPENCV\_GENERATE\_PKGCONFIG=ON \(\backslash\)
+    -D OPENCV\_EXTRA\_MODULES\_PATH=~/opencv\_build/opencv\_contrib/modules \(\backslash\)
+    -D BUILD\_EXAMPLES=ON ..
+\end{DoxyCode}
+
+\item Make the files using multiple threads and install. Get coffee during this step. 
+\begin{DoxyCode}
+make -j8
+sudo make install
+\end{DoxyCode}
+
+\end{DoxyItemize}
+
+Next, use {\ttfamily git} to pull this repository. Once the Lun\+Aero {\ttfamily git} repository is pulled, you can compile it. To do this, execute the lines in the terminal\+:
+
+
+\begin{DoxyCode}
+cd /home/$USER/Documents
+git https://github.com/BlueNalgene/CPP\_Birdtracker.git
+cd Birdtracker\_CPP
+\end{DoxyCode}
+
+
+This script downloads the everything you need to compile the program from this {\ttfamily git} repository. Once you have the repository on your Raspberry Pi and have installed all of the relevant packages from the {\ttfamily apt} command above, enter the Lun\+Aero\+\_\+C folder, and issue the following command\+:
+
+
+\begin{DoxyCode}
+make
+\end{DoxyCode}
+
+
+The {\ttfamily make} command follows the instructions from the {\ttfamily Makefile} to compile your program. If you ever make changes to the source material, remember to edit the {\ttfamily Makefile} to reflect changes to the packages used or the required C++ files. If {\ttfamily make} runs correctly, your terminal will print some text that looks like {\ttfamily g++ blah blah -\/o frame\+\_\+extractor.\+o} spanning a few lines. If the output is significantly longer than that and includes words like E\+R\+R\+OR or W\+A\+R\+N\+I\+NG, something may have gone wrong, and you should read the error messages to see if something needs to be fixed.
+
+\subsubsection*{Option 2 (experimental)\+: Download a Pre-\/\+Compiled Binary Release}
+
+\subsection*{Running Lun\+Aero}
+
+To run the {\ttfamily frame\+\_\+extractor.\+o}, use the Linux terminal. There, you enter the command for the program and information about the video you want to run the program on. It is convenient if you navigate to the directory where you made the file\+:
+
+
+\begin{DoxyCode}
+/path/to/Birdtracker\_CPP
+\end{DoxyCode}
+
+
+\subsubsection*{Edit the Settings}
+
+A file called {\ttfamily settings.\+cfg} has been provided to give the user the ability to modify settings without needing to recompile. Before running, Lun\+Aero for the first time, it is prudent to check that you are happy with the default settings. This is especially true for the General Settings at to top of the file.
+
+\subsubsection*{Command Options}
+
+The following options are available for command line switches\+:
+
+\tabulinesep=1mm
+\begin{longtabu} spread 0pt [c]{*{4}{|X[-1]}|}
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ Full Command }&\textbf{ Short Command }&\textbf{ Expected Input }&\textbf{ Description  }\\\cline{1-4}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ Full Command }&\textbf{ Short Command }&\textbf{ Expected Input }&\textbf{ Description  }\\\cline{1-4}
+\endhead
+{\ttfamily -\/-\/help} &{\ttfamily -\/h} &none &Show this info \\\cline{1-4}
+{\ttfamily -\/-\/version} &{\ttfamily -\/v} &none &Print version info to terminal \\\cline{1-4}
+{\ttfamily -\/-\/input} &{\ttfamily -\/i} &path to vid file&Specify path to input video \\\cline{1-4}
+{\ttfamily -\/-\/config-\/file}&{\ttfamily -\/c} &path to config &Specify config file \\\cline{1-4}
+{\ttfamily -\/-\/osf-\/path} &{\ttfamily -\/osf} &url to osf vid &Speify path to osf video \\\cline{1-4}
+\end{longtabu}
+The \char`\"{}\+Short Command\char`\"{} is just a helpful shorter version to replace the full command. Using either the {\ttfamily -\/-\/help} or {\ttfamily -\/-\/version} commands will print the relevant info to the terminal and exit, without running the full program. Each command or input must be separated by a space.
+
+Each of the commands {\ttfamily -\/-\/input}, {\ttfamily -\/-\/config-\/file}, and {\ttfamily -\/-\/osf-\/path} require input arguments to follow the switch. These inputs are paths to the local storage location (in the case of {\ttfamily -\/-\/input} and {\ttfamily -\/-\/config-\/file}) or a url path (in the case of {\ttfamily -\/-\/osf-\/path}). If any of these switches are issued without an appropriate path argument following it, the program will crash. You may not issue both the {\ttfamily -\/-\/input} and {\ttfamily -\/-\/osf-\/path} in the same terminal command, as these switches conflict. (You can only have one source video!). You do not need to issue a {\ttfamily -\/-\/config-\/file} switch if you are using the {\ttfamily settings.\+cfg} file stored in the default location.
+
+Some example commands\+:
+
+
+\begin{DoxyCode}
+./frame\_extractor.o -i /path/to/video.mp4
+\end{DoxyCode}
+ 
+\begin{DoxyCode}
+./frame\_extractor.o -i "/path/to/video with spaces.mp4"
+\end{DoxyCode}
+
+
+
+\begin{DoxyCode}
+./frame\_extractor.o -c /path/to/special\_config.cfg -osf osfstorage/path/to/video.mp4
+\end{DoxyCode}
+
+
+Remember\+: any time you want to check the usage information to view what each command switch does, use {\ttfamily -\/-\/help} in terminal, e.\+g.\+:
+
+
+\begin{DoxyCode}
+./frame\_extractor.o --help
+\end{DoxyCode}
+
+
+\subsubsection*{Using videos from O\+SF}
+
+Run Birdtracker\+\_\+\+C\+PP on videos directly from storage repositories on Open Science Framework (O\+SF), you need to do some extra steps to pull in the A\+PI and enable access.
+
+
+\begin{DoxyItemize}
+\item The Python package {\ttfamily O\+S\+F\+Client} must be installed on your system. To install it, use the {\ttfamily pip} package manager e.\+g.\+: 
+\begin{DoxyCode}
+pip3 install OSFClient --user
+\end{DoxyCode}
+
+\item You must configure O\+S\+F\+Client on your system if you are using a password protected repository. To do this, add an environmental variable to your terminal for the entry \char`\"{}\+O\+S\+F\+\_\+\+P\+A\+S\+S\+W\+O\+R\+D\char`\"{}. On my system, this is easiest by editing the {\ttfamily .bashrc} file to contain the export command. 
+\begin{DoxyCode}
+nano /home/$USER/.bashrc
+\end{DoxyCode}
+ scroll to the bottom and add a line 
+\begin{DoxyCode}
+export OSF\_PASSWORD=[your password goes here]
+\end{DoxyCode}
+ This is the safest way to access according to the O\+S\+F\+Client maintainers, and I did not write this part of the code. Your milage may vary.
+\item Finally, you need to know the path to your file including the O\+SF repo ID and the storage name. The repository ID is a 5-\/digit alphanumeric code you can see when you got to the browser version of the site (osf.\+io/12345). If you are using the defult O\+SF storage servers, you need to include the text \char`\"{}osfstorage\char`\"{} at the beginning of your path in the terminal. If you are using another storage server, please let me know what you have to use!
+\end{DoxyItemize}
+
+\subsubsection*{Valid Input File Formats}
+
+The best choice for file format is M\+P4, as that is what everything is configured in the code to use. Other formats, such as the raw H264 video format which is output by Lun\+Aero, are converted to M\+P4 prior to starting the run. This video conversion may add time to your run, so consider this if you run this on shared systems with restricted time access.
+
+Video conversion is done using {\ttfamily ffmpeg}, and this program is thus a prerequisite for use. If you are on a Linux system, you probably have {\ttfamily ffmpeg} installed already though. So don\textquotesingle{}t sweat it.
+
+\subsubsection*{Estimating Run Time}
+
+On the test computer (Intel(\+R) Core(\+T\+M) i7-\/7500U C\+PU @ 2.\+70\+G\+Hz), the run time of this program is approximately 7 times the length of the input video, when the video is 1920x1080 at 30fps. So a 5 minute video will run in about 35 minutes.
+
+Why does it take so long? Most of the computation time is spent opening and closing image files. This cannot be avoided.
+
+\subsection*{The Output}
+
+This program outputs several files during the run. The files are stored by default in the folder {\ttfamily Birdtracker\+\_\+\+Output}. Data files are stored in the {\ttfamily data} directory, if the settings are configured to output the frames, a {\ttfamily frames} directory is created containing {\ttfamily png} images of each frame in the video, this will also create an {\ttfamily output.\+mp4} slideshow of the frames.
+
+\subsubsection*{Output File Manifest}
+
+The data files in the {\ttfamily data} directory are as follows\+:
+
+\tabulinesep=1mm
+\begin{longtabu} spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ Filename }&\textbf{ Description  }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ Filename }&\textbf{ Description  }\\\cline{1-2}
+\endhead
+log.\+log &Debugging log of run \\\cline{1-2}
+metadata.\+csv &Input video metadata \\\cline{1-2}
+boxes.\+csv &Boundary values of largest contour in frame \\\cline{1-2}
+ellipses.\+csv &Properties of the largest contour in frame \\\cline{1-2}
+Tier1.\+csv &Tier 1 detected silhouettes \\\cline{1-2}
+Tier2.\+csv &Tier 2 detected silhouettes \\\cline{1-2}
+Tier3.\+csv &Tier 3 detected silhouettes \\\cline{1-2}
+Tier4.\+csv &Tier 4 detected silhouettes \\\cline{1-2}
+mixed\+\_\+tiers.\+csv &All tier data mixed into a single file \\\cline{1-2}
+offscreen\+\_\+moon.\+csv &Number of pixels where the moon is touching the screen edge \\\cline{1-2}
+\end{longtabu}
+
+\begin{DoxyItemize}
+\item log.\+log -\/ If the boolean toggle {\ttfamily D\+E\+B\+U\+G\+\_\+\+C\+O\+UT} is set to {\ttfamily true} in settings.\+cfg, this log file will be created. Debugging messages are written to this file over the course of the run. Note, that this does not include any S\+T\+D\+O\+UT or S\+T\+D\+E\+RR messages. If there is an error message written to the terminal, for example, you must fetch that another way.
+\item metadata.\+csv -\/ This file lists properties of the input video. Currently, that just includes the path to the input video.
+\item boxes.\+csv -\/ This comma separated values (csv) file is mostly used for internal calculations. It is retained for diagnostic conveneince. The contents are values calculated which describe the location and size of the boundary points of the largest contour on each frame (presumably, this is the moon).
+\item ellipses.\+csv -\/ This csv file lists properties of the largest contour on the screen more relevant to lunar calculations. Includes information such as the major and minor axis of the contour, area, and edges which touch the side of the screen.
+\item Tier1.\+csv -\/ This csv lists all of the silhouettes detected using the stricter version of the {\ttfamily adaptive\+Threshold} method.
+\end{DoxyItemize}
+
+\subsubsection*{The Video}
+
+\subsection*{When Something Goes Wrong}
+
+Something always goes wrong. It is the way of things. When something inevitably does go wrong with Lun\+Aero program, you should first check the logs. If the setting {\ttfamily D\+E\+B\+U\+G\+\_\+\+C\+O\+UT} in {\ttfamily settings.\+cfg} is set to {\ttfamily true} the program will attempt to save a log file in the same directory where the videos are saved for each run. This is very detailed, so searching for keywords like {\ttfamily W\+A\+R\+N\+I\+NG} and {\ttfamily E\+R\+R\+OR} are suggested.
+
+\subsubsection*{Something Went Wrong... and I can\textquotesingle{}t find a log file}
+
+If there is no log file saved where you would expect it and you have checked that your debug settings are correct, there may have been a problem when writing the log file. Did you see a little notification pop up near the top right of the screen? If you see one of those, it means there was a problem before the log file could be written. Check that you have the correct drive name saved to {\ttfamily D\+R\+I\+V\+E\+\_\+\+N\+A\+ME} in the settings. Check to see if the path looks correct. In terminal type
+
+
+\begin{DoxyCode}
+ls /media/pi/
+\end{DoxyCode}
+ In the output you should see {\ttfamily D\+R\+I\+V\+E\+\_\+\+N\+A\+ME}. If you also see something which looks like {\ttfamily D\+R\+I\+V\+E\+\_\+\+N\+A\+ME}\+\_\+1, then something went wrong mounting the drive. Safely eject and disconnect all drives on the Raspberry Pi. Run the {\ttfamily ls} command again. If you still see {\ttfamily D\+R\+I\+V\+E\+\_\+\+N\+A\+ME} variants W\+I\+TH T\+HE D\+R\+I\+VE N\+OT C\+O\+N\+N\+E\+C\+T\+ED, you need to remove them.
+
+
+\begin{DoxyCode}
+sudo rm -r /path/to/offending/drive
+\end{DoxyCode}
+
+
+Be careful with that command. If drives are still connected, you risk data loss by using it. Once the offending false mount points are removed, try connecting your drive again.
+
+This problem usually occurs when drives are incorrectly removed and re-\/mounted. Linux is very persnickety when it comes to mounting drives. Be sure to eject prior to disconnecting a drive if the Raspberry Pi is running. It is best to have the power disconnected any time you want to remove or add a drive.
+
+\subsubsection*{Something Went Wrong...and it isn\textquotesingle{}t listed here}
+
+If you need help, raise an Issue on this {\ttfamily git} repository with descriptive information so the package maintainer can help you.
+
+\subsection*{Bird Detection Software}
+
+As of June 21st, 2019, the original Python software for tracking birds in video of the moon has been migrated to a new repository at \href{https://github.com/BlueNalgene/Birdtracker_LunAero,}{\tt https\+://github.\+com/\+Blue\+Nalgene/\+Birdtracker\+\_\+\+Lun\+Aero,} although work on this version has been discontinued in favor of C++. The new version may be found at \href{https://github.com/BlueNalgene/CPP_Birdtracker}{\tt https\+://github.\+com/\+Blue\+Nalgene/\+C\+P\+P\+\_\+\+Birdtracker} .
+
+\subsection*{What if I Want to Play with the Source Code?}
+
+The source code is documented with the {\ttfamily Doxygen} standard. Every function and most variables are heavily commented to make it easy for you. You can view the documentation online by going to\+: \href{https://bluenalgene.github.io/LunAero_C/html/index.html}{\tt https\+://bluenalgene.\+github.\+io/\+Lun\+Aero\+\_\+\+C/html/index.\+html} . 
