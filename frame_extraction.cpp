@@ -1,8 +1,8 @@
 /*
- * 
+ *
  * This is a more efficient frame data extraction program for the LunAero birdtracker project
- * 
- * 
+ *
+ *
  */
 
 #include "frame_extraction.hpp"
@@ -19,13 +19,13 @@
  */
 static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
 	Mat zero_mask = Mat::zeros(in_frame.size(), in_frame.type());
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING << "SHIFT_X: " << shiftx << std::endl << "SHIFT_Y: " << shifty << std::endl;
 		LOGGING.close();
 	}
-	
+
 	if ((shiftx < 0) && (shifty < 0)) { // move right and down
 		if (DEBUG_COUT) {
 			LOGGING.open(LOGOUT, std::ios_base::app);
@@ -59,9 +59,9 @@ static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
 		in_frame(Rect(abs(shiftx), abs(shifty), BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty)))
 		.copyTo(zero_mask(Rect(0, 0, BOXSIZE-abs(shiftx), BOXSIZE-abs(shifty))));
 	}
-	
+
 	in_frame = zero_mask;
-	
+
 	return in_frame;
 }
 
@@ -83,10 +83,10 @@ static Mat shift_frame(Mat in_frame, int shiftx, int shifty) {
 static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int plusy) {
 	int shiftx = 0;
 	int shifty = 0;
-	
+
 // 	Point local_tl = boundingRect(contour).tl();
 // 	Point local_br = boundingRect(contour).br();
-// 	
+//
 // 	if (DEBUG_COUT) {
 // 		LOGGING.open(LOGOUT, std::ios_base::app);
 // 		LOGGING
@@ -97,7 +97,7 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 // 		<< "ORIG_BR = (" << ORIG_BR.x << ", " << ORIG_BR.y << ")" << std::endl;
 // 		LOGGING.close();
 // 	}
-// 	
+//
 // 	if ((abs(plusx) > EDGETHRESH) && (abs(plusx) > EDGETHRESH)) {
 // 		if (plusx > 0) {
 // 			if (plusy > 0) {
@@ -124,27 +124,27 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 // 		if (plusx > 0) {
 // 			// +x (touching right edge)
 // 			shiftx = (local_tl.x - ORIG_TL.x);
-// 			
+//
 // 		} else {
 // 			// -x (touching left edge)
 // 			shiftx = (local_br.x - ORIG_BR.x);
-// 			
+//
 // 		}
 // 	} else if (abs(plusy) > EDGETHRESH) {
 // 		if (plusy > 0) {
 // 			// +y (touching bottom edge)
 // 			shifty = (local_tl.y - ORIG_TL.y);
-// 			
+//
 // 		} else {
 // 			// -y (touching top edge)
 // 			shifty = (local_br.y - ORIG_BR.y);
-// 			
+//
 // 		}
 // 	}
-	
+
 	in_frame = shift_frame(in_frame, shiftx/2, shifty/2);
-	
-	
+
+
 	return in_frame;
 }
 
@@ -159,7 +159,7 @@ static Mat corner_matching(Mat in_frame, vector<Point> contour, int plusx, int p
 static vector <int> test_edges(Mat in_frame, vector<Point> contour, int te_ret) {
 	int plusx = 0;
 	int plusy = 0;
-	
+
 	// Fetch the boundary of this primary contour
 	Rect rect  = boundingRect(contour);
 	/*
@@ -192,13 +192,13 @@ static vector <int> test_edges(Mat in_frame, vector<Point> contour, int te_ret) 
 		plusx = (BOXSIZE - ORIG_TL.x) - rect.width;
 		plusy = -(ORIG_BR.y - rect.height);
 	}
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING << plusx << ", " << plusy << std::endl;
 		LOGGING.close();
 	}
-	
+
 	vector <int> outplus;
 	outplus.push_back(plusx);
 	outplus.push_back(plusy);
@@ -230,11 +230,11 @@ static int min_square_dim(Mat in_frame) {
  */
 static vector <int> edge_width(vector<Point> contour) {
 	vector <int> local_vec;
-	
+
 	Rect box = boundingRect(contour);
 	int top = box.tl().y;
 	int bot = box.br().y;
-	
+
 	int topout = 0;
 	int botout = 0;
 	for (size_t i = 0; i<contour.size(); i++) {
@@ -245,10 +245,10 @@ static vector <int> edge_width(vector<Point> contour) {
 			botout += 1;
 		}
 	}
-	
+
 	local_vec.push_back(topout);
 	local_vec.push_back(botout);
-	
+
 	return local_vec;
 }
 
@@ -260,11 +260,11 @@ static vector <int> edge_width(vector<Point> contour) {
  */
 static vector <int> edge_height(vector<Point> contour) {
 	vector <int> local_vec;
-	
+
 	Rect box = boundingRect(contour);
 	int lef = box.tl().x;
 	int rig = box.br().x;
-	
+
 	int lefout = 0;
 	int rigout = 0;
 	for (size_t i = 0; i<contour.size(); i++) {
@@ -275,10 +275,10 @@ static vector <int> edge_height(vector<Point> contour) {
 			rigout += 1;
 		}
 	}
-	
+
 	local_vec.push_back(lefout);
 	local_vec.push_back(rigout);
-	
+
 	return local_vec;
 }
 
@@ -287,26 +287,26 @@ static vector <int> edge_height(vector<Point> contour) {
  * largest contour, but does not necessarily center the contour within the frame.  That is handled
  * by halo_noise_and_center by determing whether the centering should use the corner_matching regime
  * or simple centroid to centroid shifting.
- * 
+ *
  * @param in_frame OpenCV matrix image, 16-bit single depth format
  * @param framecnt int of nth frame retrieved by program
  * @return in_frame The cropped in_frame
  */
 static Mat initial_crop(Mat in_frame, int framecnt) {
 	int oldvalue;
-	
+
 	// Find largest contour
-	Rect box = box_finder(in_frame, framecnt);
-	
+	Rect box = box_finder(in_frame, true);
+
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
-	
+
 	// Edit box corners such that we have a BOXSIZE square
 	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2),
 						(box.tl().y- (BOXSIZE - box.height)/2));
 	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x,
 						 ((BOXSIZE - box.height)/2) + box.br().y);
-	
+
 	// Correct for non BOXSIZE rounding errors, only expand BR since we check for invalid later
 	if (roi_br.x - roi_tl.x > BOXSIZE) {
 		oldvalue = (roi_br.x - roi_tl.x) - BOXSIZE;
@@ -322,7 +322,7 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
 		oldvalue = BOXSIZE - (roi_br.y - roi_tl.y);
 		roi_br = Point(roi_br.x, roi_br.y + oldvalue);
 	}
-	
+
 	// Correct for invalid values in the new box
 	if (roi_tl.x < 0) {
 		oldvalue = -(roi_tl.x);
@@ -344,28 +344,28 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
 		roi_tl = Point(roi_tl.x, roi_tl.y - oldvalue);
 		roi_br = Point(roi_br.x, roi_br.y - oldvalue);
 	}
-	
+
 	// Make this our region of interest.
 	Rect roi = Rect(roi_tl, roi_br);
-	
+
 	// Find intersection, i.e. valid crop region
 	Rect intersection = image_rect & roi;
-	
+
 	// Adjust the intersection to have the correct BOXSIZE
 	intersection = Rect(Point(intersection.x, intersection.y), Size(BOXSIZE, BOXSIZE));
-	
+
 	// Move intersection to the result coordinate space
 	Rect inter_roi = intersection - roi.tl();
-	
+
 	// Crop the image to the intersection
 	Mat precrop = in_frame(intersection);
-	
+
 	// If we have positive coordinates, then blackout the region.  If not, just pass the precrop along
 	if ((inter_roi.x > 0) || (inter_roi.y > 0)) {
 		// Create black image and copy intersection
 		Mat zero_mask = Mat::zeros(Size(BOXSIZE, BOXSIZE), in_frame.type());
 		// Assign a rectangular region in precrop...
-		precrop(Rect(Point(0, 0), 
+		precrop(Rect(Point(0, 0),
 				Size(BOXSIZE-inter_roi.x, BOXSIZE-inter_roi.y)
 				))
 		// ...and copy the black masked moon there.
@@ -375,13 +375,13 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
 				Size(BOXSIZE-inter_roi.x, BOXSIZE-inter_roi.y)
 			)
 		));
-		
+
 		in_frame = zero_mask;
 	} else {
 		// If negative values exist, whatever, just pass it along and call it a day.
 		in_frame = precrop;
 	}
-	
+
 	return in_frame;
 }
 
@@ -398,8 +398,8 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
  * - 4 : touching bottom and left edge
  * - 5 : touching top and right edge
  * - 6 : touching bottom and right edge
- * 
- * 
+ *
+ *
  * @param in_frame OpenCV matrix image, 16-bit single depth format
  * @param contour OpenCV contour, a vector of int int points
  * @return touching_status an integer value representing if and which edge of the frame is touched
@@ -408,7 +408,7 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
 static int touching_edges(Mat in_frame, vector<Point> contour) {
 	// fetch the boundary rectangle for our large contour
 	Rect box = boundingRect(contour);
-	
+
 	if (box.tl().x == 0) {
 		if (box.tl().y == 0) {
 			return 3;
@@ -434,7 +434,7 @@ static int touching_edges(Mat in_frame, vector<Point> contour) {
 			return 0;
 		}
 	}
-	
+
 	// This should never be reached
 	return -1;
 }
@@ -445,23 +445,22 @@ static Mat traditional_centering(Mat in_frame, vector <vector<Point>> contours, 
 	Mat zero_mask(Size(BOXSIZE, BOXSIZE), in_frame.type(), Scalar(0));
 	// Create a mat with just the moon
 	Mat item(in_frame(box));
-	
+
 	// Apply contour to mask
 	drawContours(mask, contours, largest, 255, FILLED);
-	
+
 	// Transfer item to mask
 	item.copyTo(item, mask(box));
-	
+
 	// Calculate the center
 	Point center(BOXSIZE/2, BOXSIZE/2);
 	Rect center_box(center.x - box.width/2, center.y - box.height/2, box.width, box.height);
-	
+
 	// Copy the item mask to the centered box on our zero mask
 	item.copyTo(zero_mask(center_box));
-	
+
 	// done
 	in_frame = zero_mask;
-	
 	return in_frame;
 }
 
@@ -476,17 +475,17 @@ static Mat traditional_centering(Mat in_frame, vector <vector<Point>> contours, 
  */
 static int first_frame(Mat in_frame, int framecnt) {
 	Mat temp_frame;
-	
+
 	// Determine the minimum dimensions of the input video
 	min_square_dim(in_frame);
-	
+
 	// Do a first pass/rough crop
 	in_frame = initial_crop(in_frame.clone(), framecnt);
 	// Make sure the black of night stays black so we can get the edge of the moon
 	threshold(in_frame.clone(), temp_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
 	// Get contours
-	vector <vector<Point>> contours = contours_only(in_frame);
-	
+	vector <vector<Point>> contours = contours_only(temp_frame);
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -495,19 +494,22 @@ static int first_frame(Mat in_frame, int framecnt) {
 		<< std::endl;
 		LOGGING.close();
 	}
-	
+
 	// Find which contour is the largest
 	int largest_contour_index = largest_contour(contours);
-	
+	drawContours(in_frame, contours, largest_contour_index, 255, 2, LINE_8);
+
 	// Store original area and perimeter of first frame
 	Rect box = boundingRect(contours[largest_contour_index]);
 	ORIG_AREA = box.area();
 	ORIG_PERI = arcLength(contours[largest_contour_index], true);
 	ORIG_VERT = box.height;
 	ORIG_HORZ = box.width;
-	ORIG_TL = box.tl();
-	ORIG_BR = box.br();
-	
+// 	ORIG_TL = box.tl();
+// 	ORIG_BR = box.br();
+	ORIG_TL = Point((BOXSIZE - box.width)/2, (BOXSIZE - box.height)/2);
+	ORIG_BR = Point(BOXSIZE - ((BOXSIZE - box.width)/2), BOXSIZE - ((BOXSIZE - box.height)/2));
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -518,27 +520,27 @@ static int first_frame(Mat in_frame, int framecnt) {
 		<< "box area: " << box.area() << std::endl;
 		LOGGING.close();
 	}
-	
+
 // 	// Create rect representing the image
 // 	Rect image_rect = Rect({}, in_frame.size());
 // 	Point roi_tl = Point(box.tl().x - ((BOXSIZE - box.width)/2), (box.tl().y- (BOXSIZE - box.height)/2));
 // 	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x, ((BOXSIZE - box.height)/2) + box.br().y);
 // 	Rect roi = Rect(roi_tl, roi_br);
-// 
+//
 // 	// Find intersection, i.e. valid crop region
 // 	Rect intersection = image_rect & roi;
-// 
+//
 // 	// Move intersection to the result coordinate space
 // 	Rect inter_roi = intersection - roi.tl();
-// 
+//
 // 	// Create black image and copy intersection
 // 	Mat crop = Mat::zeros(roi.size(), in_frame.type());
 // 	in_frame(intersection).copyTo(crop(inter_roi));
-// 	
+//
 // 	in_frame = crop;
 
 // 	in_frame = traditional_centering(in_frame.clone(), contours, largest_contour_index, box);
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -550,7 +552,7 @@ static int first_frame(Mat in_frame, int framecnt) {
 		<< std::endl;
 		LOGGING.close();
 	}
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -562,15 +564,15 @@ static int first_frame(Mat in_frame, int framecnt) {
 		<< std::endl;
 		LOGGING.close();
 	}
-	
-	
+
+
 // 	vector <int> outplus = test_edges(in_frame, contours[largest_contour_index]);
-// 	
+//
 // 	int edge_top = 0;
 // 	int edge_bot = 0;
 // 	int edge_lef = 0;
 // 	int edge_rig = 0;
-// 	
+//
 // 	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
 // 		if ((outplus[0] > 0) || (outplus[0] < 0)) {
 // 			vector <int> local_edge = edge_width(contours[largest_contour_index]);
@@ -583,7 +585,7 @@ static int first_frame(Mat in_frame, int framecnt) {
 // 			edge_rig = local_edge[1];
 // 		}
 // 	}
-/*	
+/*
 	// Open the outfile to append list of major ellipses
 	std::ofstream outell;
 	outell.open(ELLIPSEDATA, std::ios_base::app);
@@ -609,7 +611,7 @@ static int first_frame(Mat in_frame, int framecnt) {
 	<< edge_rig
 	<< std::endl;
 	outell.close();*/
-	
+
 // 	return in_frame;
 	return 0;
 }
@@ -627,22 +629,22 @@ static int first_frame(Mat in_frame, int framecnt) {
  */
 static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	Mat temp_frame;
-	
+
 	// Do a first pass/rough crop
 	in_frame = initial_crop(in_frame.clone(), framecnt);
 	// Make sure the black of night stays black so we can get the edge of the moon
 	threshold(in_frame.clone(), temp_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
-	
+
 	vector <vector<Point>> contours = contours_only(temp_frame);
 	int largest = largest_contour(contours);
 	Rect box = boundingRect(contours[largest]);
-	
+
 	int edge_top = 0;
 	int edge_bot = 0;
 	int edge_lef = 0;
 	int edge_rig = 0;
 	int te_ret = touching_edges(in_frame, contours[largest]);
-	
+
 	if (te_ret > 0) {
 // 	if ((abs(outplus[0]) > EDGETHRESH) || (abs(outplus[1]) > EDGETHRESH)) {
 		if (DEBUG_COUT) {
@@ -673,8 +675,13 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	} else {
 		std::cerr << "WARNING: Returned improper value when testing touching edges" << std::endl;
 	}
-		
 	
+	// Find largest contour box on cropped frame
+	box = box_finder(in_frame, true);
+	// write that data to our boxes file.
+	box_data(box, framecnt);
+
+
 	// Open the outfile to append list of major ellipses
 	std::ofstream outell;
 	outell.open(ELLIPSEDATA, std::ios_base::app);
@@ -700,8 +707,8 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	<< edge_rig
 	<< std::endl;
 	outell.close();
-	
-	
+
+
 	return in_frame;
 }
 
@@ -766,11 +773,11 @@ static Mat apply_dynamic_mask(Mat in_frame, vector <vector<Point>> contours, int
 static int largest_contour(vector <vector<Point>> contours) {
 	int largest_contour_index = -1;
 	int largest_area = 0;
-	
+
 	// Finds the largest contour in the "canny_output" of the input frame
 	for( size_t i = 0; i< contours.size(); i++ ) {
 		double area = contourArea(contours[i]);
-	
+
 		if (area > largest_area) {
 			largest_area = area;
 			largest_contour_index = i;
@@ -797,13 +804,16 @@ static vector <vector<Point>> contours_only(Mat in_frame) {
  * This function finds the bounding box for the largest contour and reports on its properties.
  *
  * @param in_frame OpenCV matrix image, 16-bit single depth format
- * @param framecnt int of nth frame retrieved by program
  * @return box OpenCV Rect object bounding the largest contour (presumably the moon)
  */
-static Rect box_finder(Mat in_frame, int framecnt) {
-	
+static Rect box_finder(Mat in_frame, bool do_thresh) {
+
+	// Make sure the black of night stays black so we can get the edge of the moon
+	if (do_thresh) {
+		threshold(in_frame.clone(), in_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
+	}
 	vector <vector<Point>> contours = contours_only(in_frame);
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -812,11 +822,24 @@ static Rect box_finder(Mat in_frame, int framecnt) {
 		<< std::endl;
 		LOGGING.close();
 	}
-	
+
 	int largest_contour_index = largest_contour(contours);
-	
+
 	// Find the bounding box for the large contour
 	Rect box = boundingRect(contours[largest_contour_index]);
+	
+	return box;
+}
+
+
+/**
+ * 
+ *
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param framecnt int of nth frame retrieved by program
+ * @return status
+ */
+static int box_data(Rect box, int framecnt) {
 
 	if (OUTPUT_FRAMES && TIGHT_CROP) {
 		std::ofstream outfile;
@@ -834,10 +857,7 @@ static Rect box_finder(Mat in_frame, int framecnt) {
 		<< box.area() << std::endl;
 		outfile.close();
 	}
-	
-	
-	
-	return box;
+	return 0;
 }
 
 /**
@@ -873,12 +893,12 @@ static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours) {
 		return contours;
 	}
 	vector <Point> bigone = contours[largest_contour_index];
-	
+
 	float distance;
 	vector <vector<Point>> out_contours;
-	
+
 	bool caught_mask = false;
-	
+
 	for (size_t i = 0; i < contours.size(); i++) {
 		caught_mask = false;
 		// Skip the big one
@@ -933,7 +953,7 @@ int tier_one(int framecnt, Mat in_frame) {
 	}
 	vector <vector<Point>> contours = contours_only(in_frame);
 	contours = quiet_halo_elim(contours);
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -999,7 +1019,7 @@ int tier_two(int framecnt, Mat in_frame) {
 	}
 	vector <vector<Point>> contours = contours_only(in_frame);
 	contours = quiet_halo_elim(contours);
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -1057,7 +1077,7 @@ int tier_three(int framecnt, Mat in_frame, Mat old_frame) {
 	std::ofstream outfile;
 	Mat scaleframe;
 	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
-	
+
 	/* Eli Method for Tier 3 */
 	Laplacian(in_frame.clone(), in_frame, CV_32F,
 		T3_LAP_KERNEL,
@@ -1091,7 +1111,7 @@ int tier_three(int framecnt, Mat in_frame, Mat old_frame) {
 	}
 	vector <vector<Point>> contours = contours_only(scaleframe);
 	contours = quiet_halo_elim(contours);
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -1153,9 +1173,9 @@ int tier_four(int framecnt, Mat in_frame, Mat old_frame) {
 	std::ofstream outfile;
 	Mat scaleframe;
 	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
-	
+
 	/* UnCanny v2 */
-	
+
 	subtract(in_frame.clone(), old_frame.clone(), in_frame);
 	adaptiveThreshold(in_frame.clone(), in_frame,
 		T4_AT_MAX,
@@ -1179,15 +1199,15 @@ int tier_four(int framecnt, Mat in_frame, Mat old_frame) {
 		BORDER_DEFAULT
 	);
 	ximgproc::thinning(ii1.clone(), scaleframe, T4_THINNING);
-	
+
 	/* end UnCanny v2 */
-	
+
 	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
 		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, T4_DYMASK);
 	}
 	vector <vector<Point>> contours = contours_only(scaleframe);
 	contours = quiet_halo_elim(contours);
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -1220,7 +1240,7 @@ int tier_four(int framecnt, Mat in_frame, Mat old_frame) {
 				<< radius
 				<< std::endl;
 			}
-			
+
 		}
 	}
 	outfile.close();
@@ -1256,7 +1276,7 @@ int parse_checklist(std::string name, std::string value) {
 			std::cerr << "Invalid boolean value in settings.cfg item: " << name << std::endl;
 			return 1;
 		}
-		
+
 		if (name == "DEBUG_COUT") {
 			DEBUG_COUT = result;
 		} else if (name == "DEBUG_FRAMES") {
@@ -1331,7 +1351,7 @@ int parse_checklist(std::string name, std::string value) {
 		} else if (name == "T4_DYMASK") {
 			T4_DYMASK = result;
 		}
-		
+
 	}
 	// Double cases
 	else if (
@@ -1395,7 +1415,7 @@ int parse_checklist(std::string name, std::string value) {
 
 /**
  * This helper function assembles the output location for frames stored by the script.
- * 
+ *
  * @param framecnt int of nth frame retrieved by program
  * @return outstring the constructed path string of where to store the nth frame
  */
@@ -1408,7 +1428,7 @@ static std::string out_frame_gen(int framecnt) {
 
 /**
  * This helper function handles spaces in user paths.
- * 
+ *
  * @param instring the input string
  * @return outstring the corrected string
  */
@@ -1434,10 +1454,10 @@ std::string space_space(std::string instring) {
 	tfiles.push_back(TIER3FILE);
 	tfiles.push_back(TIER4FILE);
 	int tcnt = 1;
-	
+
 	std::cout << "TC_W, TC_H: " << TC_W << ", " << TC_H << std::endl;
 	std::cout << "TC_W, TC_H: " << (BOXSIZE - TC_W)/2 << ", " << (BOXSIZE - TC_H)/2 << std::endl;
-	
+
 	for (auto i : tfiles) {
 		std::ifstream infile(i);
 		if (!infile.is_open()) {
@@ -1447,13 +1467,13 @@ std::string space_space(std::string instring) {
 			<< std::endl;
 			return 1;
 		}
-		
+
 		// Skip header of input file.
 		if (infile.good()) {
 			// Extract the first line in the file
 			std::getline(infile, line);
 		}
-		
+
 		// Create output file with headers.
 		std::ofstream outputfile(temp_loc);
 		std::cout << "opened file: " << temp_loc << std::endl;
@@ -1468,9 +1488,9 @@ std::string space_space(std::string instring) {
 			return 2;
 		}
 		outputfile.close();
-		
+
 		usleep(1000000);
-		
+
 		// Read lines of the input file
 		int val;
 		outputfile.open(temp_loc, std::ios_base::app);
@@ -1498,7 +1518,7 @@ std::string space_space(std::string instring) {
 				} else {
 					outputfile << token << ",";
 				}
-				
+
 				// If the next token is a comma, ignore it and move on
 				if (ss.peek() == ',') {
 					ss.ignore();
@@ -1507,26 +1527,26 @@ std::string space_space(std::string instring) {
 		}
 		infile.close();
 		outputfile.close();
-		
+
 		if (std::remove(i.c_str()) != 0) {
 			std::cerr << "Failure to remove file " << space_space(i) << " with error " << strerror(errno) << std::endl;
 		}
 		std::cout << "rm\'d " << i << std::endl;
 		std::cout << "mv\'ing " << temp_loc << " to " << i << std::endl;
-		
+
 		if (std::rename(temp_loc.c_str(), i.c_str()) < 0) {
 			std::cerr << "Could not move temp.csv to Tier location using rename with error: " << strerror(errno) << std::endl;
 			return 3;
 		}
-		
+
 	}
-	
+
 	return 0;
 }
 
 /**
  * Determines the maximum width and height of the moon bounding box encountered in the video.
- * 
+ *
  * @return out_vec a vector of ints including the maximum width and height of the moon.
  */
 static int get_max_ellipse_params() {
@@ -1537,17 +1557,17 @@ static int get_max_ellipse_params() {
 		<< "WARNING: Could not open box file"
 		<< std::endl;
 	}
-	
+
 	// Prepare variables
 	std::string line;
 	int running_size = 0;
-	
+
 	// Read the column names and do nothing with them
 	if (box_file.good()) {
 		// Extract the first line in the file
 		std::getline(box_file, line);
 	}
-	
+
 	while (std::getline(box_file, line)) {
 		// Create a stringstream of the current line
 		std::stringstream ss(line);
@@ -1578,7 +1598,7 @@ static int get_max_ellipse_params() {
 	}
 	// Close file
 	box_file.close();
-	
+
 	return running_size;
 }
 
@@ -1642,7 +1662,7 @@ static int generate_slideshow() {
 /**
  * Concatenates the Tiered data files into a single file called mixed_tiers.csv
  * This requires the linux sort function to run because sorting csv in C++ ab initio is painful
- * 
+ *
  * @return status
  */
 static int concat_tiers() {
@@ -1678,16 +1698,16 @@ static int concat_tiers() {
 		<< std::endl;
 		return 4;
 	}
-	
+
 	// Prepare output file
 	std::string mix_loc = OUTPUTDIR + "data/mixed_tiers.csv";
 	std::ofstream outputfile(mix_loc);
 	outputfile.open(mix_loc);
 	outputfile.close();
-	
+
 	// Prepare variables
 	std::string line;
-	
+
 	// Read the column names and do nothing with them
 	if ((t1_file.good()) && (t2_file.good()) && (t3_file.good()) && (t4_file.good())) {
 		// Extract the first line in the file
@@ -1696,7 +1716,7 @@ static int concat_tiers() {
 		std::getline(t3_file, line);
 		std::getline(t4_file, line);
 	}
-	
+
 	// Write column labels for the new file
 	outputfile.open(mix_loc);
 	if (outputfile.good()) {
@@ -1710,7 +1730,7 @@ static int concat_tiers() {
 		<< std::endl;
 		return 5;
 	}
-	
+
 	vector <std::ifstream *> tfiles;
 	tfiles.push_back(&t1_file);
 	tfiles.push_back(&t2_file);
@@ -1729,10 +1749,10 @@ static int concat_tiers() {
 		tcnt++;
 	}
 	outputfile.close();
-	
+
 	//HACK these commands require a linux terminal
 	std::string commandstr;
-	commandstr = "(head -n 1 " 
+	commandstr = "(head -n 1 "
 	+ space_space(mix_loc)
 	+ " && tail -n +2 "
 	+ space_space(mix_loc)
@@ -1746,20 +1766,20 @@ static int concat_tiers() {
 		<< strerror(errno) << std::endl;
 		return 0;
 	}
-	
+
 	if (std::rename((OUTPUTDIR + "data/temp.csv").c_str(), mix_loc.c_str()) != 0) {
 		std::cerr << "WARNING: Failed to move temporary file to mixed_tiers.csv with error: "
 		<< strerror(errno) << std::endl;
 		return 0;
 	}
-	
+
 	return 0;
 }
 
 /**
  * Simplifies the ellipse.csv file to only report frames where the ellispe goes off screen.
  * Creates a new file offscreen_moon.csv
- * 
+ *
  * @return status
  */
 static int off_screen_ellipse() {
@@ -1771,22 +1791,22 @@ static int off_screen_ellipse() {
 		<< std::endl;
 		return 1;
 	}
-	
+
 	// Prepare output file
 	std::string simp_loc = OUTPUTDIR + "data/offscreen_moon.csv";
 	std::ofstream outputfile(simp_loc);
 	outputfile.open(simp_loc);
 	outputfile.close();
-	
+
 	// Prepare variables
 	std::string line;
-	
+
 	// Read the column names and do nothing with them
 	if (ellipse_file.good()) {
 		// Extract the first line in the file
 		std::getline(ellipse_file, line);
 	}
-	
+
 	// Write column labels for the new file
 	outputfile.open(simp_loc);
 	if (outputfile.good()) {
@@ -1800,7 +1820,7 @@ static int off_screen_ellipse() {
 		<< std::endl;
 		return 1;
 	}
-	
+
 	// Read data, line by line
 	while (std::getline(ellipse_file, line)) {
 		// Create a stringstream of the current line
@@ -1843,13 +1863,13 @@ static int off_screen_ellipse() {
 	}
 	// Close file
 	ellipse_file.close();
-	
+
 	return 0;
 }
 
 /**
  * Holder function for processes which run after the bulk of main completes
- * 
+ *
  * @return status
  */
 static int post_processing() {
@@ -1910,25 +1930,25 @@ int main(int argc, char* argv[]) {
 	// Capture interrupt signals so we don't create zombie processes
 	// FIXME This doesn't work right with all the forks.
 	signal(SIGINT, signal_callback_handler);
-	
+
 	// Arg Handler --------------------------------------------------------------------------------
-	
+
 	// Handle arguments
 	if (argc < 2) {
 		show_usage(argv[0]);
 		return 1;
 	}
-	
+
 	vector <string> sources;
 	std::string osf_file = "";
 	std::string input_file = "";
 	std::string config_file = "settings.cfg";
-	
+
 	for (int i = 1; i < argc; ++i) {
 		string arg = argv[i];
 		if ((arg == "-h") || (arg == "--help")) {
 			show_usage(argv[0]);
-			
+
 			return 0;
 		} else if ((arg == "-v") || (arg == "--version")) {
 			std::cout
@@ -1972,7 +1992,7 @@ int main(int argc, char* argv[]) {
 			sources.push_back(argv[i]);
 		}
 	}
-	
+
 	// Check that we did not include both an OSF and manual input file.
 	if (osf_file.length() > 0 && input_file.length() > 0) {
 		std::cerr << "Either use an input file or an OSF file, not both" << std::endl;
@@ -1997,18 +2017,18 @@ int main(int argc, char* argv[]) {
 		system(osfcommand.c_str());
 		input_file = "local.mp4";
 	}
-	
+
 	// Make sure file exists
 	if (!std::experimental::filesystem::exists(input_file)) {
 		std::cerr << "Input file (" << input_file << ") not found.  Aborting." << std::endl;
 		return 1;
 	}
-	
+
 	// H264 -> MP4 --------------------------------------------------------------------------------
 	// TODO add detection and conversion using MP4Box
 	// Note, this method only works with linux afaik
-	
-	
+
+
 	// Hack method to kick out h264 files
 	auto delimiter_pos = input_file.find('.');
 	if (input_file.substr(delimiter_pos + 1) != "mp4") {
@@ -2019,10 +2039,10 @@ int main(int argc, char* argv[]) {
 		<< std::endl;
 		return 1;
 	}
-	
-	
+
+
 	// Config Handler -----------------------------------------------------------------------------
-	
+
 	std::ifstream cFile (config_file);
 	if (cFile.is_open()) {
 		std::string line;
@@ -2038,7 +2058,7 @@ int main(int argc, char* argv[]) {
 				return 1;
 			}
 		}
-		
+
 	}
 	else {
 		std::cerr << "Couldn't open config file for reading." << std::endl;
@@ -2052,10 +2072,10 @@ int main(int argc, char* argv[]) {
 		<< "Using input file: " << input_file << std::endl;
 		LOGGING.close();
 	}
-	
-	
+
+
 	// Touch the output file ----------------------------------------------------------------------
-	
+
 	// Create directories
 	std::string localpath;
 	localpath = fs::current_path();
@@ -2072,7 +2092,7 @@ int main(int argc, char* argv[]) {
 		localpath = OUTPUTDIR + "frames";
 		fs::create_directories(localpath);
 	}
-	
+
 	// Synthesize Filenames
 	TIER1FILE = OUTPUTDIR + "data/Tier1.csv";
 	TIER2FILE = OUTPUTDIR + "data/Tier2.csv";
@@ -2083,7 +2103,7 @@ int main(int argc, char* argv[]) {
 	if (OUTPUT_FRAMES && TIGHT_CROP) {
 		BOXDATA = OUTPUTDIR + "data/boxes.csv";
 	}
-	
+
 	outfile.open(TIER1FILE);
 	outfile
 	<< "frame number"
@@ -2128,7 +2148,7 @@ int main(int argc, char* argv[]) {
 	<< "radius"
 	<< std::endl;
 	outfile.close();
-	
+
 	// Touch output ellipse file
 	std::ofstream outell;
 	outell.open(ELLIPSEDATA);
@@ -2154,7 +2174,7 @@ int main(int argc, char* argv[]) {
 	<< "points on right edge"
 	<< std::endl;
 	outell.close();
-	
+
 	// Touch and create metafile
 	std::ofstream metafile;
 	metafile.open(METADATA);
@@ -2164,7 +2184,7 @@ int main(int argc, char* argv[]) {
 		metafile << "video:," << input_file << std::endl;
 	}
 	metafile.close();
-	
+
 	if (OUTPUT_FRAMES && TIGHT_CROP) {
 		outfile.open(BOXDATA);
 		outfile
@@ -2190,7 +2210,7 @@ int main(int argc, char* argv[]) {
 		<< std::endl;
 		outfile.close();
 	}
-	
+
 	// Instance and Assign ------------------------------------------------------------------------
 	// Memory map variables we want to share across forks
 	// mm_gotframe reports that the frame acquisition was completed
@@ -2217,23 +2237,23 @@ int main(int argc, char* argv[]) {
 	auto *mm_frmcount = static_cast <int *>(mmap(NULL, sizeof(int), \
 		PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0));
 	*mm_frmcount = -1;
-	
+
 	// OpenCV specific variables
 	Mat frame;
-	
+
 	// Memory and fork management inits
 	int frame_fd = open("/tmp/file", O_CREAT|O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	int frame_fd2 = open("/tmp/file2", O_CREAT|O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
-	
+
 	// Other local variables
 	int thresh = 0;
-	
-	
+
+
 	// Tell OpenCV to open our video and fetch the first frame ------------------------------------
 	VideoCapture cap(input_file); // open the default camera
 	if (!cap.isOpened())  // check if we succeeded
 		return -1;
-	
+
 	// Get the first frame with a clear moon
 	bool running = true;
 	while (running) {
@@ -2247,7 +2267,7 @@ int main(int argc, char* argv[]) {
 			return -1;
 		}
 		Mat temp_frame;
-		*mm_frmcount++;
+		++*mm_frmcount;
 		cvtColor(frame.clone(), frame, COLOR_BGR2GRAY);
 		threshold(frame.clone(), temp_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
 		vector <vector<Point>> contours = contours_only(temp_frame);
@@ -2257,12 +2277,12 @@ int main(int argc, char* argv[]) {
 			running = false;
 		}
 	}
-	
+
 	// Process this frame to establish initial values
 	first_frame(frame.clone(), *mm_frmcount);
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING << "passed first frame, used frame " << *mm_frmcount << "as corners" << std::endl;
+		LOGGING << "passed first frame, used frame " << *mm_frmcount << " as corners" << std::endl;
 		LOGGING.close();
 	}
 	// Release and restart the video from the beginning.
@@ -2271,11 +2291,19 @@ int main(int argc, char* argv[]) {
 	cap.open(input_file);
 	if (!cap.isOpened())  // check if we succeeded
 		return -1;
-	
+
 	// Get the first frame
 	cap >> frame;
 	++*mm_frmcount;
-	
+
+// 	while (*mm_frmcount < 2060) {
+// 		++*mm_frmcount;
+// 		cap >> frame;
+// 	}
+
+	cvtColor(frame, frame, COLOR_BGR2GRAY);
+	frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
+
 	if (OUTPUT_FRAMES) {
 		std::string output_loc = out_frame_gen(*mm_frmcount);
 		imwrite(output_loc, frame);
@@ -2285,13 +2313,13 @@ int main(int argc, char* argv[]) {
 			LOGGING.close();
 		}
 	}
-	
+
 	// Memory management init continued -----------------------------------------------------------
 	// Memory map slot for video frame
 	// This must be called after the first test frame so we have the correct size info
 	// e.g. we expect 6220800 bytes for a 3 channel 1920x1080 image
 	const size_t shmem_size = frame.total() * frame.elemSize();
-	
+
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
 		LOGGING
@@ -2309,7 +2337,7 @@ int main(int argc, char* argv[]) {
 		<< std::endl;
 		LOGGING.close();
 	}
-	
+
 	// Resize the frame_fd to fit the frame size we are using
 	if (ftruncate(frame_fd, shmem_size) != 0) {
 		std::cerr << "failed to truncate resize file descriptor" << std::endl;
@@ -2320,8 +2348,8 @@ int main(int argc, char* argv[]) {
 		std::cerr << "failed to truncate resize file descriptor 2" << std::endl;
 		return 1;
 	}
-	
-	
+
+
 	unsigned char *buf = static_cast <unsigned char*>(mmap(NULL, shmem_size, PROT_READ|PROT_WRITE, MAP_SHARED, frame_fd, 0));
 	memcpy(buf, frame.ptr(), shmem_size);
 	if (DEBUG_COUT) {
@@ -2329,7 +2357,7 @@ int main(int argc, char* argv[]) {
 		LOGGING << "memcpy'd buf1 with size:" << sizeof(*buf) << std::endl;
 		LOGGING.close();
 	}
-	
+
 	unsigned char *buf2 = static_cast <unsigned char*>(mmap(NULL, shmem_size, PROT_READ|PROT_WRITE, MAP_SHARED, frame_fd2, 0));
 	memcpy(buf2, frame.ptr(), shmem_size);
 	if (DEBUG_COUT) {
@@ -2337,26 +2365,26 @@ int main(int argc, char* argv[]) {
 		LOGGING << "memcpy'd buf2 with size:"  << sizeof(*buf2) << std::endl;
 		LOGGING.close();
 	}
-	
+
 	// Store first frame in memory
 	memcpy(buf, frame.ptr(), shmem_size);
 	*mm_frameavail = true;
-	
+
 	// Delared PID here so we can stash the fork in an if statement.
 	int pid0;
 	int pid1;
 	int pid2;
-	
+
 	// Set all the mm_ codes
 	*mm_killed = false;
 	*mm_frameavail = true;
 	*mm_tier1 = true;
 	*mm_tier2 = true;
 	*mm_tier3 = true;
-	
+
 	// Main Loop ----------------------------------------------------------------------------------
 	pid0 = fork();
-	
+
 	if (pid0 > 0) {
 		// FORK 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		while (cap.isOpened()) {
@@ -2373,8 +2401,8 @@ int main(int argc, char* argv[]) {
 			*mm_tier1 = false;
 			*mm_tier2 = false;
 			*mm_tier3 = false;
-			
-			
+
+
 			// Cycle ring buffer
 			memcpy(buf2, buf, shmem_size);
 			// Get new frame; operate and store
@@ -2386,7 +2414,7 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 			++*mm_frmcount;
-			
+
 			if (DEBUG_COUT) {
 				LOGGING.open(LOGOUT, std::ios_base::app);
 				LOGGING
@@ -2395,14 +2423,13 @@ int main(int argc, char* argv[]) {
 				<< std::endl;
 				LOGGING.close();
 			}
-			
+
 			// Image processing operations
 			cvtColor(frame, frame, COLOR_BGR2GRAY);
 			frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
-			
 			if (DEBUG_COUT) {
 				LOGGING.open(LOGOUT, std::ios_base::app);
-				LOGGING 
+				LOGGING
 				<< "frame dimensions: "
 				<< frame.size().width
 				<< " x "
@@ -2416,10 +2443,10 @@ int main(int argc, char* argv[]) {
 			}
 			// Store this image into the memory buffer
 			memcpy(buf, frame.ptr(), shmem_size);
-			
+
 			// Report that the frame was stored
 			*mm_frameavail = true;
-			
+
 			if (OUTPUT_FRAMES) {
 				std::string output_loc = out_frame_gen(*mm_frmcount);
 				imwrite(output_loc, frame);
@@ -2429,7 +2456,7 @@ int main(int argc, char* argv[]) {
 					LOGGING.close();
 				}
 			}
-			
+
 			if (DEBUG_FRAMES) {
 				imshow("fg_mask", frame);
 				waitKey(1);
@@ -2472,7 +2499,7 @@ int main(int argc, char* argv[]) {
 						LOGGING.close();
 					}
 				} else {
-					
+
 					// Grab the previous frame + current frame and store them locally
 					Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf, 1 * frame.size().width);
 					Mat oldframe = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf2, 1 * frame.size().width);
@@ -2481,11 +2508,11 @@ int main(int argc, char* argv[]) {
 					*mm_tier3 = true;
 				}
 			}
-			
+
 		}
 	}
  	usleep(1000000);
-	
+
 	BOXSIZE = 1080;
 	if (post_processing() != 0) {
 		std::cerr
