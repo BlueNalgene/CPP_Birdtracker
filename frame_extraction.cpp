@@ -906,6 +906,7 @@ static int show_usage(string name) {
  * @return out_contours vector of OpenCV int-int Point vectors representing valid contours
  */
 static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours) {
+	std::cout << contours.size() << std::endl;
 	int largest_contour_index = largest_contour(contours);
 	if (largest_contour_index < 0) {
 		return contours;
@@ -970,43 +971,55 @@ int tier_one(int framecnt, Mat in_frame) {
 		in_frame = apply_dynamic_mask(in_frame.clone(), dymask, T1_DYMASK);
 	}
 	vector <vector<Point>> contours = contours_only(in_frame);
-	contours = quiet_halo_elim(contours);
+	if (contours.size() > 1) {
+		contours = quiet_halo_elim(contours);
 
-	if (DEBUG_COUT) {
-		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING
-		<< "Number of contours in tier 1 pass for frame "
-		<< framecnt
-		<< ": "
-		<< contours.size()
-		<< std::endl;
-		LOGGING.close();
-	}
-	int largest_contour_index = largest_contour(contours);
-	if (largest_contour_index > -1) {
-		minEnclosingCircle(contours[largest_contour_index], center, bigradius);
-	}
-	outfile.open(TIER1FILE, std::ios_base::app);
-	// Cycle through the contours
-	for (auto vec : contours) {
-		// Greater than one includes lunar ellipse
-		if (vec.size() > 1) {
-			minEnclosingCircle(vec, center, radius);
-			if (radius != bigradius) {
-				// Open the outfile to append
-				outfile
-				<< framecnt
-				<< ","
-				<< static_cast<int>(center.x)
-				<< ","
-				<< static_cast<int>(center.y)
-				<< ","
-				<< radius
-				<< std::endl;
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Number of contours in tier 1 pass for frame "
+			<< framecnt
+			<< ": "
+			<< contours.size()
+			<< std::endl;
+			LOGGING.close();
+		}
+		int largest_contour_index = largest_contour(contours);
+		if (largest_contour_index > -1) {
+			minEnclosingCircle(contours[largest_contour_index], center, bigradius);
+		}
+		outfile.open(TIER1FILE, std::ios_base::app);
+		// Cycle through the contours
+		for (auto vec : contours) {
+			// Greater than one includes lunar ellipse
+			if (vec.size() > 1) {
+				minEnclosingCircle(vec, center, radius);
+				if (radius != bigradius) {
+					// Open the outfile to append
+					outfile
+					<< framecnt
+					<< ","
+					<< static_cast<int>(center.x)
+					<< ","
+					<< static_cast<int>(center.y)
+					<< ","
+					<< radius
+					<< std::endl;
+				}
 			}
 		}
+		outfile.close();
+	} else {
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Found too few contours for frame " << framecnt << " Tier "
+			<< "1 "
+			<< "skipping this tier for this frame."
+			<< std::endl;
+			LOGGING.close();
+		}
 	}
-	outfile.close();
 	return 0;
 }
 
@@ -1036,43 +1049,55 @@ int tier_two(int framecnt, Mat in_frame) {
 		in_frame = apply_dynamic_mask(in_frame.clone(), dymask, T2_DYMASK);
 	}
 	vector <vector<Point>> contours = contours_only(in_frame);
-	contours = quiet_halo_elim(contours);
+	if (contours.size() > 1) {
+		contours = quiet_halo_elim(contours);
 
-	if (DEBUG_COUT) {
-		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING
-		<< "Number of contours in tier 2 pass for frame "
-		<< framecnt
-		<< ": "
-		<< contours.size()
-		<< std::endl;
-		LOGGING.close();
-	}
-	int largest_contour_index = largest_contour(contours);
-	if (largest_contour_index > -1) {
-		minEnclosingCircle(contours[largest_contour_index], center, bigradius);
-	}
-	outfile.open(TIER2FILE, std::ios_base::app);
-	// Cycle through the contours
-	for (auto vec : contours) {
-		// Greater than one includes lunar ellipse
-		if (vec.size() > 1) {
-			minEnclosingCircle(vec, center, radius);
-			if (radius != bigradius) {
-				// Open the outfile to append
-				outfile
-				<< framecnt
-				<< ","
-				<< static_cast<int>(center.x)
-				<< ","
-				<< static_cast<int>(center.y)
-				<< ","
-				<< radius
-				<< std::endl;
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Number of contours in tier 2 pass for frame "
+			<< framecnt
+			<< ": "
+			<< contours.size()
+			<< std::endl;
+			LOGGING.close();
+		}
+		int largest_contour_index = largest_contour(contours);
+		if (largest_contour_index > -1) {
+			minEnclosingCircle(contours[largest_contour_index], center, bigradius);
+		}
+		outfile.open(TIER2FILE, std::ios_base::app);
+		// Cycle through the contours
+		for (auto vec : contours) {
+			// Greater than one includes lunar ellipse
+			if (vec.size() > 1) {
+				minEnclosingCircle(vec, center, radius);
+				if (radius != bigradius) {
+					// Open the outfile to append
+					outfile
+					<< framecnt
+					<< ","
+					<< static_cast<int>(center.x)
+					<< ","
+					<< static_cast<int>(center.y)
+					<< ","
+					<< radius
+					<< std::endl;
+				}
 			}
 		}
+		outfile.close();
+	} else {
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Found too few contours for frame " << framecnt << " Tier "
+			<< "2 "
+			<< "skipping this tier for this frame."
+			<< std::endl;
+			LOGGING.close();
+		}
 	}
-	outfile.close();
 	return 0;
 }
 
@@ -1128,43 +1153,55 @@ int tier_three(int framecnt, Mat in_frame, Mat old_frame) {
 		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, T3_DYMASK);
 	}
 	vector <vector<Point>> contours = contours_only(scaleframe);
-	contours = quiet_halo_elim(contours);
+	if (contours.size() > 0) {
+		contours = quiet_halo_elim(contours);
 
-	if (DEBUG_COUT) {
-		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING
-		<< "Number of contours in tier 3 pass for frame "
-		<< framecnt
-		<< ": "
-		<< contours.size()
-		<< std::endl;
-		LOGGING.close();
-	}
-	int largest_contour_index = largest_contour(contours);
-	if (largest_contour_index > -1) {
-		minEnclosingCircle(contours[largest_contour_index], center, bigradius);
-	}
-	outfile.open(TIER3FILE, std::ios_base::app);
-	// Cycle through the contours
-	for (auto vec : contours) {
-		// Greater than one includes lunar ellipse
-		if (vec.size() > 1) {
-			minEnclosingCircle(vec, center, radius);
-			if (radius != bigradius) {
-				// Open the outfile to append
-				outfile
-				<< framecnt
-				<< ","
-				<< static_cast<int>(center.x)
-				<< ","
-				<< static_cast<int>(center.y)
-				<< ","
-				<< radius
-				<< std::endl;
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Number of contours in tier 3 pass for frame "
+			<< framecnt
+			<< ": "
+			<< contours.size()
+			<< std::endl;
+			LOGGING.close();
+		}
+		int largest_contour_index = largest_contour(contours);
+		if (largest_contour_index > -1) {
+			minEnclosingCircle(contours[largest_contour_index], center, bigradius);
+		}
+		outfile.open(TIER3FILE, std::ios_base::app);
+		// Cycle through the contours
+		for (auto vec : contours) {
+			// Greater than one includes lunar ellipse
+			if (vec.size() > 1) {
+				minEnclosingCircle(vec, center, radius);
+				if (radius != bigradius) {
+					// Open the outfile to append
+					outfile
+					<< framecnt
+					<< ","
+					<< static_cast<int>(center.x)
+					<< ","
+					<< static_cast<int>(center.y)
+					<< ","
+					<< radius
+					<< std::endl;
+				}
 			}
 		}
+		outfile.close();
+	} else {
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Found too few contours for frame " << framecnt << " Tier "
+			<< "3 "
+			<< "skipping this tier for this frame."
+			<< std::endl;
+			LOGGING.close();
+		}
 	}
-	outfile.close();
 	return 0;
 }
 
@@ -1224,44 +1261,56 @@ int tier_four(int framecnt, Mat in_frame, Mat old_frame) {
 		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, T4_DYMASK);
 	}
 	vector <vector<Point>> contours = contours_only(scaleframe);
-	contours = quiet_halo_elim(contours);
+	if (contours.size() > 0) {
+		contours = quiet_halo_elim(contours);
 
-	if (DEBUG_COUT) {
-		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING
-		<< "Number of contours in tier 4 pass for frame "
-		<< framecnt
-		<< ": "
-		<< contours.size()
-		<< std::endl;
-		LOGGING.close();
-	}
-	int largest_contour_index = largest_contour(contours);
-	if (largest_contour_index > -1) {
-		minEnclosingCircle(contours[largest_contour_index], center, bigradius);
-	}
-	outfile.open(TIER4FILE, std::ios_base::app);
-	// Cycle through the contours
-	for (auto vec : contours) {
-		// Greater than one includes lunar ellipse
-		if (vec.size() > 1) {
-			minEnclosingCircle(vec, center, radius);
-			if (radius != bigradius) {
-				// Open the outfile to append
-				outfile
-				<< framecnt
-				<< ","
-				<< static_cast<int>(center.x)
-				<< ","
-				<< static_cast<int>(center.y)
-				<< ","
-				<< radius
-				<< std::endl;
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Number of contours in tier 4 pass for frame "
+			<< framecnt
+			<< ": "
+			<< contours.size()
+			<< std::endl;
+			LOGGING.close();
+		}
+		int largest_contour_index = largest_contour(contours);
+		if (largest_contour_index > -1) {
+			minEnclosingCircle(contours[largest_contour_index], center, bigradius);
+		}
+		outfile.open(TIER4FILE, std::ios_base::app);
+		// Cycle through the contours
+		for (auto vec : contours) {
+			// Greater than one includes lunar ellipse
+			if (vec.size() > 1) {
+				minEnclosingCircle(vec, center, radius);
+				if (radius != bigradius) {
+					// Open the outfile to append
+					outfile
+					<< framecnt
+					<< ","
+					<< static_cast<int>(center.x)
+					<< ","
+					<< static_cast<int>(center.y)
+					<< ","
+					<< radius
+					<< std::endl;
+				}
+
 			}
-
+		}
+		outfile.close();
+	} else {
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Found too few contours for frame " << framecnt << " Tier "
+			<< "4 "
+			<< "skipping this tier for this frame."
+			<< std::endl;
+			LOGGING.close();
 		}
 	}
-	outfile.close();
 	return 0;
 }
 
