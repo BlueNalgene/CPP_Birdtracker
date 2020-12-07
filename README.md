@@ -153,6 +153,11 @@ running, LunAero for the first time, it is prudent to check that you are
 happy with the default settings.  This is especially true for the
 General Settings at to top of the file.
 
+A python3 script called `fog_removal.py` has been added to simplify
+selecting the appropriate value for BLACKOUT_THRESH.  Run this script
+prior to running a video to visually determine the appropriate value
+for this variable.
+
 ### Command Options
 
 The following options are available for command line switches:
