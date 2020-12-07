@@ -1522,7 +1522,7 @@ std::string space_space(std::string instring) {
 	int tcnt = 1;
 	if (DEBUG_COUT) {
 		LOGGING.open(LOGOUT, std::ios_base::app);
-		LOGGING "TC_W, TC_H: " << TC_W << ", " << TC_H << std::endl
+		LOGGING << "TC_W, TC_H: " << TC_W << ", " << TC_H << std::endl
 		<< "TC_W, TC_H: " << (BOXSIZE - TC_W)/2 << ", " << (BOXSIZE - TC_H)/2 << std::endl;
 		LOGGING.close();
 	}
