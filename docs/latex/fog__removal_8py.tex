@@ -1,0 +1,37 @@
+\hypertarget{fog__removal_8py}{}\section{fog\+\_\+removal.\+py File Reference}
+\label{fog__removal_8py}\index{fog\+\_\+removal.\+py@{fog\+\_\+removal.\+py}}
+
+
+A script to remove \char`\"{}fog\char`\"{} from around the moon prior to run.  
+
+
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespacefog__removal}{fog\+\_\+removal}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespacefog__removal_acc10907c635ab765dcf02a6fc6499620}{fog\+\_\+removal.\+create\+\_\+directions} ()
+\begin{DoxyCompactList}\small\item\em Create intro/directions slide for the thresholding Python script. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a7b07384f6a6ff8498e14f3aa5f8e2252}{fog\+\_\+removal.\+is\+\_\+valid\+\_\+file} (parser, arg)
+\begin{DoxyCompactList}\small\item\em Check if arg is a valid file that already exists on the file system. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a89c98f8f9a6d048485938fc05675ce9e}{fog\+\_\+removal.\+get\+\_\+parser} ()
+\begin{DoxyCompactList}\small\item\em Get parser object for this script. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a427a577da8405e5624962d7ef722aadf}{fog\+\_\+removal.\+main} ()
+\begin{DoxyCompactList}\small\item\em Perform primary functions of this script. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A script to remove \char`\"{}fog\char`\"{} from around the moon prior to run. 
+
+This script uses the Open\+CV highgui to allow the user to test the first frame of a video to determine the most approparite thresholding value to remove fog from the around the moon. The threshold value selected here should be used as the input value of B\+L\+A\+C\+K\+O\+U\+T\+\_\+\+T\+H\+R\+E\+SH in the settings.\+cfg config file. Use the terminal to run this script, as it requires the user to choose the file to be operated on using an \char`\"{}-\/f\char`\"{} switch.\hypertarget{fog__removal_8py_example_fog}{}\subsection{Usage Example}\label{fog__removal_8py_example_fog}
+\begin{DoxyVerb}python3 ./fog_removal.py -f /path/to/file.mp4
+\end{DoxyVerb}
+\hypertarget{fog__removal_8py_libraries_fog}{}\subsection{Libraries/\+Modules}\label{fog__removal_8py_libraries_fog}
+
+\begin{DoxyItemize}
+\item Open\+CV 3.\+0 or later
+\item Numpy 
+\end{DoxyItemize}

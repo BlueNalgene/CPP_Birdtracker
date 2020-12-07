@@ -1,0 +1,108 @@
+\hypertarget{namespacefog__removal}{}\section{fog\+\_\+removal Namespace Reference}
+\label{namespacefog__removal}\index{fog\+\_\+removal@{fog\+\_\+removal}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespacefog__removal_acc10907c635ab765dcf02a6fc6499620}{create\+\_\+directions} ()
+\begin{DoxyCompactList}\small\item\em Create intro/directions slide for the thresholding Python script. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a7b07384f6a6ff8498e14f3aa5f8e2252}{is\+\_\+valid\+\_\+file} (parser, arg)
+\begin{DoxyCompactList}\small\item\em Check if arg is a valid file that already exists on the file system. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a89c98f8f9a6d048485938fc05675ce9e}{get\+\_\+parser} ()
+\begin{DoxyCompactList}\small\item\em Get parser object for this script. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a427a577da8405e5624962d7ef722aadf}{main} ()
+\begin{DoxyCompactList}\small\item\em Perform primary functions of this script. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{namespacefog__removal_acc10907c635ab765dcf02a6fc6499620}\label{namespacefog__removal_acc10907c635ab765dcf02a6fc6499620}} 
+\index{fog\+\_\+removal@{fog\+\_\+removal}!create\+\_\+directions@{create\+\_\+directions}}
+\index{create\+\_\+directions@{create\+\_\+directions}!fog\+\_\+removal@{fog\+\_\+removal}}
+\subsubsection{\texorpdfstring{create\+\_\+directions()}{create\_directions()}}
+{\footnotesize\ttfamily def fog\+\_\+removal.\+create\+\_\+directions (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Create intro/directions slide for the thresholding Python script. 
+
+\begin{DoxyReturn}{Returns}
+image A 1080x1080 black 3 color image with red text (CV Mat) 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=310pt]{namespacefog__removal_acc10907c635ab765dcf02a6fc6499620_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{namespacefog__removal_a89c98f8f9a6d048485938fc05675ce9e}\label{namespacefog__removal_a89c98f8f9a6d048485938fc05675ce9e}} 
+\index{fog\+\_\+removal@{fog\+\_\+removal}!get\+\_\+parser@{get\+\_\+parser}}
+\index{get\+\_\+parser@{get\+\_\+parser}!fog\+\_\+removal@{fog\+\_\+removal}}
+\subsubsection{\texorpdfstring{get\+\_\+parser()}{get\_parser()}}
+{\footnotesize\ttfamily def fog\+\_\+removal.\+get\+\_\+parser (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get parser object for this script. 
+
+\begin{DoxyReturn}{Returns}
+Parser object 
+\end{DoxyReturn}
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{namespacefog__removal_a89c98f8f9a6d048485938fc05675ce9e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=329pt]{namespacefog__removal_a89c98f8f9a6d048485938fc05675ce9e_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{namespacefog__removal_a7b07384f6a6ff8498e14f3aa5f8e2252}\label{namespacefog__removal_a7b07384f6a6ff8498e14f3aa5f8e2252}} 
+\index{fog\+\_\+removal@{fog\+\_\+removal}!is\+\_\+valid\+\_\+file@{is\+\_\+valid\+\_\+file}}
+\index{is\+\_\+valid\+\_\+file@{is\+\_\+valid\+\_\+file}!fog\+\_\+removal@{fog\+\_\+removal}}
+\subsubsection{\texorpdfstring{is\+\_\+valid\+\_\+file()}{is\_valid\_file()}}
+{\footnotesize\ttfamily def fog\+\_\+removal.\+is\+\_\+valid\+\_\+file (\begin{DoxyParamCaption}\item[{}]{parser,  }\item[{}]{arg }\end{DoxyParamCaption})}
+
+
+
+Check if arg is a valid file that already exists on the file system. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em parser} & the argparse object \\
+\hline
+{\em arg} & the string of the filename we want to test\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+arg 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{namespacefog__removal_a7b07384f6a6ff8498e14f3aa5f8e2252_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{namespacefog__removal_a427a577da8405e5624962d7ef722aadf}\label{namespacefog__removal_a427a577da8405e5624962d7ef722aadf}} 
+\index{fog\+\_\+removal@{fog\+\_\+removal}!main@{main}}
+\index{main@{main}!fog\+\_\+removal@{fog\+\_\+removal}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily def fog\+\_\+removal.\+main (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Perform primary functions of this script. 
+
+Command line arguments are first parsed to get the file name on which we want to operate. Then, we ensure that this is a valid file. The video file is opened and the first frame is read. We then create our output window of size 1080x1080 and trackbars for the Directions toggle and Image Threshold. If everything was successful, the window opens with the Diretions image. When the user tells the Directions to toggle closed, the first frame from the video is shown after conversion to grayscale and thresholded to zero. The image threshold is determined by the value of the threshold trackbar. The user exits with the E\+SC key. On exit, the final value of the threshold is printed to the terminal. Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{namespacefog__removal_a427a577da8405e5624962d7ef722aadf_cgraph}
+\end{center}
+\end{figure}
