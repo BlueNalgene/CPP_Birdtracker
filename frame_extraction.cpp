@@ -906,7 +906,6 @@ static int show_usage(string name) {
  * @return out_contours vector of OpenCV int-int Point vectors representing valid contours
  */
 static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours) {
-	std::cout << contours.size() << std::endl;
 	int largest_contour_index = largest_contour(contours);
 	if (largest_contour_index < 0) {
 		return contours;
@@ -1521,10 +1520,12 @@ std::string space_space(std::string instring) {
 	tfiles.push_back(TIER3FILE);
 	tfiles.push_back(TIER4FILE);
 	int tcnt = 1;
-
-	std::cout << "TC_W, TC_H: " << TC_W << ", " << TC_H << std::endl;
-	std::cout << "TC_W, TC_H: " << (BOXSIZE - TC_W)/2 << ", " << (BOXSIZE - TC_H)/2 << std::endl;
-
+	if (DEBUG_COUT) {
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING "TC_W, TC_H: " << TC_W << ", " << TC_H << std::endl
+		<< "TC_W, TC_H: " << (BOXSIZE - TC_W)/2 << ", " << (BOXSIZE - TC_H)/2 << std::endl;
+		LOGGING.close();
+	}
 	for (auto i : tfiles) {
 		std::ifstream infile(i);
 		if (!infile.is_open()) {
@@ -1543,7 +1544,11 @@ std::string space_space(std::string instring) {
 
 		// Create output file with headers.
 		std::ofstream outputfile(temp_loc);
-		std::cout << "opened file: " << temp_loc << std::endl;
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "opened file: " << temp_loc << std::endl;
+			LOGGING.close();
+		}
 		if (outputfile.good()) {
 			outputfile
 			<< "frame number,x pos,y pos,radius"
@@ -1598,9 +1603,12 @@ std::string space_space(std::string instring) {
 		if (std::remove(i.c_str()) != 0) {
 			std::cerr << "Failure to remove file " << space_space(i) << " with error " << strerror(errno) << std::endl;
 		}
-		std::cout << "rm\'d " << i << std::endl;
-		std::cout << "mv\'ing " << temp_loc << " to " << i << std::endl;
-
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "rm\'d " << i << std::endl
+			<< "mv\'ing " << temp_loc << " to " << i << std::endl;
+			LOGGING.close();
+		}
 		if (std::rename(temp_loc.c_str(), i.c_str()) < 0) {
 			std::cerr << "Could not move temp.csv to Tier location using rename with error: " << strerror(errno) << std::endl;
 			return 3;
@@ -1694,17 +1702,23 @@ static int generate_slideshow() {
 			std::cerr << "Max ellipse apparently is 0.  Something is wrong." << std::endl;
 			return 1;
 		}
-		std::cout << "Max Box: " << max_box << std::endl;
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "Max Box: " << max_box << std::endl;
+			LOGGING.close();
+		}
 		TC_W = std::min(max_box + 5, BOXSIZE);
 		TC_H = TC_W;
 		int center_x = BOXSIZE/2 - TC_W/2;
 		int center_y = BOXSIZE/2 - TC_H/2;
 		command = "ffmpeg -y -hide_banner -loglevel warning -i " + framepath + "../output.mp4 -vf \"crop=" + std::to_string(TC_W) + ":" + std::to_string(TC_H) + ":" + std::to_string(center_x) + ":" + std::to_string(center_y) + "\" " + framepath + "../temp.mp4";
-		std::cout
-		<< "-------------------------------------------------------------------------"
-		<< std::endl << command << std::endl
-		<< "-------------------------------------------------------------------------"
-		<< std::endl;
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< command
+			<< std::endl;
+			LOGGING.close();
+		}
 		system(command.c_str());
 		if (DEBUG_COUT) {
 			LOGGING.open(LOGOUT, std::ios_base::app);
@@ -1806,7 +1820,11 @@ static int concat_tiers() {
 	int tcnt = 1;
 	outputfile.open(mix_loc, std::ios_base::app);
 	for (auto i : tfiles) {
-		std::cout << "Concat begin on file: " << tcnt << std::endl;
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING << "Concat begin on file: " << tcnt << std::endl;
+			LOGGING.close();
+		}
 		while (std::getline(*i, line)) {
 			line = line + "," + std::to_string(tcnt);
 			outputfile
@@ -1827,7 +1845,11 @@ static int concat_tiers() {
 	+ " > "
 	+ space_space(OUTPUTDIR)
 	+ "data/temp.csv";
-	std::cout << "Concat command string: " << commandstr << std::endl;
+	if (DEBUG_COUT) {
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "Concat command string: " << commandstr << std::endl;
+		LOGGING.close();
+	}
 	if (system(commandstr.c_str()) != 0) {
 		std::cerr << "WARNING: Failed to concat tiers with error: "
 		<< strerror(errno) << std::endl;
