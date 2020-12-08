@@ -746,38 +746,19 @@ void signal_callback_handler(int signum) {
 }
 
 /**
- * This function fetches the largest contour to be used as a mask later on.  If no contour is found,
- * negative values are returned in the output to be handled later.
- *
- * @param in_frame OpenCV matrix image, 16-bit single depth format
- * @return output nested vector of int-int OpenCV points
- */
-static vector <vector<Point>> fetch_dynamic_mask(Mat in_frame) {
-	vector <vector<Point>> output;
-	vector <vector<Point>> contours = contours_only(in_frame);
-	int index = largest_contour(contours);
-	if (index < 0) {
-		vector<Point> aaa;
-		aaa.push_back(Point(-1, -1));
-		output.push_back(aaa);
-		return output;
-	}
-	vector<Point> maxcont = contours[index];
-	output.push_back(maxcont);
-	return output;
-}
-
-/**
  * This function masks out the edges of the input frame based on the contour.  The maskwidth determines
  * how much to mask out.
  *
  * @param in_frame OpenCV matrix image, 16-bit single depth format
- * @param contours vector of OpenCV vectors of int-int point contour edges
+ * @param contour OpenCV Point vectors of int-int point contour edges.  Use the output from "bigone"
+ * here.
  * @param maskwidth
  * @return in_frame The modified in_frame from the input params
  */
-static Mat apply_dynamic_mask(Mat in_frame, vector <vector<Point>> contours, int maskwidth) {
-	drawContours(in_frame, contours, -1, 0, maskwidth, LINE_8);
+static Mat apply_dynamic_mask(Mat in_frame, vector <Point> contour, int maskwidth) {
+	vector <vector <Point>> contours;
+	contours.push_back(contour);
+	drawContours(in_frame, contours, 0, 0, maskwidth, LINE_8);
 	return in_frame;
 }
 
@@ -982,7 +963,6 @@ int tier_one(int framecnt, Mat in_frame, vector <Point> bigone) {
 	float radius;
 	float bigradius = 0;
 	std::ofstream outfile;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
 	adaptiveThreshold(in_frame.clone(), in_frame,
 		T1_AT_MAX,
 		ADAPTIVE_THRESH_GAUSSIAN_C,
@@ -990,10 +970,11 @@ int tier_one(int framecnt, Mat in_frame, vector <Point> bigone) {
 		T1_AT_BLOCKSIZE,
 		T1_AT_CONSTANT
 	);
-	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
-		in_frame = apply_dynamic_mask(in_frame.clone(), dymask, T1_DYMASK);
-	}
+	// Apply dynamic mask
+	in_frame = apply_dynamic_mask(in_frame.clone(), bigone, T1_DYMASK);
+
 	vector <vector<Point>> contours = contours_only(in_frame);
+	imwrite("./test_t1.png", in_frame);
 	if (contours.size() > 1) {
 		contours = quiet_halo_elim(contours, bigone);
 
@@ -1061,7 +1042,6 @@ int tier_two(int framecnt, Mat in_frame, vector <Point> bigone) {
 	float radius;
 	float bigradius = 0;
 	std::ofstream outfile;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
 	adaptiveThreshold(in_frame.clone(), in_frame,
 		T2_AT_MAX,
 		ADAPTIVE_THRESH_GAUSSIAN_C,
@@ -1069,10 +1049,10 @@ int tier_two(int framecnt, Mat in_frame, vector <Point> bigone) {
 		T2_AT_BLOCKSIZE,
 		T2_AT_CONSTANT
 	);
-	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
-		in_frame = apply_dynamic_mask(in_frame.clone(), dymask, T2_DYMASK);
-	}
+	// Apply dynamic mask
+	in_frame = apply_dynamic_mask(in_frame.clone(), bigone, T2_DYMASK);
 	vector <vector<Point>> contours = contours_only(in_frame);
+	imwrite("./test_t2.png", in_frame);
 	if (contours.size() > 1) {
 		contours = quiet_halo_elim(contours, bigone);
 
@@ -1144,7 +1124,6 @@ int tier_three(int framecnt, Mat in_frame, Mat old_frame, vector <Point> bigone)
 	float bigradius = 0;
 	std::ofstream outfile;
 	Mat scaleframe;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
 
 	/* Eli Method for Tier 3 */
 	Laplacian(in_frame.clone(), in_frame, CV_32F,
@@ -1174,9 +1153,8 @@ int tier_three(int framecnt, Mat in_frame, Mat old_frame, vector <Point> bigone)
 	scaleframe = in_frame.clone() - old_frame.clone();
 	scaleframe = scaleframe.clone() > T3_CUTOFF_THRESH;
 	/* end Eli Method */
-	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
-		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, T3_DYMASK);
-	}
+	// Apply dynamic mask
+	scaleframe = apply_dynamic_mask(scaleframe.clone(), bigone, T3_DYMASK);
 	vector <vector<Point>> contours = contours_only(scaleframe);
 	if (contours.size() > 0) {
 		contours = quiet_halo_elim(contours, bigone);
@@ -1253,7 +1231,6 @@ int tier_four(int framecnt, Mat in_frame, Mat old_frame, vector <Point> bigone) 
 	float bigradius = 0;
 	std::ofstream outfile;
 	Mat scaleframe;
-	vector <vector<Point>> dymask = fetch_dynamic_mask(in_frame);
 
 	/* UnCanny v2 */
 
@@ -1280,12 +1257,11 @@ int tier_four(int framecnt, Mat in_frame, Mat old_frame, vector <Point> bigone) 
 		BORDER_DEFAULT
 	);
 	ximgproc::thinning(ii1.clone(), scaleframe, T4_THINNING);
-
+	
 	/* end UnCanny v2 */
-
-	if ((dymask[0][0].x != -1) && (dymask[0][0].y != -1)) {
-		scaleframe = apply_dynamic_mask(scaleframe.clone(), dymask, T4_DYMASK);
-	}
+	
+	// Apply dynamic mask
+	scaleframe = apply_dynamic_mask(scaleframe.clone(), bigone, T4_DYMASK);
 	vector <vector<Point>> contours = contours_only(scaleframe);
 	if (contours.size() > 0) {
 		contours = quiet_halo_elim(contours, bigone);
