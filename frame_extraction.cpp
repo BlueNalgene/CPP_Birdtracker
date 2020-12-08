@@ -2286,6 +2286,10 @@ int main(int argc, char* argv[]) {
 	} else {
 		metafile << "video:," << input_file << std::endl;
 	}
+	
+	// Create settings metadata space and header
+	metafile << std::endl << "settings values:," << config_file << std::endl;
+	
 	// Write contents of settings to metadata
 	if (config_stream.is_open()) {
 		config_stream.clear();
@@ -2305,6 +2309,60 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Couldn't open config file reporting metadata." << std::endl;
 		return 1;
 	}
+	
+	// Use ffprobe to fetch and parse video specific metadata
+	std::string ffmeta_path = localpath + "/fftemp.txt";
+	std::string command;
+	if (!osf_file.empty()) {
+		command = "ffprobe -hide_banner -i "
+		+ space_space(osf_file)
+		+ " -show_format -show_streams -print_format default > "
+		+ space_space(ffmeta_path);
+	} else {
+		command = "ffprobe -hide_banner -i "
+		+ input_file
+		+ " -show_format -show_streams -print_format default > "
+		+ space_space(ffmeta_path);
+	}
+	
+	if (DEBUG_COUT) {
+		LOGGING.open(LOGOUT, std::ios_base::app);
+		LOGGING << "Recording video metadata using command: "
+		<< command
+		<< std::endl;
+		LOGGING.close();
+	}
+	system(command.c_str());
+	
+	// Create space and header for ffprobe metadata
+	metafile << std::endl << "ffprobe metadata," << std::endl;
+	
+	// Create output of ffprobe from command and write to metadata file
+	std::ifstream ffmeta_stream(ffmeta_path);
+	if (ffmeta_stream.is_open()) {
+		std::string line;
+		while(getline(ffmeta_stream, line)) {
+			line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+			if(line[0] == '[' || line.empty()) {
+				continue;
+			}
+			delimiter_pos = line.find("=");
+			std::string name = line.substr(0, delimiter_pos);
+			std::string value = line.substr(delimiter_pos + 1);
+			metafile << name << ":," << value << std::endl;
+		}
+	} else {
+		std::cerr << "Unable to open ff metadata temporary file" << std::endl;
+		return 1;
+	}
+	
+	// Delete the temporary file
+	if (std::remove(ffmeta_path.c_str()) != 0) {
+		std::cerr << "Failed to remove old fftemp.txt file with error: "
+		<< strerror(errno) << std::endl;
+	}
+	
+	// Done with the metadata
 	metafile.close();
 
 	if (OUTPUT_FRAMES && TIGHT_CROP) {
