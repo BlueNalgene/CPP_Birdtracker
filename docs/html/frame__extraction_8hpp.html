@@ -132,8 +132,6 @@ Functions</h2></td></tr>
 <tr class="separator:a020638e44cbbdfbe5a689c61c4bec371"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aade1bdfa6306f0627b8a1fe204aacfab"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#aade1bdfa6306f0627b8a1fe204aacfab">signal_callback_handler</a> (int signum)</td></tr>
 <tr class="separator:aade1bdfa6306f0627b8a1fe204aacfab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a510acbf4ec2b1b348a2c1ca1de901677"><td class="memItemLeft" align="right" valign="top">static vector&lt; vector&lt; Point &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a510acbf4ec2b1b348a2c1ca1de901677">fetch_dynamic_mask</a> (Mat in_frame)</td></tr>
-<tr class="separator:a510acbf4ec2b1b348a2c1ca1de901677"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09f4cf8817c686df6a1992baf222b97a"><td class="memItemLeft" align="right" valign="top">static Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a09f4cf8817c686df6a1992baf222b97a">apply_dynamic_mask</a> (Mat in_frame, vector&lt; vector&lt; Point &gt;&gt; contours, int maskwidth)</td></tr>
 <tr class="separator:a09f4cf8817c686df6a1992baf222b97a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc90f05608032b4730869812a513267f"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#abc90f05608032b4730869812a513267f">largest_contour</a> (vector&lt; vector&lt; Point &gt;&gt; contours)</td></tr>
@@ -146,16 +144,18 @@ Functions</h2></td></tr>
 <tr class="separator:a3fe52ab2a13802c64a500f3b3fac618c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c53b5dffc43d3917a312ade756e53ee"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a5c53b5dffc43d3917a312ade756e53ee">show_usage</a> (string name)</td></tr>
 <tr class="separator:a5c53b5dffc43d3917a312ade756e53ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1005043d0919694aa2b5ec4fac47bc14"><td class="memItemLeft" align="right" valign="top">static vector&lt; vector&lt; Point &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a1005043d0919694aa2b5ec4fac47bc14">quiet_halo_elim</a> (vector&lt; vector&lt; Point &gt;&gt; contours)</td></tr>
-<tr class="separator:a1005043d0919694aa2b5ec4fac47bc14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae11f912f6b32c3d1d721dd94d516080e"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#ae11f912f6b32c3d1d721dd94d516080e">tier_one</a> (int cnt, Mat in_frame)</td></tr>
-<tr class="separator:ae11f912f6b32c3d1d721dd94d516080e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65db50ecbbc291087ce1f3f9577ab44f"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a65db50ecbbc291087ce1f3f9577ab44f">tier_two</a> (int cnt, Mat in_frame)</td></tr>
-<tr class="separator:a65db50ecbbc291087ce1f3f9577ab44f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7aad51af21259176b3a70562e0609b4"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#ae7aad51af21259176b3a70562e0609b4">tier_three</a> (int cnt, Mat in_frame, Mat old_frame)</td></tr>
-<tr class="separator:ae7aad51af21259176b3a70562e0609b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f92f407caae6f336f0497d00ea27af5"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a9f92f407caae6f336f0497d00ea27af5">tier_four</a> (int cnt, Mat in_frame, Mat old_frame)</td></tr>
-<tr class="separator:a9f92f407caae6f336f0497d00ea27af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7564e59e35a0ba92812018e6ff847141"><td class="memItemLeft" align="right" valign="top">static vector&lt; Point &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a7564e59e35a0ba92812018e6ff847141">qhe_bigone</a> (Mat in_frame)</td></tr>
+<tr class="separator:a7564e59e35a0ba92812018e6ff847141"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9d9ad905beac19a35c93ee874a2c84c"><td class="memItemLeft" align="right" valign="top">static vector&lt; vector&lt; Point &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#ae9d9ad905beac19a35c93ee874a2c84c">quiet_halo_elim</a> (vector&lt; vector&lt; Point &gt;&gt; contours, vector&lt; Point &gt; bigone)</td></tr>
+<tr class="separator:ae9d9ad905beac19a35c93ee874a2c84c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefb0c1bc7ceed8e1df9cb033fbc5b6a4"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#aefb0c1bc7ceed8e1df9cb033fbc5b6a4">tier_one</a> (int cnt, Mat in_frame, vector&lt; Point &gt; bigone)</td></tr>
+<tr class="separator:aefb0c1bc7ceed8e1df9cb033fbc5b6a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af68a26eb7b7f9df708af2adffc9bb826"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#af68a26eb7b7f9df708af2adffc9bb826">tier_two</a> (int cnt, Mat in_frame, vector&lt; Point &gt; bigone)</td></tr>
+<tr class="separator:af68a26eb7b7f9df708af2adffc9bb826"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5e2d4f3ec9c6dba1ea50fe053228b0e"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#af5e2d4f3ec9c6dba1ea50fe053228b0e">tier_three</a> (int cnt, Mat in_frame, Mat old_frame, vector&lt; Point &gt; bigone)</td></tr>
+<tr class="separator:af5e2d4f3ec9c6dba1ea50fe053228b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4045b12a555baf914c7c11f9d92f3c3f"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a4045b12a555baf914c7c11f9d92f3c3f">tier_four</a> (int cnt, Mat in_frame, Mat old_frame, vector&lt; Point &gt; bigone)</td></tr>
+<tr class="separator:a4045b12a555baf914c7c11f9d92f3c3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3f0a97a7bf6dcfbb91ffdbc9997841f"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#ae3f0a97a7bf6dcfbb91ffdbc9997841f">parse_checklist</a> (std::string name, std::string value)</td></tr>
 <tr class="separator:ae3f0a97a7bf6dcfbb91ffdbc9997841f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5b18af36c3bf024f8a2dc5c4fe4242b"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#ae5b18af36c3bf024f8a2dc5c4fe4242b">out_frame_gen</a> (int framecnt)</td></tr>
@@ -245,6 +245,14 @@ Variables</h2></td></tr>
 <tr class="separator:ab4a8b7063262f24b88b18e8fc87ef249"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dac10009ab7d65a666e505012a79722"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a9dac10009ab7d65a666e505012a79722">BLACKOUT_THRESH</a> = 51</td></tr>
 <tr class="separator:a9dac10009ab7d65a666e505012a79722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeea4b78659f16fb276d7a18056557b21"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#aeea4b78659f16fb276d7a18056557b21">QHE_GB_KERNEL_X</a> = 15</td></tr>
+<tr class="separator:aeea4b78659f16fb276d7a18056557b21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae528b26104cf3efbaa603349b0de72dd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#ae528b26104cf3efbaa603349b0de72dd">QHE_GB_KERNEL_Y</a> = 15</td></tr>
+<tr class="separator:ae528b26104cf3efbaa603349b0de72dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7f767bdb807131c04268d9a626940d0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#ad7f767bdb807131c04268d9a626940d0">QHE_GB_SIGMA_X</a> = 1</td></tr>
+<tr class="separator:ad7f767bdb807131c04268d9a626940d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4111a02865ed1f29b7eb2c931c67fb82"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a4111a02865ed1f29b7eb2c931c67fb82">QHE_GB_SIGMA_Y</a> = 1</td></tr>
+<tr class="separator:a4111a02865ed1f29b7eb2c931c67fb82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a653f64d9971448710226dc272ea46d3f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a653f64d9971448710226dc272ea46d3f">T1_AT_MAX</a> = 255</td></tr>
 <tr class="separator:a653f64d9971448710226dc272ea46d3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b965756b91cadfff1e64d0efccac874"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="frame__extraction_8hpp.html#a0b965756b91cadfff1e64d0efccac874">T1_AT_BLOCKSIZE</a> = 65</td></tr>
@@ -566,32 +574,6 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a510acbf4ec2b1b348a2c1ca1de901677"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a510acbf4ec2b1b348a2c1ca1de901677">&#9670;&nbsp;</a></span>fetch_dynamic_mask()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static vector&lt;vector&lt;Point&gt; &gt; fetch_dynamic_mask </td>
-          <td>(</td>
-          <td class="paramtype">Mat&#160;</td>
-          <td class="paramname"><em>in_frame</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a2dab519501e6a1106a8b0b2cbfd52511"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2dab519501e6a1106a8b0b2cbfd52511">&#9670;&nbsp;</a></span>first_frame()</h2>
 
@@ -793,35 +775,35 @@ Here is the call graph for this function:</div>
 <area shape="rect" id="node2" href="frame__extraction_8cpp.html#a89a8322bea357674e81ba9cbdefe0378" title="signal_callback_handler" alt="" coords="104,5,264,32"/>
 <area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5c53b5dffc43d3917a312ade756e53ee" title="show_usage" alt="" coords="137,56,231,83"/>
 <area shape="rect" id="node4" href="frame__extraction_8cpp.html#aaee2ca25c5f0d375d48ec5b88dd6c1b3" title="parse_checklist" alt="" coords="127,107,241,133"/>
-<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="733,639,836,665"/>
-<area shape="rect" id="node6" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="729,867,840,893"/>
-<area shape="rect" id="node7" href="frame__extraction_8cpp.html#a032ee30a958a27cdb3d5b419953ab584" title="touching_edges" alt="" coords="333,360,446,387"/>
-<area shape="rect" id="node8" href="frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511" title="first_frame" alt="" coords="142,259,226,285"/>
-<area shape="rect" id="node12" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="107,563,261,589"/>
-<area shape="rect" id="node19" href="frame__extraction_8cpp.html#ae5b18af36c3bf024f8a2dc5c4fe4242b" title="out_frame_gen" alt="" coords="130,664,238,691"/>
-<area shape="rect" id="node20" href="frame__extraction_8cpp.html#a4f9b7b156d48ad3f147ff2b4edc01509" title="tier_one" alt="" coords="355,867,423,893"/>
-<area shape="rect" id="node24" href="frame__extraction_8cpp.html#ad19a4b05d920662cf30fbbdfc56264c3" title="tier_two" alt="" coords="355,1019,423,1045"/>
-<area shape="rect" id="node25" href="frame__extraction_8cpp.html#a7e416aa918214bbc26d5a68f7da0138d" title="tier_three" alt="" coords="351,917,427,944"/>
-<area shape="rect" id="node26" href="frame__extraction_8cpp.html#a1835862c7afe0c2ea6a51fc984bc49e7" title="tier_four" alt="" coords="355,968,424,995"/>
-<area shape="rect" id="node27" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="125,1297,243,1324"/>
-<area shape="rect" id="node9" href="frame__extraction_8cpp.html#a8b5c97016e3cad4475344f33f288bed4" title="min_square_dim" alt="" coords="331,208,448,235"/>
-<area shape="rect" id="node10" href="frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="347,309,431,336"/>
-<area shape="rect" id="node11" href="frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="557,411,639,437"/>
-<area shape="rect" id="node13" href="frame__extraction_8cpp.html#a5ef2b91877d44dada29b478b53744af6" title="test_edges" alt="" coords="346,563,433,589"/>
-<area shape="rect" id="node14" href="frame__extraction_8cpp.html#afae27f2c8807b9a09243b93d512b504c" title="shift_frame" alt="" coords="346,613,433,640"/>
-<area shape="rect" id="node15" href="frame__extraction_8cpp.html#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1" title="edge_width" alt="" coords="345,664,433,691"/>
-<area shape="rect" id="node16" href="frame__extraction_8cpp.html#a3eefea9d7b7944b3c17145bf1f42ca1f" title="edge_height" alt="" coords="343,715,435,741"/>
-<area shape="rect" id="node17" href="frame__extraction_8cpp.html#a8f336c75968d8ab7d3aa3c5c8ff74dbb" title="traditional_centering" alt="" coords="320,765,459,792"/>
-<area shape="rect" id="node18" href="frame__extraction_8cpp.html#a3fe52ab2a13802c64a500f3b3fac618c" title="box_data" alt="" coords="352,512,427,539"/>
-<area shape="rect" id="node21" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="525,943,671,969"/>
-<area shape="rect" id="node22" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="524,841,672,868"/>
-<area shape="rect" id="node23" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="542,993,654,1020"/>
-<area shape="rect" id="node28" href="frame__extraction_8cpp.html#a272c8275ab7a0918c5e6c9acf9afda50" title="generate_slideshow" alt="" coords="321,1348,458,1375"/>
-<area shape="rect" id="node31" href="frame__extraction_8cpp.html#a7e01b11733281d89519fef4c5abf705c" title="edit_contours_for_crop" alt="" coords="312,1247,467,1273"/>
-<area shape="rect" id="node32" href="frame__extraction_8cpp.html#a579a6e5cf9846789c07a88e72ef4a7a7" title="concat_tiers" alt="" coords="343,1297,436,1324"/>
-<area shape="rect" id="node33" href="frame__extraction_8cpp.html#aaf7c365254fb30ce3015aded4fdf1c9d" title="off_screen_ellipse" alt="" coords="326,1399,453,1425"/>
-<area shape="rect" id="node29" href="frame__extraction_8cpp.html#a6aa2b943656a2bdc7bbb9a4f9e1adcd1" title="space_space" alt="" coords="549,1297,647,1324"/>
-<area shape="rect" id="node30" href="frame__extraction_8cpp.html#ae3cfeeb43523e31ac7eebd51dbf58f9c" title="get_max_ellipse_params" alt="" coords="515,1348,681,1375"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a6aa2b943656a2bdc7bbb9a4f9e1adcd1" title="space_space" alt="" coords="549,1272,647,1299"/>
+<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="752,512,855,539"/>
+<area shape="rect" id="node7" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="748,765,859,792"/>
+<area shape="rect" id="node8" href="frame__extraction_8cpp.html#a032ee30a958a27cdb3d5b419953ab584" title="touching_edges" alt="" coords="333,461,446,488"/>
+<area shape="rect" id="node9" href="frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511" title="first_frame" alt="" coords="142,259,226,285"/>
+<area shape="rect" id="node13" href="frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="107,639,261,665"/>
+<area shape="rect" id="node20" href="frame__extraction_8cpp.html#ae5b18af36c3bf024f8a2dc5c4fe4242b" title="out_frame_gen" alt="" coords="130,917,238,944"/>
+<area shape="rect" id="node21" href="frame__extraction_8cpp.html#a7564e59e35a0ba92812018e6ff847141" title="qhe_bigone" alt="" coords="554,233,642,260"/>
+<area shape="rect" id="node22" href="frame__extraction_8cpp.html#a26d746fc8b9f07ddace0bc9eef68c1c1" title="tier_one" alt="" coords="564,917,632,944"/>
+<area shape="rect" id="node25" href="frame__extraction_8cpp.html#ad1e0683d8ff18ab579fbb2fcce6da1cc" title="tier_two" alt="" coords="564,968,632,995"/>
+<area shape="rect" id="node26" href="frame__extraction_8cpp.html#a001a4318d62e5fcdb8b910d1f4dbab36" title="tier_three" alt="" coords="560,816,636,843"/>
+<area shape="rect" id="node27" href="frame__extraction_8cpp.html#abf1a9d948afc821690ec8c5c13dcee07" title="tier_four" alt="" coords="563,867,633,893"/>
+<area shape="rect" id="node28" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="125,1221,243,1248"/>
+<area shape="rect" id="node10" href="frame__extraction_8cpp.html#a8b5c97016e3cad4475344f33f288bed4" title="min_square_dim" alt="" coords="331,208,448,235"/>
+<area shape="rect" id="node11" href="frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="347,411,431,437"/>
+<area shape="rect" id="node12" href="frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="557,512,639,539"/>
+<area shape="rect" id="node14" href="frame__extraction_8cpp.html#a5ef2b91877d44dada29b478b53744af6" title="test_edges" alt="" coords="346,613,433,640"/>
+<area shape="rect" id="node15" href="frame__extraction_8cpp.html#afae27f2c8807b9a09243b93d512b504c" title="shift_frame" alt="" coords="346,664,433,691"/>
+<area shape="rect" id="node16" href="frame__extraction_8cpp.html#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1" title="edge_width" alt="" coords="345,715,433,741"/>
+<area shape="rect" id="node17" href="frame__extraction_8cpp.html#a3eefea9d7b7944b3c17145bf1f42ca1f" title="edge_height" alt="" coords="343,765,435,792"/>
+<area shape="rect" id="node18" href="frame__extraction_8cpp.html#a8f336c75968d8ab7d3aa3c5c8ff74dbb" title="traditional_centering" alt="" coords="320,816,459,843"/>
+<area shape="rect" id="node19" href="frame__extraction_8cpp.html#a3fe52ab2a13802c64a500f3b3fac618c" title="box_data" alt="" coords="352,867,427,893"/>
+<area shape="rect" id="node23" href="frame__extraction_8cpp.html#adb0537fa8d7c5a8932f1abc66ee3d3f3" title="apply_dynamic_mask" alt="" coords="729,867,877,893"/>
+<area shape="rect" id="node24" href="frame__extraction_8cpp.html#ae9d9ad905beac19a35c93ee874a2c84c" title="quiet_halo_elim" alt="" coords="747,917,859,944"/>
+<area shape="rect" id="node29" href="frame__extraction_8cpp.html#a272c8275ab7a0918c5e6c9acf9afda50" title="generate_slideshow" alt="" coords="321,1171,458,1197"/>
+<area shape="rect" id="node31" href="frame__extraction_8cpp.html#a7e01b11733281d89519fef4c5abf705c" title="edit_contours_for_crop" alt="" coords="312,1221,467,1248"/>
+<area shape="rect" id="node32" href="frame__extraction_8cpp.html#a579a6e5cf9846789c07a88e72ef4a7a7" title="concat_tiers" alt="" coords="343,1323,436,1349"/>
+<area shape="rect" id="node33" href="frame__extraction_8cpp.html#aaf7c365254fb30ce3015aded4fdf1c9d" title="off_screen_ellipse" alt="" coords="326,1272,453,1299"/>
+<area shape="rect" id="node30" href="frame__extraction_8cpp.html#ae3cfeeb43523e31ac7eebd51dbf58f9c" title="get_max_ellipse_params" alt="" coords="515,1171,681,1197"/>
 </map>
 </div>
 
@@ -982,8 +964,34 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a1005043d0919694aa2b5ec4fac47bc14"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1005043d0919694aa2b5ec4fac47bc14">&#9670;&nbsp;</a></span>quiet_halo_elim()</h2>
+<a id="a7564e59e35a0ba92812018e6ff847141"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7564e59e35a0ba92812018e6ff847141">&#9670;&nbsp;</a></span>qhe_bigone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static vector&lt;Point&gt; qhe_bigone </td>
+          <td>(</td>
+          <td class="paramtype">Mat&#160;</td>
+          <td class="paramname"><em>in_frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae9d9ad905beac19a35c93ee874a2c84c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9d9ad905beac19a35c93ee874a2c84c">&#9670;&nbsp;</a></span>quiet_halo_elim()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -995,8 +1003,18 @@ Here is the caller graph for this function:</div>
           <td class="memname">static vector&lt;vector&lt;Point&gt; &gt; quiet_halo_elim </td>
           <td>(</td>
           <td class="paramtype">vector&lt; vector&lt; Point &gt;&gt;&#160;</td>
-          <td class="paramname"><em>contours</em></td><td>)</td>
+          <td class="paramname"><em>contours</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>bigone</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -1146,10 +1164,10 @@ Here is the caller graph for this function:</div>
 <div class="center"><img src="frame__extraction_8hpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1_icgraph.png" border="0" usemap="#frame__extraction_8hpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1_icgraph" alt=""/></div>
 <map name="frame__extraction_8hpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1_icgraph" id="frame__extraction_8hpp_a6aa2b943656a2bdc7bbb9a4f9e1adcd1_icgraph">
 <area shape="rect" id="node2" href="frame__extraction_8cpp.html#a7e01b11733281d89519fef4c5abf705c" title="edit_contours_for_crop" alt="" coords="152,5,307,32"/>
+<area shape="rect" id="node4" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="520,132,571,159"/>
 <area shape="rect" id="node5" href="frame__extraction_8cpp.html#a272c8275ab7a0918c5e6c9acf9afda50" title="generate_slideshow" alt="" coords="161,56,298,83"/>
 <area shape="rect" id="node6" href="frame__extraction_8cpp.html#a579a6e5cf9846789c07a88e72ef4a7a7" title="concat_tiers" alt="" coords="183,107,276,133"/>
-<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="355,56,472,83"/>
-<area shape="rect" id="node4" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="520,56,571,83"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="355,81,472,108"/>
 </map>
 </div>
 
@@ -1197,8 +1215,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a9f92f407caae6f336f0497d00ea27af5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9f92f407caae6f336f0497d00ea27af5">&#9670;&nbsp;</a></span>tier_four()</h2>
+<a id="a4045b12a555baf914c7c11f9d92f3c3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4045b12a555baf914c7c11f9d92f3c3f">&#9670;&nbsp;</a></span>tier_four()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1222,7 +1240,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Mat&#160;</td>
-          <td class="paramname"><em>old_frame</em>&#160;</td>
+          <td class="paramname"><em>old_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>bigone</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1242,6 +1266,7 @@ Here is the caller graph for this function:</div>
     <tr><td class="paramname">framecnt</td><td>int of nth frame retrieved by program </td></tr>
     <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
     <tr><td class="paramname">old_frame</td><td>OpenCV matrix image, 16-bit single depth format, stored from previous cycle </td></tr>
+    <tr><td class="paramname">bigone</td><td>vector of Opencv Points representing the largest contour from qhe_bigone </td></tr>
   </table>
   </dd>
 </dl>
@@ -1249,28 +1274,27 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_cgraph.png" border="0" usemap="#frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_cgraph" alt=""/></div>
-<map name="frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_cgraph" id="frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_cgraph">
-<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="123,36,270,62"/>
-<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="323,10,425,37"/>
-<area shape="rect" id="node4" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="319,86,429,113"/>
-<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="123,137,271,164"/>
-<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="141,188,253,214"/>
+<div class="center"><img src="frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_cgraph.png" border="0" usemap="#frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_cgraph" alt=""/></div>
+<map name="frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_cgraph" id="frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#adb0537fa8d7c5a8932f1abc66ee3d3f3" title="apply_dynamic_mask" alt="" coords="123,5,271,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="145,56,248,83"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#ae9d9ad905beac19a35c93ee874a2c84c" title="quiet_halo_elim" alt="" coords="141,107,253,133"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="141,157,252,184"/>
 </map>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_icgraph.png" border="0" usemap="#frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_icgraph" alt=""/></div>
-<map name="frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_icgraph" id="frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_icgraph">
+<div class="center"><img src="frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_icgraph.png" border="0" usemap="#frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_icgraph" alt=""/></div>
+<map name="frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_icgraph" id="frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_icgraph">
 <area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="123,5,173,32"/>
 </map>
 </div>
 
 </div>
 </div>
-<a id="ae11f912f6b32c3d1d721dd94d516080e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae11f912f6b32c3d1d721dd94d516080e">&#9670;&nbsp;</a></span>tier_one()</h2>
+<a id="aefb0c1bc7ceed8e1df9cb033fbc5b6a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefb0c1bc7ceed8e1df9cb033fbc5b6a4">&#9670;&nbsp;</a></span>tier_one()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1288,7 +1312,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Mat&#160;</td>
-          <td class="paramname"><em>in_frame</em>&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>bigone</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1307,6 +1337,7 @@ Here is the caller graph for this function:</div>
   <table class="params">
     <tr><td class="paramname">framecnt</td><td>int of nth frame retrieved by program </td></tr>
     <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">bigone</td><td>vector of Opencv Points representing the largest contour from qhe_bigone </td></tr>
   </table>
   </dd>
 </dl>
@@ -1314,28 +1345,27 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_cgraph.png" border="0" usemap="#frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_cgraph" alt=""/></div>
-<map name="frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_cgraph" id="frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_cgraph">
-<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="122,36,269,62"/>
-<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="321,10,424,37"/>
-<area shape="rect" id="node4" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="317,86,428,113"/>
-<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="121,137,269,164"/>
-<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="139,188,251,214"/>
+<div class="center"><img src="frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_cgraph.png" border="0" usemap="#frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_cgraph" alt=""/></div>
+<map name="frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_cgraph" id="frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#adb0537fa8d7c5a8932f1abc66ee3d3f3" title="apply_dynamic_mask" alt="" coords="121,5,269,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="144,56,247,83"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#ae9d9ad905beac19a35c93ee874a2c84c" title="quiet_halo_elim" alt="" coords="139,107,251,133"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="140,157,251,184"/>
 </map>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_icgraph.png" border="0" usemap="#frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_icgraph" alt=""/></div>
-<map name="frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_icgraph" id="frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_icgraph">
+<div class="center"><img src="frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_icgraph.png" border="0" usemap="#frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_icgraph" alt=""/></div>
+<map name="frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_icgraph" id="frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_icgraph">
 <area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="121,5,172,32"/>
 </map>
 </div>
 
 </div>
 </div>
-<a id="ae7aad51af21259176b3a70562e0609b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae7aad51af21259176b3a70562e0609b4">&#9670;&nbsp;</a></span>tier_three()</h2>
+<a id="af5e2d4f3ec9c6dba1ea50fe053228b0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5e2d4f3ec9c6dba1ea50fe053228b0e">&#9670;&nbsp;</a></span>tier_three()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1359,7 +1389,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Mat&#160;</td>
-          <td class="paramname"><em>old_frame</em>&#160;</td>
+          <td class="paramname"><em>old_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>bigone</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1379,6 +1415,7 @@ Here is the caller graph for this function:</div>
     <tr><td class="paramname">framecnt</td><td>int of nth frame retrieved by program </td></tr>
     <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
     <tr><td class="paramname">old_frame</td><td>OpenCV matrix image, 16-bit single depth format, stored from previous cycle </td></tr>
+    <tr><td class="paramname">bigone</td><td>vector of Opencv Points representing the largest contour from qhe_bigone </td></tr>
   </table>
   </dd>
 </dl>
@@ -1386,28 +1423,27 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_cgraph.png" border="0" usemap="#frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_cgraph" alt=""/></div>
-<map name="frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_cgraph" id="frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_cgraph">
-<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="130,35,277,62"/>
-<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="329,10,432,37"/>
-<area shape="rect" id="node4" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="325,86,436,113"/>
-<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="129,137,277,163"/>
-<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="147,187,259,214"/>
+<div class="center"><img src="frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_cgraph.png" border="0" usemap="#frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_cgraph" alt=""/></div>
+<map name="frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_cgraph" id="frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#adb0537fa8d7c5a8932f1abc66ee3d3f3" title="apply_dynamic_mask" alt="" coords="129,5,277,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="152,56,255,83"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#ae9d9ad905beac19a35c93ee874a2c84c" title="quiet_halo_elim" alt="" coords="147,107,259,133"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="148,157,259,184"/>
 </map>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_icgraph.png" border="0" usemap="#frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_icgraph" alt=""/></div>
-<map name="frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_icgraph" id="frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_icgraph">
+<div class="center"><img src="frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_icgraph.png" border="0" usemap="#frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_icgraph" alt=""/></div>
+<map name="frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_icgraph" id="frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_icgraph">
 <area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="129,5,180,32"/>
 </map>
 </div>
 
 </div>
 </div>
-<a id="a65db50ecbbc291087ce1f3f9577ab44f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a65db50ecbbc291087ce1f3f9577ab44f">&#9670;&nbsp;</a></span>tier_two()</h2>
+<a id="af68a26eb7b7f9df708af2adffc9bb826"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af68a26eb7b7f9df708af2adffc9bb826">&#9670;&nbsp;</a></span>tier_two()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1425,7 +1461,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Mat&#160;</td>
-          <td class="paramname"><em>in_frame</em>&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vector&lt; Point &gt;&#160;</td>
+          <td class="paramname"><em>bigone</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1444,6 +1486,7 @@ Here is the caller graph for this function:</div>
   <table class="params">
     <tr><td class="paramname">framecnt</td><td>int of nth frame retrieved by program </td></tr>
     <tr><td class="paramname">in_frame</td><td>OpenCV matrix image, 16-bit single depth format </td></tr>
+    <tr><td class="paramname">bigone</td><td>vector of Opencv Points representing the largest contour from qhe_bigone </td></tr>
   </table>
   </dd>
 </dl>
@@ -1451,20 +1494,19 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_cgraph.png" border="0" usemap="#frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_cgraph" alt=""/></div>
-<map name="frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_cgraph" id="frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_cgraph">
-<area shape="rect" id="node2" href="frame__extraction_8cpp.html#a510acbf4ec2b1b348a2c1ca1de901677" title="fetch_dynamic_mask" alt="" coords="122,36,269,62"/>
-<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="321,10,424,37"/>
-<area shape="rect" id="node4" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="317,86,428,113"/>
-<area shape="rect" id="node5" href="frame__extraction_8cpp.html#a09f4cf8817c686df6a1992baf222b97a" title="apply_dynamic_mask" alt="" coords="121,137,269,164"/>
-<area shape="rect" id="node6" href="frame__extraction_8cpp.html#a1005043d0919694aa2b5ec4fac47bc14" title="quiet_halo_elim" alt="" coords="139,188,251,214"/>
+<div class="center"><img src="frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_cgraph.png" border="0" usemap="#frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_cgraph" alt=""/></div>
+<map name="frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_cgraph" id="frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_cgraph">
+<area shape="rect" id="node2" href="frame__extraction_8cpp.html#adb0537fa8d7c5a8932f1abc66ee3d3f3" title="apply_dynamic_mask" alt="" coords="121,5,269,32"/>
+<area shape="rect" id="node3" href="frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="144,56,247,83"/>
+<area shape="rect" id="node4" href="frame__extraction_8cpp.html#ae9d9ad905beac19a35c93ee874a2c84c" title="quiet_halo_elim" alt="" coords="139,107,251,133"/>
+<area shape="rect" id="node5" href="frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="140,157,251,184"/>
 </map>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_icgraph.png" border="0" usemap="#frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_icgraph" alt=""/></div>
-<map name="frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_icgraph" id="frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_icgraph">
+<div class="center"><img src="frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_icgraph.png" border="0" usemap="#frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_icgraph" alt=""/></div>
+<map name="frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_icgraph" id="frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_icgraph">
 <area shape="rect" id="node2" href="frame__extraction_8hpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="121,5,172,32"/>
 </map>
 </div>
@@ -1928,6 +1970,66 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 <p>The directory where the output data should be put. Default creates a new directory. No quotation marks. Requires a leading slash and trailing slash (e.g. /test/) User configurable from settings.cfg </p>
+
+</div>
+</div>
+<a id="aeea4b78659f16fb276d7a18056557b21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeea4b78659f16fb276d7a18056557b21">&#9670;&nbsp;</a></span>QHE_GB_KERNEL_X</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int QHE_GB_KERNEL_X = 15</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Gaussian Blur X kernel size for QHE Bigone. User configurable from settings.cfg </p>
+
+</div>
+</div>
+<a id="ae528b26104cf3efbaa603349b0de72dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae528b26104cf3efbaa603349b0de72dd">&#9670;&nbsp;</a></span>QHE_GB_KERNEL_Y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int QHE_GB_KERNEL_Y = 15</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Gaussian Blur Y kernel size for QHE Bigone. User configurable from settings.cfg </p>
+
+</div>
+</div>
+<a id="ad7f767bdb807131c04268d9a626940d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7f767bdb807131c04268d9a626940d0">&#9670;&nbsp;</a></span>QHE_GB_SIGMA_X</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double QHE_GB_SIGMA_X = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Gaussian Blur sigma x value for QHE Bigone. User configurable from settings.cfg </p>
+
+</div>
+</div>
+<a id="a4111a02865ed1f29b7eb2c931c67fb82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4111a02865ed1f29b7eb2c931c67fb82">&#9670;&nbsp;</a></span>QHE_GB_SIGMA_Y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double QHE_GB_SIGMA_Y = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Gaussian Blur sigma y value for QHE Bigone. User configurable from settings.cfg </p>
 
 </div>
 </div>

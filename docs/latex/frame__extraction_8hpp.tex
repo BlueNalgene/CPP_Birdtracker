@@ -65,8 +65,6 @@ static Mat \hyperlink{frame__extraction_8hpp_a020638e44cbbdfbe5a689c61c4bec371}{
 \item 
 static void \hyperlink{frame__extraction_8hpp_aade1bdfa6306f0627b8a1fe204aacfab}{signal\+\_\+callback\+\_\+handler} (int signum)
 \item 
-static vector$<$ vector$<$ Point $>$ $>$ \hyperlink{frame__extraction_8hpp_a510acbf4ec2b1b348a2c1ca1de901677}{fetch\+\_\+dynamic\+\_\+mask} (Mat in\+\_\+frame)
-\item 
 static Mat \hyperlink{frame__extraction_8hpp_a09f4cf8817c686df6a1992baf222b97a}{apply\+\_\+dynamic\+\_\+mask} (Mat in\+\_\+frame, vector$<$ vector$<$ Point $>$$>$ contours, int maskwidth)
 \item 
 static int \hyperlink{frame__extraction_8hpp_abc90f05608032b4730869812a513267f}{largest\+\_\+contour} (vector$<$ vector$<$ Point $>$$>$ contours)
@@ -79,15 +77,17 @@ static int \hyperlink{frame__extraction_8hpp_a3fe52ab2a13802c64a500f3b3fac618c}{
 \item 
 static int \hyperlink{frame__extraction_8hpp_a5c53b5dffc43d3917a312ade756e53ee}{show\+\_\+usage} (string name)
 \item 
-static vector$<$ vector$<$ Point $>$ $>$ \hyperlink{frame__extraction_8hpp_a1005043d0919694aa2b5ec4fac47bc14}{quiet\+\_\+halo\+\_\+elim} (vector$<$ vector$<$ Point $>$$>$ contours)
+static vector$<$ Point $>$ \hyperlink{frame__extraction_8hpp_a7564e59e35a0ba92812018e6ff847141}{qhe\+\_\+bigone} (Mat in\+\_\+frame)
 \item 
-static int \hyperlink{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e}{tier\+\_\+one} (int cnt, Mat in\+\_\+frame)
+static vector$<$ vector$<$ Point $>$ $>$ \hyperlink{frame__extraction_8hpp_ae9d9ad905beac19a35c93ee874a2c84c}{quiet\+\_\+halo\+\_\+elim} (vector$<$ vector$<$ Point $>$$>$ contours, vector$<$ Point $>$ bigone)
 \item 
-static int \hyperlink{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f}{tier\+\_\+two} (int cnt, Mat in\+\_\+frame)
+static int \hyperlink{frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4}{tier\+\_\+one} (int cnt, Mat in\+\_\+frame, vector$<$ Point $>$ bigone)
 \item 
-static int \hyperlink{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4}{tier\+\_\+three} (int cnt, Mat in\+\_\+frame, Mat old\+\_\+frame)
+static int \hyperlink{frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826}{tier\+\_\+two} (int cnt, Mat in\+\_\+frame, vector$<$ Point $>$ bigone)
 \item 
-static int \hyperlink{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5}{tier\+\_\+four} (int cnt, Mat in\+\_\+frame, Mat old\+\_\+frame)
+static int \hyperlink{frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e}{tier\+\_\+three} (int cnt, Mat in\+\_\+frame, Mat old\+\_\+frame, vector$<$ Point $>$ bigone)
+\item 
+static int \hyperlink{frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f}{tier\+\_\+four} (int cnt, Mat in\+\_\+frame, Mat old\+\_\+frame, vector$<$ Point $>$ bigone)
 \item 
 static int \hyperlink{frame__extraction_8hpp_ae3f0a97a7bf6dcfbb91ffdbc9997841f}{parse\+\_\+checklist} (std\+::string name, std\+::string value)
 \item 
@@ -177,6 +177,14 @@ int \hyperlink{frame__extraction_8hpp_a2332079d8f52c6b83c3ad88bc07d7fc0}{E\+D\+G
 int \hyperlink{frame__extraction_8hpp_ab4a8b7063262f24b88b18e8fc87ef249}{Q\+H\+E\+\_\+\+W\+I\+D\+TH} = 10
 \item 
 int \hyperlink{frame__extraction_8hpp_a9dac10009ab7d65a666e505012a79722}{B\+L\+A\+C\+K\+O\+U\+T\+\_\+\+T\+H\+R\+E\+SH} = 51
+\item 
+int \hyperlink{frame__extraction_8hpp_aeea4b78659f16fb276d7a18056557b21}{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+X} = 15
+\item 
+int \hyperlink{frame__extraction_8hpp_ae528b26104cf3efbaa603349b0de72dd}{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+Y} = 15
+\item 
+double \hyperlink{frame__extraction_8hpp_ad7f767bdb807131c04268d9a626940d0}{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+X} = 1
+\item 
+double \hyperlink{frame__extraction_8hpp_a4111a02865ed1f29b7eb2c931c67fb82}{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+Y} = 1
 \item 
 double \hyperlink{frame__extraction_8hpp_a653f64d9971448710226dc272ea46d3f}{T1\+\_\+\+A\+T\+\_\+\+M\+AX} = 255
 \item 
@@ -283,12 +291,6 @@ int \hyperlink{frame__extraction_8hpp_a25e7cae5e0555d85c848342cfa92686c}{T4\+\_\
 \subsubsection{\texorpdfstring{edge\+\_\+width()}{edge\_width()}}
 {\footnotesize\ttfamily static vector$<$int$>$ edge\+\_\+width (\begin{DoxyParamCaption}\item[{vector$<$ Point $>$}]{contour }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
-\mbox{\Hypertarget{frame__extraction_8hpp_a510acbf4ec2b1b348a2c1ca1de901677}\label{frame__extraction_8hpp_a510acbf4ec2b1b348a2c1ca1de901677}} 
-\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!fetch\+\_\+dynamic\+\_\+mask@{fetch\+\_\+dynamic\+\_\+mask}}
-\index{fetch\+\_\+dynamic\+\_\+mask@{fetch\+\_\+dynamic\+\_\+mask}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
-\subsubsection{\texorpdfstring{fetch\+\_\+dynamic\+\_\+mask()}{fetch\_dynamic\_mask()}}
-{\footnotesize\ttfamily static vector$<$vector$<$Point$>$ $>$ fetch\+\_\+dynamic\+\_\+mask (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
-
 \mbox{\Hypertarget{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}\label{frame__extraction_8hpp_a2dab519501e6a1106a8b0b2cbfd52511}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!first\+\_\+frame@{first\+\_\+frame}}
 \index{first\+\_\+frame@{first\+\_\+frame}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
@@ -337,11 +339,12 @@ Main loop
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[height=550pt]{frame__extraction_8hpp_a0ddf1224851353fc92bfbff6f499fa97_cgraph}
+\includegraphics[width=350pt]{frame__extraction_8hpp_a0ddf1224851353fc92bfbff6f499fa97_cgraph}
 \end{center}
 \end{figure}
 \mbox{\Hypertarget{frame__extraction_8hpp_a8b5c97016e3cad4475344f33f288bed4}\label{frame__extraction_8hpp_a8b5c97016e3cad4475344f33f288bed4}} 
@@ -380,7 +383,8 @@ This function handles the strings and values parsed from the settings.\+cfg file
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -393,11 +397,17 @@ Here is the caller graph for this function\+:\nopagebreak
 \subsubsection{\texorpdfstring{post\+\_\+processing()}{post\_processing()}}
 {\footnotesize\ttfamily static int post\+\_\+processing (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
-\mbox{\Hypertarget{frame__extraction_8hpp_a1005043d0919694aa2b5ec4fac47bc14}\label{frame__extraction_8hpp_a1005043d0919694aa2b5ec4fac47bc14}} 
+\mbox{\Hypertarget{frame__extraction_8hpp_a7564e59e35a0ba92812018e6ff847141}\label{frame__extraction_8hpp_a7564e59e35a0ba92812018e6ff847141}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!qhe\+\_\+bigone@{qhe\+\_\+bigone}}
+\index{qhe\+\_\+bigone@{qhe\+\_\+bigone}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{qhe\+\_\+bigone()}{qhe\_bigone()}}
+{\footnotesize\ttfamily static vector$<$Point$>$ qhe\+\_\+bigone (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{frame__extraction_8hpp_ae9d9ad905beac19a35c93ee874a2c84c}\label{frame__extraction_8hpp_ae9d9ad905beac19a35c93ee874a2c84c}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!quiet\+\_\+halo\+\_\+elim@{quiet\+\_\+halo\+\_\+elim}}
 \index{quiet\+\_\+halo\+\_\+elim@{quiet\+\_\+halo\+\_\+elim}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{quiet\+\_\+halo\+\_\+elim()}{quiet\_halo\_elim()}}
-{\footnotesize\ttfamily static vector$<$vector$<$Point$>$ $>$ quiet\+\_\+halo\+\_\+elim (\begin{DoxyParamCaption}\item[{vector$<$ vector$<$ Point $>$$>$}]{contours }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static vector$<$vector$<$Point$>$ $>$ quiet\+\_\+halo\+\_\+elim (\begin{DoxyParamCaption}\item[{vector$<$ vector$<$ Point $>$$>$}]{contours,  }\item[{vector$<$ Point $>$}]{bigone }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 \mbox{\Hypertarget{frame__extraction_8hpp_afae27f2c8807b9a09243b93d512b504c}\label{frame__extraction_8hpp_afae27f2c8807b9a09243b93d512b504c}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!shift\+\_\+frame@{shift\+\_\+frame}}
@@ -447,7 +457,8 @@ This helper function handles spaces in user paths.
 \begin{DoxyReturn}{Returns}
 outstring the corrected string 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -460,11 +471,11 @@ Here is the caller graph for this function\+:\nopagebreak
 \subsubsection{\texorpdfstring{test\+\_\+edges()}{test\_edges()}}
 {\footnotesize\ttfamily static vector$<$int$>$ test\+\_\+edges (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{vector$<$ Point $>$}]{contour,  }\item[{int}]{te\+\_\+ret }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
-\mbox{\Hypertarget{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5}\label{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5}} 
+\mbox{\Hypertarget{frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f}\label{frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!tier\+\_\+four@{tier\+\_\+four}}
 \index{tier\+\_\+four@{tier\+\_\+four}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{tier\+\_\+four()}{tier\_four()}}
-{\footnotesize\ttfamily static int tier\+\_\+four (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame,  }\item[{Mat}]{old\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static int tier\+\_\+four (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame,  }\item[{Mat}]{old\+\_\+frame,  }\item[{vector$<$ Point $>$}]{bigone }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 This is the fourth pass to detect valid contours in a frame. The parameters of the function are set in the T4 section of settings.\+cfg. This is the Un\+Canny method for detecting motion. The steps are essentially the backward operation of the steps taken during Canny filtering. The current frame is subtracted from the previous frame, and this output is threholded. The thresholded image is then passed through directional Sobel filters to separate the x and y components. These components are squared, added to each other, and square rooted. The output is rescaled to match the input value ranges, and a Gaussian blur is applied. Since this output is messy, the blurry image is processed using Zhang-\/\+Suen thinning to get distinct edges. Any details lost between the blurring and thinning steps reduce noise. Contours are then detected in the normal way.
 
@@ -476,29 +487,33 @@ This is the fourth pass to detect valid contours in a frame. The parameters of t
 \hline
 {\em old\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format, stored from previous cycle \\
 \hline
+{\em bigone} & vector of Opencv Points representing the largest contour from qhe\+\_\+bigone \\
+\hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_cgraph}
+\includegraphics[width=279pt]{frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=206pt]{frame__extraction_8hpp_a9f92f407caae6f336f0497d00ea27af5_icgraph}
+\includegraphics[width=206pt]{frame__extraction_8hpp_a4045b12a555baf914c7c11f9d92f3c3f_icgraph}
 \end{center}
 \end{figure}
-\mbox{\Hypertarget{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e}\label{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e}} 
+\mbox{\Hypertarget{frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4}\label{frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!tier\+\_\+one@{tier\+\_\+one}}
 \index{tier\+\_\+one@{tier\+\_\+one}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{tier\+\_\+one()}{tier\_one()}}
-{\footnotesize\ttfamily static int tier\+\_\+one (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static int tier\+\_\+one (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame,  }\item[{vector$<$ Point $>$}]{bigone }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 This is the first pass to detect valid contours in a frame. The parameters of the function are set in the T1 section of settings.\+cfg. Contours are detected based on a relatively strict Open\+CV adaptive\+Threshold function. These should be gauranteed \char`\"{}hits\char`\"{}.
 
@@ -508,29 +523,33 @@ This is the first pass to detect valid contours in a frame. The parameters of th
 \hline
 {\em in\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format \\
 \hline
+{\em bigone} & vector of Opencv Points representing the largest contour from qhe\+\_\+bigone \\
+\hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_cgraph}
+\includegraphics[width=278pt]{frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=205pt]{frame__extraction_8hpp_ae11f912f6b32c3d1d721dd94d516080e_icgraph}
+\includegraphics[width=205pt]{frame__extraction_8hpp_aefb0c1bc7ceed8e1df9cb033fbc5b6a4_icgraph}
 \end{center}
 \end{figure}
-\mbox{\Hypertarget{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4}\label{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4}} 
+\mbox{\Hypertarget{frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e}\label{frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!tier\+\_\+three@{tier\+\_\+three}}
 \index{tier\+\_\+three@{tier\+\_\+three}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{tier\+\_\+three()}{tier\_three()}}
-{\footnotesize\ttfamily static int tier\+\_\+three (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame,  }\item[{Mat}]{old\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static int tier\+\_\+three (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame,  }\item[{Mat}]{old\+\_\+frame,  }\item[{vector$<$ Point $>$}]{bigone }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 This is the third pass to detect valid contours in a frame. The parameters of the function are set in the T3 section of settings.\+cfg. The detector performs an isotropic Laplacian on the current frame and the previous frame (settings.\+cfg can be modified for anisotropic Laplacian). The outputs are blurred and recombined. Values passing a cutoff threshold are retained and the contours are detected.
 
@@ -542,29 +561,33 @@ This is the third pass to detect valid contours in a frame. The parameters of th
 \hline
 {\em old\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format, stored from previous cycle \\
 \hline
+{\em bigone} & vector of Opencv Points representing the largest contour from qhe\+\_\+bigone \\
+\hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_cgraph}
+\includegraphics[width=284pt]{frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=211pt]{frame__extraction_8hpp_ae7aad51af21259176b3a70562e0609b4_icgraph}
+\includegraphics[width=211pt]{frame__extraction_8hpp_af5e2d4f3ec9c6dba1ea50fe053228b0e_icgraph}
 \end{center}
 \end{figure}
-\mbox{\Hypertarget{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f}\label{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f}} 
+\mbox{\Hypertarget{frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826}\label{frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!tier\+\_\+two@{tier\+\_\+two}}
 \index{tier\+\_\+two@{tier\+\_\+two}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{tier\+\_\+two()}{tier\_two()}}
-{\footnotesize\ttfamily static int tier\+\_\+two (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static int tier\+\_\+two (\begin{DoxyParamCaption}\item[{int}]{framecnt,  }\item[{Mat}]{in\+\_\+frame,  }\item[{vector$<$ Point $>$}]{bigone }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 This is the second pass to detect valid contours in a frame. The parameters of the function are set in the T2 section of settings.\+cfg. Contours are detected based on a relatively loose Open\+CV adaptive\+Threshold function.
 
@@ -574,22 +597,26 @@ This is the second pass to detect valid contours in a frame. The parameters of t
 \hline
 {\em in\+\_\+frame} & Open\+CV matrix image, 16-\/bit single depth format \\
 \hline
+{\em bigone} & vector of Opencv Points representing the largest contour from qhe\+\_\+bigone \\
+\hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_cgraph}
+\includegraphics[width=278pt]{frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=205pt]{frame__extraction_8hpp_a65db50ecbbc291087ce1f3f9577ab44f_icgraph}
+\includegraphics[width=205pt]{frame__extraction_8hpp_af68a26eb7b7f9df708af2adffc9bb826_icgraph}
 \end{center}
 \end{figure}
 \mbox{\Hypertarget{frame__extraction_8hpp_a032ee30a958a27cdb3d5b419953ab584}\label{frame__extraction_8hpp_a032ee30a958a27cdb3d5b419953ab584}} 
@@ -757,7 +784,31 @@ Should the frame extractor output every frame with detected contours? User confi
 \subsubsection{\texorpdfstring{O\+U\+T\+P\+U\+T\+D\+IR}{OUTPUTDIR}}
 {\footnotesize\ttfamily std\+::string O\+U\+T\+P\+U\+T\+D\+IR = \char`\"{}Birdtracker\+\_\+\+Output/\char`\"{}}
 
-The directory where the output data should be put. Default creates a new directory. No quotation marks. Requires a leading slash and trailing slash (e.\+g. /test/) User configurable from settings.\+cfg \mbox{\Hypertarget{frame__extraction_8hpp_ab4a8b7063262f24b88b18e8fc87ef249}\label{frame__extraction_8hpp_ab4a8b7063262f24b88b18e8fc87ef249}} 
+The directory where the output data should be put. Default creates a new directory. No quotation marks. Requires a leading slash and trailing slash (e.\+g. /test/) User configurable from settings.\+cfg \mbox{\Hypertarget{frame__extraction_8hpp_aeea4b78659f16fb276d7a18056557b21}\label{frame__extraction_8hpp_aeea4b78659f16fb276d7a18056557b21}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+X@{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+X}}
+\index{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+X@{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+X}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+X}{QHE\_GB\_KERNEL\_X}}
+{\footnotesize\ttfamily int Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+X = 15}
+
+Gaussian Blur X kernel size for Q\+HE Bigone. User configurable from settings.\+cfg \mbox{\Hypertarget{frame__extraction_8hpp_ae528b26104cf3efbaa603349b0de72dd}\label{frame__extraction_8hpp_ae528b26104cf3efbaa603349b0de72dd}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+Y@{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+Y}}
+\index{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+Y@{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+Y}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+Y}{QHE\_GB\_KERNEL\_Y}}
+{\footnotesize\ttfamily int Q\+H\+E\+\_\+\+G\+B\+\_\+\+K\+E\+R\+N\+E\+L\+\_\+Y = 15}
+
+Gaussian Blur Y kernel size for Q\+HE Bigone. User configurable from settings.\+cfg \mbox{\Hypertarget{frame__extraction_8hpp_ad7f767bdb807131c04268d9a626940d0}\label{frame__extraction_8hpp_ad7f767bdb807131c04268d9a626940d0}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+X@{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+X}}
+\index{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+X@{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+X}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+X}{QHE\_GB\_SIGMA\_X}}
+{\footnotesize\ttfamily double Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+X = 1}
+
+Gaussian Blur sigma x value for Q\+HE Bigone. User configurable from settings.\+cfg \mbox{\Hypertarget{frame__extraction_8hpp_a4111a02865ed1f29b7eb2c931c67fb82}\label{frame__extraction_8hpp_a4111a02865ed1f29b7eb2c931c67fb82}} 
+\index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+Y@{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+Y}}
+\index{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+Y@{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+Y}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
+\subsubsection{\texorpdfstring{Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+Y}{QHE\_GB\_SIGMA\_Y}}
+{\footnotesize\ttfamily double Q\+H\+E\+\_\+\+G\+B\+\_\+\+S\+I\+G\+M\+A\+\_\+Y = 1}
+
+Gaussian Blur sigma y value for Q\+HE Bigone. User configurable from settings.\+cfg \mbox{\Hypertarget{frame__extraction_8hpp_ab4a8b7063262f24b88b18e8fc87ef249}\label{frame__extraction_8hpp_ab4a8b7063262f24b88b18e8fc87ef249}} 
 \index{frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}!Q\+H\+E\+\_\+\+W\+I\+D\+TH@{Q\+H\+E\+\_\+\+W\+I\+D\+TH}}
 \index{Q\+H\+E\+\_\+\+W\+I\+D\+TH@{Q\+H\+E\+\_\+\+W\+I\+D\+TH}!frame\+\_\+extraction.\+hpp@{frame\+\_\+extraction.\+hpp}}
 \subsubsection{\texorpdfstring{Q\+H\+E\+\_\+\+W\+I\+D\+TH}{QHE\_WIDTH}}
