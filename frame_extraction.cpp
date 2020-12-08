@@ -1325,6 +1325,9 @@ int tier_four(int framecnt, Mat in_frame, Mat old_frame, vector <Point> bigone) 
  * @return status
  */
 int parse_checklist(std::string name, std::string value) {
+	// Prep metadata file
+	std::ofstream metafile;
+	metafile.open(METADATA);
 	// Boolean cases
 	if (name == "DEBUG_COUT"
 		|| name == "DEBUG_FRAMES"
@@ -1335,6 +1338,9 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "CONCAT_TIERS"
 		|| name == "TIGHT_CROP"
 		) {
+		// Write the input to metadata file:
+		metafile << name << " = " << value;
+		metafile.close();
 		// Define booleans
 		bool result;
 		if (value == "true" || value == "True" || value == "TRUE") {
@@ -1386,6 +1392,10 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "QHE_GB_KERNEL_X"
 		|| name == "QHE_GB_KERNEL_Y"
 		) {
+		// Write the input to metadata file:
+		metafile << name << " = " << value;
+		metafile.close();
+		// Store value as apprpriate int
 		int result = std::stoi(value);
 		if (name == "EDGETHRESH") {
 			EDGETHRESH = result;
@@ -1446,6 +1456,10 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "QHE_GB_SIGMA_X"
 		|| name == "QHE_GB_SIGMA_Y"
 		) {
+		// Write the input to metadata file:
+		metafile << name << " = " << value;
+		metafile.close();
+		// Store value as relevant double
 		double result = std::stod(value);
 		if (name == "T1_AT_MAX") {
 			T1_AT_MAX = result;
@@ -1483,6 +1497,10 @@ int parse_checklist(std::string name, std::string value) {
 		if (name == "OSFPROJECT"
 		|| name == "OUTPUTDIR"
 		) {
+			// Write the input to metadata file:
+			metafile << name << " = " << value;
+			metafile.close();
+			// Store value as appropriate string
 			if (name == "OSFPROJECT") {
 				OSFPROJECT = value;
 			} else if (name == "OUTPUTDIR") {
