@@ -229,6 +229,29 @@ int BLACKOUT_THRESH = 51;
 
 
 /**
+ * Gaussian Blur X kernel size for QHE Bigone.
+ * User configurable from settings.cfg
+ */
+int QHE_GB_KERNEL_X = 15;
+/**
+ * Gaussian Blur Y kernel size for QHE Bigone.
+ * User configurable from settings.cfg
+ */
+int QHE_GB_KERNEL_Y = 15;
+/**
+ * Gaussian Blur sigma x value for QHE Bigone.
+ * User configurable from settings.cfg
+ */
+double QHE_GB_SIGMA_X = 1;
+/**
+ * Gaussian Blur sigma y value for QHE Bigone.
+ * User configurable from settings.cfg
+ */
+double QHE_GB_SIGMA_Y = 1;
+
+
+
+/**
  * Max value for adaptive threshold for Tier 1.
  * User configurable from settings.cfg
  */

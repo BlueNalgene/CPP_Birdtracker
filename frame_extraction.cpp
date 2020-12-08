@@ -887,9 +887,9 @@ static int show_usage(string name) {
 static vector <Point> qhe_bigone(Mat in_frame) {
 	
 	GaussianBlur(in_frame.clone(), in_frame,
-		Size(15, 15),
-		1,
-		1,
+		Size(QHE_GB_KERNEL_X, QHE_GB_KERNEL_Y),
+		QHE_GB_SIGMA_X,
+		QHE_GB_SIGMA_Y,
 		BORDER_DEFAULT
 	);
 	threshold(in_frame.clone(), in_frame, 1, 255, THRESH_BINARY);
@@ -1383,6 +1383,8 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "T4_GB_KERNEL_Y"
 		|| name == "T4_THINNING"
 		|| name == "T4_DYMASK"
+		|| name == "QHE_GB_KERNEL_X"
+		|| name == "QHE_GB_KERNEL_Y"
 		) {
 		int result = std::stoi(value);
 		if (name == "EDGETHRESH") {
@@ -1419,6 +1421,10 @@ int parse_checklist(std::string name, std::string value) {
 			T4_THINNING = result;
 		} else if (name == "T4_DYMASK") {
 			T4_DYMASK = result;
+		} else if (name == "QHE_GB_KERNEL_X") {
+			QHE_GB_KERNEL_X = result;
+		} else if (name == "QHE_GB_KERNEL_Y") {
+			QHE_GB_KERNEL_Y = result;
 		}
 
 	}
@@ -1437,6 +1443,8 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "T4_POWER"
 		|| name == "T4_GB_SIGMA_X"
 		|| name == "T4_GB_SIGMA_Y"
+		|| name == "QHE_GB_SIGMA_X"
+		|| name == "QHE_GB_SIGMA_Y"
 		) {
 		double result = std::stod(value);
 		if (name == "T1_AT_MAX") {
@@ -1465,6 +1473,10 @@ int parse_checklist(std::string name, std::string value) {
 			T4_GB_SIGMA_X = result;
 		} else if (name == "T4_GB_SIGMA_Y") {
 			T4_GB_SIGMA_Y = result;
+		} else if (name == "QHE_GB_SIGMA_X") {
+			QHE_GB_SIGMA_X = result;
+		} else if (name == "QHE_GB_SIGMA_Y") {
+			QHE_GB_SIGMA_Y = result;
 		}
 	} else
 		// String cases
