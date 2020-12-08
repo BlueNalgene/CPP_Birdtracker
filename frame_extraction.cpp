@@ -974,7 +974,6 @@ int tier_one(int framecnt, Mat in_frame, vector <Point> bigone) {
 	in_frame = apply_dynamic_mask(in_frame.clone(), bigone, T1_DYMASK);
 
 	vector <vector<Point>> contours = contours_only(in_frame);
-	imwrite("./test_t1.png", in_frame);
 	if (contours.size() > 1) {
 		contours = quiet_halo_elim(contours, bigone);
 
@@ -1052,7 +1051,6 @@ int tier_two(int framecnt, Mat in_frame, vector <Point> bigone) {
 	// Apply dynamic mask
 	in_frame = apply_dynamic_mask(in_frame.clone(), bigone, T2_DYMASK);
 	vector <vector<Point>> contours = contours_only(in_frame);
-	imwrite("./test_t2.png", in_frame);
 	if (contours.size() > 1) {
 		contours = quiet_halo_elim(contours, bigone);
 
