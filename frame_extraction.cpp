@@ -897,21 +897,44 @@ static int show_usage(string name) {
 }
 
 /**
+ * Finds the largest contour within the frame after masking.  Called from main thread to prevent waste
+ * of CPU time for each tier.
+ * 
+ * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @return bigone vector of cv Points representing the largest frame in the image
+ */
+static vector <Point> qhe_bigone(Mat in_frame) {
+	
+	GaussianBlur(in_frame.clone(), in_frame,
+		Size(15, 15),
+		1,
+		1,
+		BORDER_DEFAULT
+	);
+	threshold(in_frame.clone(), in_frame, 1, 255, THRESH_BINARY);
+	vector <vector <Point>> local_contours = contours_only(in_frame);
+	int largest_contour_index = largest_contour(local_contours);
+	if (largest_contour_index < 0) {
+		vector <Point> empty;
+		empty.push_back(Point(-1, -1));
+		return empty;
+	} else {
+		vector <Point> bigone = local_contours[largest_contour_index];
+		return bigone;
+	}
+}
+
+/**
  * This function removes contours which are near to the edge of the moon halo.  This is a quiet kind
  * of masking which does not alter the image, rather it quietly makes contours in violation
  * `disappear'.  The distance from the moon edge which is to be masked is determined by QHE_WIDTH
  * from settings.cfg.
  *
  * @param contours vector of OpenCV vectors of int-int point contour edges
+ * @param bigone vector of Opencv Points representing the largest contour from qhe_bigone
  * @return out_contours vector of OpenCV int-int Point vectors representing valid contours
  */
-static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours) {
-	int largest_contour_index = largest_contour(contours);
-	if (largest_contour_index < 0) {
-		return contours;
-	}
-	vector <Point> bigone = contours[largest_contour_index];
-
+static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours, vector <Point> bigone) {
 	float distance;
 	vector <vector<Point>> out_contours;
 
@@ -920,9 +943,9 @@ static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours) {
 	for (size_t i = 0; i < contours.size(); i++) {
 		caught_mask = false;
 		// Skip the big one
-		if (i == largest_contour_index) {
-			continue;
-		}
+// 		if (i == largest_contour_index) {
+// 			continue;
+// 		}
 		Moments M = moments(contours[i]);
 		int x_cen = (M.m10/M.m00);
 		int y_cen = (M.m01/M.m00);
@@ -951,9 +974,10 @@ static vector <vector<Point>> quiet_halo_elim(vector <vector<Point>> contours) {
  *
  * @param framecnt int of nth frame retrieved by program
  * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param bigone vector of Opencv Points representing the largest contour from qhe_bigone
  * @return status
  */
-int tier_one(int framecnt, Mat in_frame) {
+int tier_one(int framecnt, Mat in_frame, vector <Point> bigone) {
 	Point2f center;
 	float radius;
 	float bigradius = 0;
@@ -971,7 +995,7 @@ int tier_one(int framecnt, Mat in_frame) {
 	}
 	vector <vector<Point>> contours = contours_only(in_frame);
 	if (contours.size() > 1) {
-		contours = quiet_halo_elim(contours);
+		contours = quiet_halo_elim(contours, bigone);
 
 		if (DEBUG_COUT) {
 			LOGGING.open(LOGOUT, std::ios_base::app);
@@ -1029,9 +1053,10 @@ int tier_one(int framecnt, Mat in_frame) {
  *
  * @param framecnt int of nth frame retrieved by program
  * @param in_frame OpenCV matrix image, 16-bit single depth format
+ * @param bigone vector of Opencv Points representing the largest contour from qhe_bigone
  * @return status
  */
-int tier_two(int framecnt, Mat in_frame) {
+int tier_two(int framecnt, Mat in_frame, vector <Point> bigone) {
 	Point2f center;
 	float radius;
 	float bigradius = 0;
@@ -1049,7 +1074,7 @@ int tier_two(int framecnt, Mat in_frame) {
 	}
 	vector <vector<Point>> contours = contours_only(in_frame);
 	if (contours.size() > 1) {
-		contours = quiet_halo_elim(contours);
+		contours = quiet_halo_elim(contours, bigone);
 
 		if (DEBUG_COUT) {
 			LOGGING.open(LOGOUT, std::ios_base::app);
@@ -1110,9 +1135,10 @@ int tier_two(int framecnt, Mat in_frame) {
  * @param framecnt int of nth frame retrieved by program
  * @param in_frame OpenCV matrix image, 16-bit single depth format
  * @param old_frame OpenCV matrix image, 16-bit single depth format, stored from previous cycle
+ * @param bigone vector of Opencv Points representing the largest contour from qhe_bigone
  * @return status
  */
-int tier_three(int framecnt, Mat in_frame, Mat old_frame) {
+int tier_three(int framecnt, Mat in_frame, Mat old_frame, vector <Point> bigone) {
 	Point2f center;
 	float radius;
 	float bigradius = 0;
@@ -1153,7 +1179,7 @@ int tier_three(int framecnt, Mat in_frame, Mat old_frame) {
 	}
 	vector <vector<Point>> contours = contours_only(scaleframe);
 	if (contours.size() > 0) {
-		contours = quiet_halo_elim(contours);
+		contours = quiet_halo_elim(contours, bigone);
 
 		if (DEBUG_COUT) {
 			LOGGING.open(LOGOUT, std::ios_base::app);
@@ -1218,9 +1244,10 @@ int tier_three(int framecnt, Mat in_frame, Mat old_frame) {
  * @param framecnt int of nth frame retrieved by program
  * @param in_frame OpenCV matrix image, 16-bit single depth format
  * @param old_frame OpenCV matrix image, 16-bit single depth format, stored from previous cycle
+ * @param bigone vector of Opencv Points representing the largest contour from qhe_bigone
  * @return status
  */
-int tier_four(int framecnt, Mat in_frame, Mat old_frame) {
+int tier_four(int framecnt, Mat in_frame, Mat old_frame, vector <Point> bigone) {
 	Point2f center;
 	float radius;
 	float bigradius = 0;
@@ -1261,7 +1288,7 @@ int tier_four(int framecnt, Mat in_frame, Mat old_frame) {
 	}
 	vector <vector<Point>> contours = contours_only(scaleframe);
 	if (contours.size() > 0) {
-		contours = quiet_halo_elim(contours);
+		contours = quiet_halo_elim(contours, bigone);
 
 		if (DEBUG_COUT) {
 			LOGGING.open(LOGOUT, std::ios_base::app);
@@ -2565,8 +2592,15 @@ int main(int argc, char* argv[]) {
 				Mat local_frame_1 = local_frame.clone();
 				Mat local_frame_2 = local_frame.clone();
 				int local_count = *mm_frmcount;
-				tier_one(local_count, local_frame_1.clone());
-				tier_two(local_count, local_frame_2.clone());
+				vector <Point> bigone = qhe_bigone(local_frame);
+				if ((bigone[0].x < 0) && (bigone[0].y < 0)) {
+						std::cerr
+						<< "WARNING: largest frame returned error, beware T1 and T2 for frame: "
+						<< local_count
+						<< std::endl;
+					}
+				tier_one(local_count, local_frame_1.clone(), bigone);
+				tier_two(local_count, local_frame_2.clone(), bigone);
 				*mm_tier1 = true;
 				*mm_tier2 = true;
 			}
@@ -2592,8 +2626,15 @@ int main(int argc, char* argv[]) {
 					// Grab the previous frame + current frame and store them locally
 					Mat local_frame = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf, 1 * frame.size().width);
 					Mat oldframe = cv::Mat(Size(frame.size().width, frame.size().height), CV_8UC1, buf2, 1 * frame.size().width);
-					tier_three(local_count, local_frame.clone(), oldframe.clone());
-					tier_four(local_count, local_frame.clone(), oldframe.clone());
+					vector <Point> bigone = qhe_bigone(local_frame);
+					if ((bigone[0].x < 0) && (bigone[0].y < 0)) {
+						std::cerr
+						<< "WARNING: largest frame returned error, beware T3 and T4 for frame: "
+						<< local_count
+						<< std::endl;
+					}
+					tier_three(local_count, local_frame.clone(), oldframe.clone(), bigone);
+					tier_four(local_count, local_frame.clone(), oldframe.clone(), bigone);
 					*mm_tier3 = true;
 				}
 			}
