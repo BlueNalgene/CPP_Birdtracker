@@ -1323,9 +1323,6 @@ int tier_four(int framecnt, Mat in_frame, Mat old_frame, vector <Point> bigone) 
  * @return status
  */
 int parse_checklist(std::string name, std::string value) {
-	// Prep metadata file
-	std::ofstream metafile;
-	metafile.open(METADATA);
 	// Boolean cases
 	if (name == "DEBUG_COUT"
 		|| name == "DEBUG_FRAMES"
@@ -1336,9 +1333,6 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "CONCAT_TIERS"
 		|| name == "TIGHT_CROP"
 		) {
-		// Write the input to metadata file:
-		metafile << name << " = " << value;
-		metafile.close();
 		// Define booleans
 		bool result;
 		if (value == "true" || value == "True" || value == "TRUE") {
@@ -1390,9 +1384,6 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "QHE_GB_KERNEL_X"
 		|| name == "QHE_GB_KERNEL_Y"
 		) {
-		// Write the input to metadata file:
-		metafile << name << " = " << value;
-		metafile.close();
 		// Store value as apprpriate int
 		int result = std::stoi(value);
 		if (name == "EDGETHRESH") {
@@ -1454,9 +1445,6 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "QHE_GB_SIGMA_X"
 		|| name == "QHE_GB_SIGMA_Y"
 		) {
-		// Write the input to metadata file:
-		metafile << name << " = " << value;
-		metafile.close();
 		// Store value as relevant double
 		double result = std::stod(value);
 		if (name == "T1_AT_MAX") {
@@ -1495,9 +1483,6 @@ int parse_checklist(std::string name, std::string value) {
 		if (name == "OSFPROJECT"
 		|| name == "OUTPUTDIR"
 		) {
-			// Write the input to metadata file:
-			metafile << name << " = " << value;
-			metafile.close();
 			// Store value as appropriate string
 			if (name == "OSFPROJECT") {
 				OSFPROJECT = value;
@@ -2163,10 +2148,10 @@ int main(int argc, char* argv[]) {
 
 	// Config Handler -----------------------------------------------------------------------------
 
-	std::ifstream cFile (config_file);
-	if (cFile.is_open()) {
+	std::ifstream config_stream (config_file);
+	if (config_stream.is_open()) {
 		std::string line;
-		while(getline(cFile, line)){
+		while(getline(config_stream, line)) {
 			line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
 			if(line[0] == '#' || line.empty()) {
 				continue;
@@ -2178,9 +2163,7 @@ int main(int argc, char* argv[]) {
 				return 1;
 			}
 		}
-
-	}
-	else {
+	} else {
 		std::cerr << "Couldn't open config file for reading." << std::endl;
 		return 1;
 	}
@@ -2302,6 +2285,25 @@ int main(int argc, char* argv[]) {
 		metafile << "video:," << osf_file << std::endl;
 	} else {
 		metafile << "video:," << input_file << std::endl;
+	}
+	// Write contents of settings to metadata
+	if (config_stream.is_open()) {
+		config_stream.clear();
+		config_stream.seekg(0);
+		std::string line;
+		while(getline(config_stream, line)) {
+			line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+			if(line[0] == '#' || line.empty()) {
+				continue;
+			}
+			delimiter_pos = line.find("=");
+			std::string name = line.substr(0, delimiter_pos);
+			std::string value = line.substr(delimiter_pos + 1);
+			metafile << name << ":," << value << std::endl;
+		}
+	} else {
+		std::cerr << "Couldn't open config file reporting metadata." << std::endl;
+		return 1;
 	}
 	metafile.close();
 
