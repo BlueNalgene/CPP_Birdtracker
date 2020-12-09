@@ -61,7 +61,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">fog_removal.py File Reference</div>  </div>
 </div><!--header-->
@@ -80,6 +81,12 @@ Functions</h2></td></tr>
 <tr class="memitem:acc10907c635ab765dcf02a6fc6499620"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#acc10907c635ab765dcf02a6fc6499620">fog_removal.create_directions</a> ()</td></tr>
 <tr class="memdesc:acc10907c635ab765dcf02a6fc6499620"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create intro/directions slide for the thresholding Python script.  <a href="namespacefog__removal.html#acc10907c635ab765dcf02a6fc6499620">More...</a><br /></td></tr>
 <tr class="separator:acc10907c635ab765dcf02a6fc6499620"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e25df53e59d9d8848b5e2ed5a399ea3"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#a6e25df53e59d9d8848b5e2ed5a399ea3">fog_removal.ascii_version</a> (in_frame)</td></tr>
+<tr class="memdesc:a6e25df53e59d9d8848b5e2ed5a399ea3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is a terminal-only version of the fog removal code.  <a href="namespacefog__removal.html#a6e25df53e59d9d8848b5e2ed5a399ea3">More...</a><br /></td></tr>
+<tr class="separator:a6e25df53e59d9d8848b5e2ed5a399ea3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50fdb2a1e3f55a7f77230a689a372876"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#a50fdb2a1e3f55a7f77230a689a372876">fog_removal.ascii_proc</a> (in_frame, thresh)</td></tr>
+<tr class="memdesc:a50fdb2a1e3f55a7f77230a689a372876"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function does the heavy lifting for the ASCII version of this code.  <a href="namespacefog__removal.html#a50fdb2a1e3f55a7f77230a689a372876">More...</a><br /></td></tr>
+<tr class="separator:a50fdb2a1e3f55a7f77230a689a372876"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b07384f6a6ff8498e14f3aa5f8e2252"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#a7b07384f6a6ff8498e14f3aa5f8e2252">fog_removal.is_valid_file</a> (parser, arg)</td></tr>
 <tr class="memdesc:a7b07384f6a6ff8498e14f3aa5f8e2252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if arg is a valid file that already exists on the file system.  <a href="namespacefog__removal.html#a7b07384f6a6ff8498e14f3aa5f8e2252">More...</a><br /></td></tr>
 <tr class="separator:a7b07384f6a6ff8498e14f3aa5f8e2252"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -92,6 +99,11 @@ Functions</h2></td></tr>
 <tr class="memitem:a427a577da8405e5624962d7ef722aadf"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#a427a577da8405e5624962d7ef722aadf">fog_removal.main</a> ()</td></tr>
 <tr class="memdesc:a427a577da8405e5624962d7ef722aadf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform primary functions of this script.  <a href="namespacefog__removal.html#a427a577da8405e5624962d7ef722aadf">More...</a><br /></td></tr>
 <tr class="separator:a427a577da8405e5624962d7ef722aadf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ad88aa1ec890d366b2f2c71131bc1f657"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#ad88aa1ec890d366b2f2c71131bc1f657">fog_removal.BLACK_BACK</a> = True</td></tr>
+<tr class="separator:ad88aa1ec890d366b2f2c71131bc1f657"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A script to remove "fog" from around the moon prior to run. </p>
@@ -103,7 +115,8 @@ Usage Example</h1>
 Libraries/Modules</h1>
 <ul>
 <li>OpenCV 3.0 or later</li>
-<li>Numpy </li>
+<li>Numpy</li>
+<li>imutils (for ASCII variant) </li>
 </ul>
 </div></div><!-- contents -->
 <!-- start footer part -->

@@ -15,6 +15,10 @@ A script to remove \char`\"{}fog\char`\"{} from around the moon prior to run.
 \item 
 def \hyperlink{namespacefog__removal_acc10907c635ab765dcf02a6fc6499620}{fog\+\_\+removal.\+create\+\_\+directions} ()
 \begin{DoxyCompactList}\small\item\em Create intro/directions slide for the thresholding Python script. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3}{fog\+\_\+removal.\+ascii\+\_\+version} (in\+\_\+frame)
+\begin{DoxyCompactList}\small\item\em This is a terminal-\/only version of the fog removal code. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a50fdb2a1e3f55a7f77230a689a372876}{fog\+\_\+removal.\+ascii\+\_\+proc} (in\+\_\+frame, thresh)
+\begin{DoxyCompactList}\small\item\em This function does the heavy lifting for the A\+S\+C\+II version of this code. \end{DoxyCompactList}\item 
 def \hyperlink{namespacefog__removal_a7b07384f6a6ff8498e14f3aa5f8e2252}{fog\+\_\+removal.\+is\+\_\+valid\+\_\+file} (parser, arg)
 \begin{DoxyCompactList}\small\item\em Check if arg is a valid file that already exists on the file system. \end{DoxyCompactList}\item 
 def \hyperlink{namespacefog__removal_a7ea01fc3bbbb26aa0f4d20724849308c}{fog\+\_\+removal.\+check\+\_\+positive} (value)
@@ -23,6 +27,11 @@ def \hyperlink{namespacefog__removal_a89c98f8f9a6d048485938fc05675ce9e}{fog\+\_\
 \begin{DoxyCompactList}\small\item\em Get parser object for this script. \end{DoxyCompactList}\item 
 def \hyperlink{namespacefog__removal_a427a577da8405e5624962d7ef722aadf}{fog\+\_\+removal.\+main} ()
 \begin{DoxyCompactList}\small\item\em Perform primary functions of this script. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{namespacefog__removal_ad88aa1ec890d366b2f2c71131bc1f657}{fog\+\_\+removal.\+B\+L\+A\+C\+K\+\_\+\+B\+A\+CK} = True
+\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -35,5 +44,6 @@ This script uses the Open\+CV highgui to allow the user to test the first frame 
 
 \begin{DoxyItemize}
 \item Open\+CV 3.\+0 or later
-\item Numpy 
+\item Numpy
+\item imutils (for A\+S\+C\+II variant) 
 \end{DoxyItemize}

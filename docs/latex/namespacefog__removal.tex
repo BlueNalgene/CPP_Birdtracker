@@ -5,6 +5,10 @@
 \item 
 def \hyperlink{namespacefog__removal_acc10907c635ab765dcf02a6fc6499620}{create\+\_\+directions} ()
 \begin{DoxyCompactList}\small\item\em Create intro/directions slide for the thresholding Python script. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3}{ascii\+\_\+version} (in\+\_\+frame)
+\begin{DoxyCompactList}\small\item\em This is a terminal-\/only version of the fog removal code. \end{DoxyCompactList}\item 
+def \hyperlink{namespacefog__removal_a50fdb2a1e3f55a7f77230a689a372876}{ascii\+\_\+proc} (in\+\_\+frame, thresh)
+\begin{DoxyCompactList}\small\item\em This function does the heavy lifting for the A\+S\+C\+II version of this code. \end{DoxyCompactList}\item 
 def \hyperlink{namespacefog__removal_a7b07384f6a6ff8498e14f3aa5f8e2252}{is\+\_\+valid\+\_\+file} (parser, arg)
 \begin{DoxyCompactList}\small\item\em Check if arg is a valid file that already exists on the file system. \end{DoxyCompactList}\item 
 def \hyperlink{namespacefog__removal_a7ea01fc3bbbb26aa0f4d20724849308c}{check\+\_\+positive} (value)
@@ -13,9 +17,74 @@ def \hyperlink{namespacefog__removal_a89c98f8f9a6d048485938fc05675ce9e}{get\+\_\
 \begin{DoxyCompactList}\small\item\em Get parser object for this script. \end{DoxyCompactList}\item 
 def \hyperlink{namespacefog__removal_a427a577da8405e5624962d7ef722aadf}{main} ()
 \begin{DoxyCompactList}\small\item\em Perform primary functions of this script. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{namespacefog__removal_ad88aa1ec890d366b2f2c71131bc1f657}{B\+L\+A\+C\+K\+\_\+\+B\+A\+CK} = True
+\end{DoxyCompactItemize}
 
 
 \subsection{Function Documentation}
+\mbox{\Hypertarget{namespacefog__removal_a50fdb2a1e3f55a7f77230a689a372876}\label{namespacefog__removal_a50fdb2a1e3f55a7f77230a689a372876}} 
+\index{fog\+\_\+removal@{fog\+\_\+removal}!ascii\+\_\+proc@{ascii\+\_\+proc}}
+\index{ascii\+\_\+proc@{ascii\+\_\+proc}!fog\+\_\+removal@{fog\+\_\+removal}}
+\subsubsection{\texorpdfstring{ascii\+\_\+proc()}{ascii\_proc()}}
+{\footnotesize\ttfamily def fog\+\_\+removal.\+ascii\+\_\+proc (\begin{DoxyParamCaption}\item[{}]{in\+\_\+frame,  }\item[{}]{thresh }\end{DoxyParamCaption})}
+
+
+
+This function does the heavy lifting for the A\+S\+C\+II version of this code. 
+
+The input image is cropped to ignore as much black background as possible, then resized to fit the user\textquotesingle{}s terminal (using output from {\ttfamily tput}). The image is thresholded, and the output from this thresholding operaiton is converted to a string of A\+S\+C\+II characters. There are 97 characters in the grayscale list. If the user has a black background, as determined by the global variable B\+L\+A\+C\+K\+\_\+\+B\+A\+CK, the order of A\+S\+C\+II characters are reversed. After printing our \char`\"{}image\char`\"{}, the user is informed if the image was resized and reminded of what value they entered.
+
+
+\begin{DoxyParams}{Parameters}
+{\em in\+\_\+frame} & The input 1-\/channel Open\+CV image \\
+\hline
+{\em thresh} & An integer between 0-\/255 to represent the threshold of to test here \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{namespacefog__removal_a50fdb2a1e3f55a7f77230a689a372876_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3}\label{namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3}} 
+\index{fog\+\_\+removal@{fog\+\_\+removal}!ascii\+\_\+version@{ascii\+\_\+version}}
+\index{ascii\+\_\+version@{ascii\+\_\+version}!fog\+\_\+removal@{fog\+\_\+removal}}
+\subsubsection{\texorpdfstring{ascii\+\_\+version()}{ascii\_version()}}
+{\footnotesize\ttfamily def fog\+\_\+removal.\+ascii\+\_\+version (\begin{DoxyParamCaption}\item[{}]{in\+\_\+frame }\end{DoxyParamCaption})}
+
+
+
+This is a terminal-\/only version of the fog removal code. 
+
+In this loop, the user is prompted for a threshold value to test or to exit by entering \char`\"{}q\char`\"{}. The in\+\_\+frame param passes through to the nested function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em in\+\_\+frame} & The input 3-\/channel Open\+CV image \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=340pt]{namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_icgraph}
+\end{center}
+\end{figure}
 \mbox{\Hypertarget{namespacefog__removal_a7ea01fc3bbbb26aa0f4d20724849308c}\label{namespacefog__removal_a7ea01fc3bbbb26aa0f4d20724849308c}} 
 \index{fog\+\_\+removal@{fog\+\_\+removal}!check\+\_\+positive@{check\+\_\+positive}}
 \index{check\+\_\+positive@{check\+\_\+positive}!fog\+\_\+removal@{fog\+\_\+removal}}
@@ -122,3 +191,12 @@ Command line arguments are first parsed to get the file name on which we want to
 \includegraphics[width=350pt]{namespacefog__removal_a427a577da8405e5624962d7ef722aadf_cgraph}
 \end{center}
 \end{figure}
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{namespacefog__removal_ad88aa1ec890d366b2f2c71131bc1f657}\label{namespacefog__removal_ad88aa1ec890d366b2f2c71131bc1f657}} 
+\index{fog\+\_\+removal@{fog\+\_\+removal}!B\+L\+A\+C\+K\+\_\+\+B\+A\+CK@{B\+L\+A\+C\+K\+\_\+\+B\+A\+CK}}
+\index{B\+L\+A\+C\+K\+\_\+\+B\+A\+CK@{B\+L\+A\+C\+K\+\_\+\+B\+A\+CK}!fog\+\_\+removal@{fog\+\_\+removal}}
+\subsubsection{\texorpdfstring{B\+L\+A\+C\+K\+\_\+\+B\+A\+CK}{BLACK\_BACK}}
+{\footnotesize\ttfamily bool fog\+\_\+removal.\+B\+L\+A\+C\+K\+\_\+\+B\+A\+CK = True}
+

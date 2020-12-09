@@ -60,7 +60,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">fog_removal Namespace Reference</div>  </div>
 </div><!--header-->
@@ -71,6 +72,12 @@ Functions</h2></td></tr>
 <tr class="memitem:acc10907c635ab765dcf02a6fc6499620"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#acc10907c635ab765dcf02a6fc6499620">create_directions</a> ()</td></tr>
 <tr class="memdesc:acc10907c635ab765dcf02a6fc6499620"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create intro/directions slide for the thresholding Python script.  <a href="#acc10907c635ab765dcf02a6fc6499620">More...</a><br /></td></tr>
 <tr class="separator:acc10907c635ab765dcf02a6fc6499620"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e25df53e59d9d8848b5e2ed5a399ea3"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#a6e25df53e59d9d8848b5e2ed5a399ea3">ascii_version</a> (in_frame)</td></tr>
+<tr class="memdesc:a6e25df53e59d9d8848b5e2ed5a399ea3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is a terminal-only version of the fog removal code.  <a href="#a6e25df53e59d9d8848b5e2ed5a399ea3">More...</a><br /></td></tr>
+<tr class="separator:a6e25df53e59d9d8848b5e2ed5a399ea3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50fdb2a1e3f55a7f77230a689a372876"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#a50fdb2a1e3f55a7f77230a689a372876">ascii_proc</a> (in_frame, thresh)</td></tr>
+<tr class="memdesc:a50fdb2a1e3f55a7f77230a689a372876"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function does the heavy lifting for the ASCII version of this code.  <a href="#a50fdb2a1e3f55a7f77230a689a372876">More...</a><br /></td></tr>
+<tr class="separator:a50fdb2a1e3f55a7f77230a689a372876"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b07384f6a6ff8498e14f3aa5f8e2252"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#a7b07384f6a6ff8498e14f3aa5f8e2252">is_valid_file</a> (parser, arg)</td></tr>
 <tr class="memdesc:a7b07384f6a6ff8498e14f3aa5f8e2252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if arg is a valid file that already exists on the file system.  <a href="#a7b07384f6a6ff8498e14f3aa5f8e2252">More...</a><br /></td></tr>
 <tr class="separator:a7b07384f6a6ff8498e14f3aa5f8e2252"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -83,8 +90,103 @@ Functions</h2></td></tr>
 <tr class="memitem:a427a577da8405e5624962d7ef722aadf"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#a427a577da8405e5624962d7ef722aadf">main</a> ()</td></tr>
 <tr class="memdesc:a427a577da8405e5624962d7ef722aadf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform primary functions of this script.  <a href="#a427a577da8405e5624962d7ef722aadf">More...</a><br /></td></tr>
 <tr class="separator:a427a577da8405e5624962d7ef722aadf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ad88aa1ec890d366b2f2c71131bc1f657"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacefog__removal.html#ad88aa1ec890d366b2f2c71131bc1f657">BLACK_BACK</a> = True</td></tr>
+<tr class="separator:ad88aa1ec890d366b2f2c71131bc1f657"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a50fdb2a1e3f55a7f77230a689a372876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50fdb2a1e3f55a7f77230a689a372876">&#9670;&nbsp;</a></span>ascii_proc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def fog_removal.ascii_proc </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>in_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>thresh</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function does the heavy lifting for the ASCII version of this code. </p>
+<p>The input image is cropped to ignore as much black background as possible, then resized to fit the user's terminal (using output from <code>tput</code>). The image is thresholded, and the output from this thresholding operaiton is converted to a string of ASCII characters. There are 97 characters in the grayscale list. If the user has a black background, as determined by the global variable BLACK_BACK, the order of ASCII characters are reversed. After printing our "image", the user is informed if the image was resized and reminded of what value they entered.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>The input 1-channel OpenCV image </td></tr>
+    <tr><td class="paramname">thresh</td><td>An integer between 0-255 to represent the threshold of to test here </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacefog__removal_a50fdb2a1e3f55a7f77230a689a372876_icgraph.png" border="0" usemap="#namespacefog__removal_a50fdb2a1e3f55a7f77230a689a372876_icgraph" alt=""/></div>
+<map name="namespacefog__removal_a50fdb2a1e3f55a7f77230a689a372876_icgraph" id="namespacefog__removal_a50fdb2a1e3f55a7f77230a689a372876_icgraph">
+<area shape="rect" id="node2" href="namespacefog__removal.html#a6e25df53e59d9d8848b5e2ed5a399ea3" title="This is a terminal&#45;only version of the fog removal code. " alt="" coords="209,5,383,32"/>
+<area shape="rect" id="node3" href="namespacefog__removal.html#a427a577da8405e5624962d7ef722aadf" title="Perform primary functions of this script. " alt="" coords="431,5,556,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a6e25df53e59d9d8848b5e2ed5a399ea3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e25df53e59d9d8848b5e2ed5a399ea3">&#9670;&nbsp;</a></span>ascii_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def fog_removal.ascii_version </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>in_frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This is a terminal-only version of the fog removal code. </p>
+<p>In this loop, the user is prompted for a threshold value to test or to exit by entering "q". The in_frame param passes through to the nested function.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in_frame</td><td>The input 3-channel OpenCV image </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_cgraph.png" border="0" usemap="#namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_cgraph" alt=""/></div>
+<map name="namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_cgraph" id="namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_cgraph">
+<area shape="rect" id="node2" href="namespacefog__removal.html#a50fdb2a1e3f55a7f77230a689a372876" title="This function does the heavy lifting for the ASCII version of this code. " alt="" coords="227,5,383,32"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_icgraph.png" border="0" usemap="#namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_icgraph" alt=""/></div>
+<map name="namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_icgraph" id="namespacefog__removal_a6e25df53e59d9d8848b5e2ed5a399ea3_icgraph">
+<area shape="rect" id="node2" href="namespacefog__removal.html#a427a577da8405e5624962d7ef722aadf" title="Perform primary functions of this script. " alt="" coords="227,5,352,32"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a7ea01fc3bbbb26aa0f4d20724849308c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7ea01fc3bbbb26aa0f4d20724849308c">&#9670;&nbsp;</a></span>check_positive()</h2>
 
@@ -238,11 +340,28 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespacefog__removal_a427a577da8405e5624962d7ef722aadf_cgraph.png" border="0" usemap="#namespacefog__removal_a427a577da8405e5624962d7ef722aadf_cgraph" alt=""/></div>
 <map name="namespacefog__removal_a427a577da8405e5624962d7ef722aadf_cgraph" id="namespacefog__removal_a427a577da8405e5624962d7ef722aadf_cgraph">
-<area shape="rect" id="node2" href="namespacefog__removal.html#a89c98f8f9a6d048485938fc05675ce9e" title="Get parser object for this script. " alt="" coords="179,5,337,32"/>
-<area shape="rect" id="node4" href="namespacefog__removal.html#acc10907c635ab765dcf02a6fc6499620" title="Create intro/directions slide for the thresholding Python script. " alt="" coords="191,57,325,98"/>
-<area shape="rect" id="node3" href="namespacefog__removal.html#a7b07384f6a6ff8498e14f3aa5f8e2252" title="Check if arg is a valid file that already exists on the file system. " alt="" coords="385,5,551,32"/>
+<area shape="rect" id="node2" href="namespacefog__removal.html#a89c98f8f9a6d048485938fc05675ce9e" title="Get parser object for this script. " alt="" coords="186,5,345,32"/>
+<area shape="rect" id="node4" href="namespacefog__removal.html#a6e25df53e59d9d8848b5e2ed5a399ea3" title="This is a terminal&#45;only version of the fog removal code. " alt="" coords="179,56,352,83"/>
+<area shape="rect" id="node6" href="namespacefog__removal.html#acc10907c635ab765dcf02a6fc6499620" title="Create intro/directions slide for the thresholding Python script. " alt="" coords="199,107,332,149"/>
+<area shape="rect" id="node3" href="namespacefog__removal.html#a7b07384f6a6ff8498e14f3aa5f8e2252" title="Check if arg is a valid file that already exists on the file system. " alt="" coords="400,5,565,32"/>
+<area shape="rect" id="node5" href="namespacefog__removal.html#a50fdb2a1e3f55a7f77230a689a372876" title="This function does the heavy lifting for the ASCII version of this code. " alt="" coords="405,56,561,83"/>
 </map>
 </div>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ad88aa1ec890d366b2f2c71131bc1f657"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad88aa1ec890d366b2f2c71131bc1f657">&#9670;&nbsp;</a></span>BLACK_BACK</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool fog_removal.BLACK_BACK = True</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

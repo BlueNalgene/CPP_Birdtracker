@@ -1,5 +1,7 @@
 <map id="fog_removal.main" name="fog_removal.main">
-<area shape="rect" id="node2" href="$namespacefog__removal.html#a89c98f8f9a6d048485938fc05675ce9e" title="Get parser object for this script. " alt="" coords="179,5,337,32"/>
-<area shape="rect" id="node4" href="$namespacefog__removal.html#acc10907c635ab765dcf02a6fc6499620" title="Create intro/directions slide for the thresholding Python script. " alt="" coords="191,57,325,98"/>
-<area shape="rect" id="node3" href="$namespacefog__removal.html#a7b07384f6a6ff8498e14f3aa5f8e2252" title="Check if arg is a valid file that already exists on the file system. " alt="" coords="385,5,551,32"/>
+<area shape="rect" id="node2" href="$namespacefog__removal.html#a89c98f8f9a6d048485938fc05675ce9e" title="Get parser object for this script. " alt="" coords="186,5,345,32"/>
+<area shape="rect" id="node4" href="$namespacefog__removal.html#a6e25df53e59d9d8848b5e2ed5a399ea3" title="This is a terminal&#45;only version of the fog removal code. " alt="" coords="179,56,352,83"/>
+<area shape="rect" id="node6" href="$namespacefog__removal.html#acc10907c635ab765dcf02a6fc6499620" title="Create intro/directions slide for the thresholding Python script. " alt="" coords="199,107,332,149"/>
+<area shape="rect" id="node3" href="$namespacefog__removal.html#a7b07384f6a6ff8498e14f3aa5f8e2252" title="Check if arg is a valid file that already exists on the file system. " alt="" coords="400,5,565,32"/>
+<area shape="rect" id="node5" href="$namespacefog__removal.html#a50fdb2a1e3f55a7f77230a689a372876" title="This function does the heavy lifting for the ASCII version of this code. " alt="" coords="405,56,561,83"/>
 </map>
