@@ -1371,6 +1371,7 @@ int parse_checklist(std::string name, std::string value) {
 		|| name == "QHE_WIDTH"
 		|| name == "BLACKOUT_THRESH"
 		|| name == "CONVERT_FPS"
+		|| name == "NON_ZERO_START"
 		|| name == "T1_AT_BLOCKSIZE"
 		|| name == "T1_DYMASK"
 		|| name == "T2_AT_BLOCKSIZE"
@@ -1398,6 +1399,8 @@ int parse_checklist(std::string name, std::string value) {
 			BLACKOUT_THRESH = result;
 		} else if (name == "CONVERT_FPS") {
 			CONVERT_FPS = result;
+		} else if (name == "NON_ZERO_START") {
+			NON_ZERO_START = result;
 		} else if (name == "T1_AT_BLOCKSIZE") {
 			T1_AT_BLOCKSIZE = result;
 		} else if (name == "T1_DYMASK") {
@@ -2529,7 +2532,7 @@ int main(int argc, char* argv[]) {
 	++*mm_frmcount;
 
 	// DEBUG Skip frames for debugging
-	while (*mm_frmcount < 1220) {
+	while (*mm_frmcount < NON_ZERO_START) {
 		++*mm_frmcount;
 		cap >> frame;
 	}

@@ -255,6 +255,11 @@ int BLACKOUT_THRESH = 51;
  * User configurable from settings.cfg
  */
 int CONVERT_FPS = 30;
+/**
+ * Sets the processor to start at a specific frame
+ * User configurable from settings.cfg
+ */
+int NON_ZERO_START = 0;
 
 
 /**
