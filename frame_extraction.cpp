@@ -312,10 +312,8 @@ static vector <int> edge_height(vector<Point> contour) {
  */
 static Mat initial_crop(Mat in_frame, int framecnt) {
 	int oldvalue;
-
 	// Find largest contour
 	Rect box = box_finder(in_frame, true);
-
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
 
@@ -324,7 +322,6 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
 						(box.tl().y- (BOXSIZE - box.height)/2));
 	Point roi_br = Point(((BOXSIZE - box.width)/2) + box.br().x,
 						 ((BOXSIZE - box.height)/2) + box.br().y);
-
 	// Correct for non BOXSIZE rounding errors, only expand BR since we check for invalid later
 	if (roi_br.x - roi_tl.x > BOXSIZE) {
 		oldvalue = (roi_br.x - roi_tl.x) - BOXSIZE;
@@ -340,7 +337,6 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
 		oldvalue = BOXSIZE - (roi_br.y - roi_tl.y);
 		roi_br = Point(roi_br.x, roi_br.y + oldvalue);
 	}
-
 	// Correct for invalid values in the new box
 	if (roi_tl.x < 0) {
 		oldvalue = -(roi_tl.x);
@@ -355,23 +351,19 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
 	if (roi_br.x > in_frame.cols) {
 		oldvalue = roi_br.x - in_frame.cols;
 		roi_tl = Point(roi_tl.x - oldvalue, roi_tl.y);
-		roi_br = Point(roi_br.x - oldvalue, roi_tl.y);
+		roi_br = Point(roi_br.x - oldvalue, roi_br.y);
 	}
 	if (roi_br.y > in_frame.rows) {
 		oldvalue = roi_br.y - in_frame.rows;
 		roi_tl = Point(roi_tl.x, roi_tl.y - oldvalue);
 		roi_br = Point(roi_br.x, roi_br.y - oldvalue);
 	}
-
 	// Make this our region of interest.
 	Rect roi = Rect(roi_tl, roi_br);
-
 	// Find intersection, i.e. valid crop region
 	Rect intersection = image_rect & roi;
-
 	// Adjust the intersection to have the correct BOXSIZE
 	intersection = Rect(Point(intersection.x, intersection.y), Size(BOXSIZE, BOXSIZE));
-
 	// Move intersection to the result coordinate space
 	Rect inter_roi = intersection - roi.tl();
 
@@ -399,7 +391,6 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
 		// If negative values exist, whatever, just pass it along and call it a day.
 		in_frame = precrop;
 	}
-
 	return in_frame;
 }
 
@@ -647,12 +638,10 @@ static int first_frame(Mat in_frame, int framecnt) {
  */
 static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	Mat temp_frame;
-
 	// Do a first pass/rough crop
 	in_frame = initial_crop(in_frame.clone(), framecnt);
 	// Make sure the black of night stays black so we can get the edge of the moon
 	threshold(in_frame.clone(), temp_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
-
 	vector <vector<Point>> contours = contours_only(temp_frame);
 	int largest = largest_contour(contours);
 	Rect box = boundingRect(contours[largest]);
@@ -698,7 +687,6 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	box = box_finder(in_frame, true);
 	// write that data to our boxes file.
 	box_data(box, framecnt);
-
 
 	// Open the outfile to append list of major ellipses
 	std::ofstream outell;
@@ -885,7 +873,6 @@ static int show_usage(string name) {
  * @return bigone vector of cv Points representing the largest frame in the image
  */
 static vector <Point> qhe_bigone(Mat in_frame) {
-	
 	GaussianBlur(in_frame.clone(), in_frame,
 		Size(QHE_GB_KERNEL_X, QHE_GB_KERNEL_Y),
 		QHE_GB_SIGMA_X,
@@ -2476,7 +2463,8 @@ int main(int argc, char* argv[]) {
 	cap >> frame;
 	++*mm_frmcount;
 
-// 	while (*mm_frmcount < 2060) {
+	// DEBUG Skip frames for debugging
+// 	while (*mm_frmcount < 1370) {
 // 		++*mm_frmcount;
 // 		cap >> frame;
 // 	}
