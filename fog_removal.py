@@ -92,6 +92,16 @@ def is_valid_file(parser, arg):
 	else:
 		return arg
 
+def check_positive(value):
+	"""!
+	Check that the input integer for the starting frame number is valid
+	"""
+	ivalue = int(value)
+	if ivalue <= 0:
+		raise RuntimeError("%s is an invalid positive int value" % value)
+	return ivalue
+
+
 def get_parser():
 	"""!
 	Get parser object for this script
@@ -102,6 +112,9 @@ def get_parser():
 	parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-f", "--file", dest="filename", required=True,\
 		type=lambda x: is_valid_file(parser, x), help="video input FILE", metavar="FILE")
+	parser.add_argument("-n", "--nth_frame", dest="max_frame", required=False,\
+		type=check_positive, help="Use the nth frame of the video to test fog", \
+		nargs=None, default=100, metavar='N')
 	return parser
 
 def main():
@@ -122,6 +135,11 @@ def main():
 	# Get the first frame of the video from the terminal command
 	cap = cv2.VideoCapture(args.filename)
 	ret, frame = cap.read()
+	cnt = 1
+	cnt_max = args.max_frame
+	while cnt < cnt_max:
+		ret, frame = cap.read()
+		cnt = cnt + 1
 	# Create our window and relevant trackbars	
 	cv2.namedWindow("image", cv2.WINDOW_NORMAL)
 	cv2.resizeWindow("image", 1080, 1080)
