@@ -23,7 +23,7 @@ static vector$<$ int $>$ \hyperlink{frame__extraction_8cpp_a3ac94b4b4ad476fbcdd1
 \item 
 static vector$<$ int $>$ \hyperlink{frame__extraction_8cpp_a3eefea9d7b7944b3c17145bf1f42ca1f}{edge\+\_\+height} (vector$<$ Point $>$ contour)
 \item 
-static Mat \hyperlink{frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4}{initial\+\_\+crop} (Mat in\+\_\+frame, int framecnt)
+static int \hyperlink{frame__extraction_8cpp_a6ebd493f01eb54e528da257db0a75e99}{initial\+\_\+crop} (Mat in\+\_\+frame, int framecnt)
 \item 
 static int \hyperlink{frame__extraction_8cpp_a032ee30a958a27cdb3d5b419953ab584}{touching\+\_\+edges} (Mat in\+\_\+frame, vector$<$ Point $>$ contour)
 \item 
@@ -31,7 +31,7 @@ static Mat \hyperlink{frame__extraction_8cpp_a8f336c75968d8ab7d3aa3c5c8ff74dbb}{
 \item 
 static int \hyperlink{frame__extraction_8cpp_a2dab519501e6a1106a8b0b2cbfd52511}{first\+\_\+frame} (Mat in\+\_\+frame, int framecnt)
 \item 
-static Mat \hyperlink{frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371}{halo\+\_\+noise\+\_\+and\+\_\+center} (Mat in\+\_\+frame, int framecnt)
+static int \hyperlink{frame__extraction_8cpp_a9c4e877be5c7a5b6c78cf2e81c09759f}{halo\+\_\+noise\+\_\+and\+\_\+center} (Mat in\+\_\+frame, int framecnt)
 \item 
 void \hyperlink{frame__extraction_8cpp_a89a8322bea357674e81ba9cbdefe0378}{signal\+\_\+callback\+\_\+handler} (int signum)
 \item 
@@ -41,7 +41,7 @@ static int \hyperlink{frame__extraction_8cpp_abc90f05608032b4730869812a513267f}{
 \item 
 static vector$<$ vector$<$ Point $>$ $>$ \hyperlink{frame__extraction_8cpp_a5a1b727e663ec81191fd584338c88227}{contours\+\_\+only} (Mat in\+\_\+frame)
 \item 
-static Rect \hyperlink{frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b}{box\+\_\+finder} (Mat in\+\_\+frame, bool do\+\_\+thresh)
+static int \hyperlink{frame__extraction_8cpp_ab82da2f54d3288500af385f722ee691e}{box\+\_\+finder} (Mat in\+\_\+frame, bool do\+\_\+thresh)
 \item 
 static int \hyperlink{frame__extraction_8cpp_a3fe52ab2a13802c64a500f3b3fac618c}{box\+\_\+data} (Rect box, int framecnt)
 \item 
@@ -127,20 +127,21 @@ Here is the caller graph for this function\+:\nopagebreak
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=350pt]{frame__extraction_8cpp_a3fe52ab2a13802c64a500f3b3fac618c_icgraph}
 \end{center}
 \end{figure}
-\mbox{\Hypertarget{frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b}\label{frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b}} 
+\mbox{\Hypertarget{frame__extraction_8cpp_ab82da2f54d3288500af385f722ee691e}\label{frame__extraction_8cpp_ab82da2f54d3288500af385f722ee691e}} 
 \index{frame\+\_\+extraction.\+cpp@{frame\+\_\+extraction.\+cpp}!box\+\_\+finder@{box\+\_\+finder}}
 \index{box\+\_\+finder@{box\+\_\+finder}!frame\+\_\+extraction.\+cpp@{frame\+\_\+extraction.\+cpp}}
 \subsubsection{\texorpdfstring{box\+\_\+finder()}{box\_finder()}}
-{\footnotesize\ttfamily static Rect box\+\_\+finder (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{bool}]{do\+\_\+thresh }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static int box\+\_\+finder (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{bool}]{do\+\_\+thresh }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
-This function finds the bounding box for the largest contour and reports on its properties.
+This function finds the bounding box for the largest contour and reports on its properties. Stores Open\+CV Rect object bounding the largest contour (presumably the moon) to global B\+F\+\_\+\+B\+OX.
 
 
 \begin{DoxyParams}{Parameters}
@@ -148,20 +149,22 @@ This function finds the bounding box for the largest contour and reports on its 
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-box Open\+CV Rect object bounding the largest contour (presumably the moon) 
+status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=261pt]{frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_cgraph}
+\includegraphics[width=261pt]{frame__extraction_8cpp_ab82da2f54d3288500af385f722ee691e_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{frame__extraction_8cpp_a3995b1d757f31ef679b1767386d65e4b_icgraph}
+\includegraphics[width=350pt]{frame__extraction_8cpp_ab82da2f54d3288500af385f722ee691e_icgraph}
 \end{center}
 \end{figure}
 \mbox{\Hypertarget{frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7}\label{frame__extraction_8cpp_a579a6e5cf9846789c07a88e72ef4a7a7}} 
@@ -205,7 +208,8 @@ This function returns the contours from an image. It really only needs to exist 
 \begin{DoxyReturn}{Returns}
 vector of int-\/int Open\+CV Point vectors for each contour detected in the in\+\_\+frame 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -257,7 +261,8 @@ This function determines the length of the extreme left and right edges of the m
 \begin{DoxyReturn}{Returns}
 local\+\_\+vec integer vector of the left and right edge length of the moon 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -280,7 +285,8 @@ This function determines the length of the extreme top and bottom edges of the m
 \begin{DoxyReturn}{Returns}
 local\+\_\+vec integer vector of the top and bottom edge length of the moon 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -325,7 +331,8 @@ This function is a special case of the frame preparation steps. It outputs many 
 \begin{DoxyReturn}{Returns}
 in\+\_\+frame The modified in\+\_\+frame from the input params 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -377,13 +384,13 @@ Here is the caller graph for this function\+:\nopagebreak
 \includegraphics[width=350pt]{frame__extraction_8cpp_ae3cfeeb43523e31ac7eebd51dbf58f9c_icgraph}
 \end{center}
 \end{figure}
-\mbox{\Hypertarget{frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371}\label{frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371}} 
+\mbox{\Hypertarget{frame__extraction_8cpp_a9c4e877be5c7a5b6c78cf2e81c09759f}\label{frame__extraction_8cpp_a9c4e877be5c7a5b6c78cf2e81c09759f}} 
 \index{frame\+\_\+extraction.\+cpp@{frame\+\_\+extraction.\+cpp}!halo\+\_\+noise\+\_\+and\+\_\+center@{halo\+\_\+noise\+\_\+and\+\_\+center}}
 \index{halo\+\_\+noise\+\_\+and\+\_\+center@{halo\+\_\+noise\+\_\+and\+\_\+center}!frame\+\_\+extraction.\+cpp@{frame\+\_\+extraction.\+cpp}}
 \subsubsection{\texorpdfstring{halo\+\_\+noise\+\_\+and\+\_\+center()}{halo\_noise\_and\_center()}}
-{\footnotesize\ttfamily static Mat halo\+\_\+noise\+\_\+and\+\_\+center (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{int}]{framecnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static int halo\+\_\+noise\+\_\+and\+\_\+center (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{int}]{framecnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
-This function finds the largest contour (presumably the edge of the moon) and attempts to center the cropped image based on the centroid of the contour. It calls corner\+\_\+matching in cases where the centroid is not an appropriate method for centering. Data from this ellipse are stored in the ellipse.\+csv file. A small portion of the edge of the moon contour is removed to keep out the noisest portions.
+This function finds the largest contour (presumably the edge of the moon) and attempts to center the cropped image based on the centroid of the contour. It calls corner\+\_\+matching in cases where the centroid is not an appropriate method for centering. Data from this ellipse are stored in the ellipse.\+csv file. A small portion of the edge of the moon contour is removed to keep out the noisest portions. Stores modified in\+\_\+frame to H\+N\+C\+\_\+\+F\+R\+A\+ME global
 
 
 \begin{DoxyParams}{Parameters}
@@ -393,29 +400,31 @@ This function finds the largest contour (presumably the edge of the moon) and at
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-in\+\_\+frame The modified in\+\_\+frame from the input params 
+status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_cgraph}
+\includegraphics[width=350pt]{frame__extraction_8cpp_a9c4e877be5c7a5b6c78cf2e81c09759f_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=270pt]{frame__extraction_8cpp_a020638e44cbbdfbe5a689c61c4bec371_icgraph}
+\includegraphics[width=270pt]{frame__extraction_8cpp_a9c4e877be5c7a5b6c78cf2e81c09759f_icgraph}
 \end{center}
 \end{figure}
-\mbox{\Hypertarget{frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4}\label{frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4}} 
+\mbox{\Hypertarget{frame__extraction_8cpp_a6ebd493f01eb54e528da257db0a75e99}\label{frame__extraction_8cpp_a6ebd493f01eb54e528da257db0a75e99}} 
 \index{frame\+\_\+extraction.\+cpp@{frame\+\_\+extraction.\+cpp}!initial\+\_\+crop@{initial\+\_\+crop}}
 \index{initial\+\_\+crop@{initial\+\_\+crop}!frame\+\_\+extraction.\+cpp@{frame\+\_\+extraction.\+cpp}}
 \subsubsection{\texorpdfstring{initial\+\_\+crop()}{initial\_crop()}}
-{\footnotesize\ttfamily static Mat initial\+\_\+crop (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{int}]{framecnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static int initial\+\_\+crop (\begin{DoxyParamCaption}\item[{Mat}]{in\+\_\+frame,  }\item[{int}]{framecnt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
-Performs an initial rough crop on the frame. This constructs a cropped frame which contains the largest contour, but does not necessarily center the contour within the frame. That is handled by halo\+\_\+noise\+\_\+and\+\_\+center by determing whether the centering should use the corner\+\_\+matching regime or simple centroid to centroid shifting.
+Performs an initial rough crop on the frame. This constructs a cropped frame which contains the largest contour, but does not necessarily center the contour within the frame. That is handled by halo\+\_\+noise\+\_\+and\+\_\+center by determing whether the centering should use the corner\+\_\+matching regime or simple centroid to centroid shifting. Stores the cropped in\+\_\+frame to I\+C\+\_\+\+F\+R\+A\+ME global.
 
 
 \begin{DoxyParams}{Parameters}
@@ -425,20 +434,22 @@ Performs an initial rough crop on the frame. This constructs a cropped frame whi
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-in\+\_\+frame The cropped in\+\_\+frame 
+status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:\nopagebreak
+Here is the call graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_cgraph}
+\includegraphics[width=350pt]{frame__extraction_8cpp_a6ebd493f01eb54e528da257db0a75e99_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=350pt]{frame__extraction_8cpp_a0c6a52eef18d1f84207a52ef5880aba4_icgraph}
+\includegraphics[width=350pt]{frame__extraction_8cpp_a6ebd493f01eb54e528da257db0a75e99_icgraph}
 \end{center}
 \end{figure}
 \mbox{\Hypertarget{frame__extraction_8cpp_abc90f05608032b4730869812a513267f}\label{frame__extraction_8cpp_abc90f05608032b4730869812a513267f}} 
@@ -457,7 +468,8 @@ This function returns the index of the largest contour in a list of contours so 
 \begin{DoxyReturn}{Returns}
 largest\+\_\+contour\+\_\+index integer index of the largest contour in a vector of contour vectors 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:\nopagebreak
+Here is the caller graph for this function\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -506,8 +518,7 @@ This function stores the B\+O\+X\+S\+I\+ZE variable globally. B\+O\+X\+S\+I\+ZE 
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -525,8 +536,7 @@ Simplifies the ellipse.\+csv file to only report frames where the ellispe goes o
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -549,8 +559,7 @@ This helper function assembles the output location for frames stored by the scri
 \begin{DoxyReturn}{Returns}
 outstring the constructed path string of where to store the nth frame 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -575,8 +584,7 @@ This function handles the strings and values parsed from the settings.\+cfg file
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -594,16 +602,14 @@ Holder function for processes which run after the bulk of main completes
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:
-\nopagebreak
+Here is the call graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=350pt]{frame__extraction_8cpp_a34a2b5ae307c281071a717fc2d1fb0c6_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -626,16 +632,14 @@ Finds the largest contour within the frame after masking. Called from main threa
 \begin{DoxyReturn}{Returns}
 bigone vector of cv Points representing the largest frame in the image 
 \end{DoxyReturn}
-Here is the call graph for this function\+:
-\nopagebreak
+Here is the call graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=265pt]{frame__extraction_8cpp_a7564e59e35a0ba92812018e6ff847141_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -660,8 +664,7 @@ This function removes contours which are near to the edge of the moon halo. This
 \begin{DoxyReturn}{Returns}
 out\+\_\+contours vector of Open\+CV int-\/int Point vectors representing valid contours 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -712,8 +715,7 @@ This is a helper function called using -\/h in terminal.
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -733,8 +735,7 @@ This is a helper function to handle terminal signals. This shuts down the variou
 {\em signum} & signal number passed to this function. Only handles 2. \\
 \hline
 \end{DoxyParams}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -757,8 +758,7 @@ This helper function handles spaces in user paths.
 \begin{DoxyReturn}{Returns}
 outstring the corrected string 
 \end{DoxyReturn}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -780,8 +780,7 @@ Get the last n characters of a string. Handles incorrectly sized searches.
 {\em length} & Number of characters from the back to return \\
 \hline
 \end{DoxyParams}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -836,16 +835,14 @@ This is the fourth pass to detect valid contours in a frame. The parameters of t
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:
-\nopagebreak
+Here is the call graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=279pt]{frame__extraction_8cpp_abf1a9d948afc821690ec8c5c13dcee07_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -872,16 +869,14 @@ This is the first pass to detect valid contours in a frame. The parameters of th
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:
-\nopagebreak
+Here is the call graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=278pt]{frame__extraction_8cpp_a26d746fc8b9f07ddace0bc9eef68c1c1_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -910,16 +905,14 @@ This is the third pass to detect valid contours in a frame. The parameters of th
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:
-\nopagebreak
+Here is the call graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=284pt]{frame__extraction_8cpp_a001a4318d62e5fcdb8b910d1f4dbab36_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -946,16 +939,14 @@ This is the second pass to detect valid contours in a frame. The parameters of t
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-Here is the call graph for this function\+:
-\nopagebreak
+Here is the call graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=278pt]{frame__extraction_8cpp_ad1e0683d8ff18ab579fbb2fcce6da1cc_cgraph}
 \end{center}
 \end{figure}
-Here is the caller graph for this function\+:
-\nopagebreak
+Here is the caller graph for this function\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode

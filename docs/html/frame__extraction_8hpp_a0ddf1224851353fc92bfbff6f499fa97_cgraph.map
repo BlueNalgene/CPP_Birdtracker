@@ -8,7 +8,7 @@
 <area shape="rect" id="node8" href="$frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="748,765,859,792"/>
 <area shape="rect" id="node9" href="$frame__extraction_8cpp.html#a032ee30a958a27cdb3d5b419953ab584" title="touching_edges" alt="" coords="333,461,446,488"/>
 <area shape="rect" id="node10" href="$frame__extraction_8cpp.html#a2dab519501e6a1106a8b0b2cbfd52511" title="first_frame" alt="" coords="142,259,226,285"/>
-<area shape="rect" id="node14" href="$frame__extraction_8cpp.html#a020638e44cbbdfbe5a689c61c4bec371" title="halo_noise_and_center" alt="" coords="107,613,261,640"/>
+<area shape="rect" id="node14" href="$frame__extraction_8cpp.html#a9c4e877be5c7a5b6c78cf2e81c09759f" title="halo_noise_and_center" alt="" coords="107,613,261,640"/>
 <area shape="rect" id="node21" href="$frame__extraction_8cpp.html#ae5b18af36c3bf024f8a2dc5c4fe4242b" title="out_frame_gen" alt="" coords="130,917,238,944"/>
 <area shape="rect" id="node22" href="$frame__extraction_8cpp.html#a7564e59e35a0ba92812018e6ff847141" title="qhe_bigone" alt="" coords="554,233,642,260"/>
 <area shape="rect" id="node23" href="$frame__extraction_8cpp.html#a26d746fc8b9f07ddace0bc9eef68c1c1" title="tier_one" alt="" coords="564,917,632,944"/>
@@ -17,8 +17,8 @@
 <area shape="rect" id="node28" href="$frame__extraction_8cpp.html#abf1a9d948afc821690ec8c5c13dcee07" title="tier_four" alt="" coords="563,867,633,893"/>
 <area shape="rect" id="node29" href="$frame__extraction_8cpp.html#a34a2b5ae307c281071a717fc2d1fb0c6" title="post_processing" alt="" coords="125,1221,243,1248"/>
 <area shape="rect" id="node11" href="$frame__extraction_8cpp.html#a8b5c97016e3cad4475344f33f288bed4" title="min_square_dim" alt="" coords="331,208,448,235"/>
-<area shape="rect" id="node12" href="$frame__extraction_8cpp.html#a0c6a52eef18d1f84207a52ef5880aba4" title="initial_crop" alt="" coords="347,411,431,437"/>
-<area shape="rect" id="node13" href="$frame__extraction_8cpp.html#a3995b1d757f31ef679b1767386d65e4b" title="box_finder" alt="" coords="557,512,639,539"/>
+<area shape="rect" id="node12" href="$frame__extraction_8cpp.html#a6ebd493f01eb54e528da257db0a75e99" title="initial_crop" alt="" coords="347,411,431,437"/>
+<area shape="rect" id="node13" href="$frame__extraction_8cpp.html#ab82da2f54d3288500af385f722ee691e" title="box_finder" alt="" coords="557,512,639,539"/>
 <area shape="rect" id="node15" href="$frame__extraction_8cpp.html#a5ef2b91877d44dada29b478b53744af6" title="test_edges" alt="" coords="346,613,433,640"/>
 <area shape="rect" id="node16" href="$frame__extraction_8cpp.html#afae27f2c8807b9a09243b93d512b504c" title="shift_frame" alt="" coords="346,664,433,691"/>
 <area shape="rect" id="node17" href="$frame__extraction_8cpp.html#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1" title="edge_width" alt="" coords="345,715,433,741"/>

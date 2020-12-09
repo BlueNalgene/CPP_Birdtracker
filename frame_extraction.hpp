@@ -148,6 +148,27 @@ int TC_W;
  * Calculated height to use for tight cropping
  */
 int TC_H;
+/**
+ * Yet another abort error code value. This reports if the box_finder was unable to find a suitable
+ * large frame, indicating the moon has vanished.
+ */
+bool CAUGHT_EMPTY = false;
+
+
+
+
+// Globals that Doxygen doesn't need to see
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+//
+Mat HNC_FRAME;
+
+//
+Mat IC_FRAME;
+
+//
+Rect BF_BOX;
+
+#endif
 
 
 
@@ -409,16 +430,16 @@ static vector <int> test_edges(Mat in_frame, vector<Point> contour, int te_ret);
 static int min_square_dim(Mat in_frame);
 static vector <int> edge_width(vector<Point> contour);
 static vector <int> edge_height(vector<Point> contour);
-static Mat initial_crop(Mat in_frame, int framecnt);
+static int initial_crop(Mat in_frame, int framecnt);
 static int touching_edges(Mat in_frame, vector<Point> contour);
 static Mat traditional_centering(Mat in_frame, vector <vector<Point>> contours, int largest, Rect box);
 static int first_frame(Mat in_frame, int framecnt);
-static Mat halo_noise_and_center(Mat in_frame, int framecnt);
+static int halo_noise_and_center(Mat in_frame, int framecnt);
 static void signal_callback_handler(int signum);
 static Mat apply_dynamic_mask(Mat in_frame, vector<vector<Point>> contours, int maskwidth);
 static int largest_contour(vector <vector<Point>> contours);
 static vector <vector<Point>> contours_only(Mat in_frame);
-static Rect box_finder(Mat in_frame, bool do_thresh);
+static int box_finder(Mat in_frame, bool do_thresh);
 static int box_data(Rect box, int framecnt);
 static int show_usage(string name);
 static vector <Point> qhe_bigone(Mat in_frame);

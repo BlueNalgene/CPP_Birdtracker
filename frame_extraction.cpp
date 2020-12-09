@@ -304,16 +304,19 @@ static vector <int> edge_height(vector<Point> contour) {
  * Performs an initial rough crop on the frame.  This constructs a cropped frame which contains the
  * largest contour, but does not necessarily center the contour within the frame.  That is handled
  * by halo_noise_and_center by determing whether the centering should use the corner_matching regime
- * or simple centroid to centroid shifting.
+ * or simple centroid to centroid shifting.  Stores the cropped in_frame to IC_FRAME global.
  *
  * @param in_frame OpenCV matrix image, 16-bit single depth format
  * @param framecnt int of nth frame retrieved by program
- * @return in_frame The cropped in_frame
+ * @return status
  */
-static Mat initial_crop(Mat in_frame, int framecnt) {
+static int initial_crop(Mat in_frame, int framecnt) {
 	int oldvalue;
 	// Find largest contour
-	Rect box = box_finder(in_frame, true);
+	if (box_finder(in_frame, true)) {
+		return 1;
+	}
+	Rect box = BF_BOX;
 	// Create rect representing the image
 	Rect image_rect = Rect({}, in_frame.size());
 
@@ -391,7 +394,9 @@ static Mat initial_crop(Mat in_frame, int framecnt) {
 		// If negative values exist, whatever, just pass it along and call it a day.
 		in_frame = precrop;
 	}
-	return in_frame;
+	IC_FRAME = in_frame;
+	
+	return 0;
 }
 
 /**
@@ -489,7 +494,9 @@ static int first_frame(Mat in_frame, int framecnt) {
 	min_square_dim(in_frame);
 
 	// Do a first pass/rough crop
-	in_frame = initial_crop(in_frame.clone(), framecnt);
+	initial_crop(in_frame.clone(), framecnt);
+	
+	in_frame = IC_FRAME;
 	// Make sure the black of night stays black so we can get the edge of the moon
 	threshold(in_frame.clone(), temp_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
 	// Get contours
@@ -630,16 +637,19 @@ static int first_frame(Mat in_frame, int framecnt) {
  * the cropped image based on the centroid of the contour.  It calls corner_matching in cases where
  * the centroid is not an appropriate method for centering.  Data from this ellipse are stored in
  * the ellipse.csv file.  A small portion of the edge of the moon contour is removed to keep out the
- * noisest portions.
+ * noisest portions.  Stores modified in_frame to HNC_FRAME global
  *
  * @param in_frame OpenCV matrix image, 16-bit single depth format
  * @param framecnt int of nth frame retrieved by program
- * @return in_frame The modified in_frame from the input params
+ * @return status
  */
-static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
+static int halo_noise_and_center(Mat in_frame, int framecnt) {
 	Mat temp_frame;
 	// Do a first pass/rough crop
-	in_frame = initial_crop(in_frame.clone(), framecnt);
+	if (initial_crop(in_frame.clone(), framecnt)) {
+		return 1;
+	}
+	in_frame = IC_FRAME;
 	// Make sure the black of night stays black so we can get the edge of the moon
 	threshold(in_frame.clone(), temp_frame, BLACKOUT_THRESH, 255, THRESH_TOZERO);
 	vector <vector<Point>> contours = contours_only(temp_frame);
@@ -684,7 +694,8 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	}
 	
 	// Find largest contour box on cropped frame
-	box = box_finder(in_frame, true);
+	box_finder(in_frame, true);
+	box = BF_BOX;
 	// write that data to our boxes file.
 	box_data(box, framecnt);
 
@@ -714,8 +725,8 @@ static Mat halo_noise_and_center(Mat in_frame, int framecnt) {
 	<< std::endl;
 	outell.close();
 
-
-	return in_frame;
+	HNC_FRAME = in_frame;
+	return 0;
 }
 
 /**
@@ -788,12 +799,13 @@ static vector <vector<Point>> contours_only(Mat in_frame) {
 }
 
 /**
- * This function finds the bounding box for the largest contour and reports on its properties.
+ * This function finds the bounding box for the largest contour and reports on its properties.  Stores
+ * OpenCV Rect object bounding the largest contour (presumably the moon) to global BF_BOX.
  *
  * @param in_frame OpenCV matrix image, 16-bit single depth format
- * @return box OpenCV Rect object bounding the largest contour (presumably the moon)
+ * @return status
  */
-static Rect box_finder(Mat in_frame, bool do_thresh) {
+static int box_finder(Mat in_frame, bool do_thresh) {
 
 	// Make sure the black of night stays black so we can get the edge of the moon
 	if (do_thresh) {
@@ -809,13 +821,17 @@ static Rect box_finder(Mat in_frame, bool do_thresh) {
 		<< std::endl;
 		LOGGING.close();
 	}
+	
+	if (contours.size() < 1) {
+		return 1;
+	}
 
 	int largest_contour_index = largest_contour(contours);
 
 	// Find the bounding box for the large contour
-	Rect box = boundingRect(contours[largest_contour_index]);
+	BF_BOX = boundingRect(contours[largest_contour_index]);
 	
-	return box;
+	return 0;
 }
 
 
@@ -2513,13 +2529,14 @@ int main(int argc, char* argv[]) {
 	++*mm_frmcount;
 
 	// DEBUG Skip frames for debugging
-// 	while (*mm_frmcount < 1370) {
-// 		++*mm_frmcount;
-// 		cap >> frame;
-// 	}
+	while (*mm_frmcount < 1220) {
+		++*mm_frmcount;
+		cap >> frame;
+	}
 
 	cvtColor(frame, frame, COLOR_BGR2GRAY);
-	frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
+	halo_noise_and_center(frame.clone(), *mm_frmcount);
+	frame = HNC_FRAME;
 
 	if (OUTPUT_FRAMES) {
 		std::string output_loc = out_frame_gen(*mm_frmcount);
@@ -2643,7 +2660,15 @@ int main(int argc, char* argv[]) {
 
 			// Image processing operations
 			cvtColor(frame, frame, COLOR_BGR2GRAY);
-			frame = halo_noise_and_center(frame.clone(), *mm_frmcount);
+			if (halo_noise_and_center(frame.clone(), *mm_frmcount)) {
+				std::cerr << "ERROR: Encountered empty frame.  Ending this run.  "
+				<< "If you believe the moon is refound later in the video, break video into parts"
+				<< " and re-run each part" << std::endl;
+				*mm_killed = true;
+				cap.release();
+				break;
+			}
+			frame = HNC_FRAME;
 			if (DEBUG_COUT) {
 				LOGGING.open(LOGOUT, std::ios_base::app);
 				LOGGING

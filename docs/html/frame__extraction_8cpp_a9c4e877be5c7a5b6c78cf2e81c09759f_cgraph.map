@@ -1,0 +1,13 @@
+<map id="halo_noise_and_center" name="halo_noise_and_center">
+<area shape="rect" id="node2" href="$frame__extraction_8cpp.html#a6ebd493f01eb54e528da257db0a75e99" title="initial_crop" alt="" coords="235,51,319,77"/>
+<area shape="rect" id="node3" href="$frame__extraction_8cpp.html#ab82da2f54d3288500af385f722ee691e" title="box_finder" alt="" coords="395,76,477,103"/>
+<area shape="rect" id="node4" href="$frame__extraction_8cpp.html#a5a1b727e663ec81191fd584338c88227" title="contours_only" alt="" coords="529,45,632,72"/>
+<area shape="rect" id="node5" href="$frame__extraction_8cpp.html#abc90f05608032b4730869812a513267f" title="largest_contour" alt="" coords="525,108,636,135"/>
+<area shape="rect" id="node6" href="$frame__extraction_8cpp.html#a032ee30a958a27cdb3d5b419953ab584" title="touching_edges" alt="" coords="221,203,334,229"/>
+<area shape="rect" id="node7" href="$frame__extraction_8cpp.html#a5ef2b91877d44dada29b478b53744af6" title="test_edges" alt="" coords="234,253,321,280"/>
+<area shape="rect" id="node8" href="$frame__extraction_8cpp.html#afae27f2c8807b9a09243b93d512b504c" title="shift_frame" alt="" coords="234,304,321,331"/>
+<area shape="rect" id="node9" href="$frame__extraction_8cpp.html#a3ac94b4b4ad476fbcdd1ac7bc26b1fe1" title="edge_width" alt="" coords="233,355,321,381"/>
+<area shape="rect" id="node10" href="$frame__extraction_8cpp.html#a3eefea9d7b7944b3c17145bf1f42ca1f" title="edge_height" alt="" coords="231,405,323,432"/>
+<area shape="rect" id="node11" href="$frame__extraction_8cpp.html#a8f336c75968d8ab7d3aa3c5c8ff74dbb" title="traditional_centering" alt="" coords="208,456,347,483"/>
+<area shape="rect" id="node12" href="$frame__extraction_8cpp.html#a3fe52ab2a13802c64a500f3b3fac618c" title="box_data" alt="" coords="240,507,315,533"/>
+</map>
