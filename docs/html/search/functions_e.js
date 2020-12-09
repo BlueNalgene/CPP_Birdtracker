@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['tail',['tail',['../frame__extraction_8cpp.html#a0053c162fe33c7a2536d9b87dc7f3260',1,'frame_extraction.cpp']]],
   ['test_5fedges',['test_edges',['../frame__extraction_8cpp.html#a5ef2b91877d44dada29b478b53744af6',1,'test_edges(Mat in_frame, vector&lt; Point &gt; contour, int te_ret):&#160;frame_extraction.cpp'],['../frame__extraction_8hpp.html#a5ef2b91877d44dada29b478b53744af6',1,'test_edges(Mat in_frame, vector&lt; Point &gt; contour, int te_ret):&#160;frame_extraction.hpp']]],
   ['tier_5ffour',['tier_four',['../frame__extraction_8cpp.html#abf1a9d948afc821690ec8c5c13dcee07',1,'tier_four(int framecnt, Mat in_frame, Mat old_frame, vector&lt; Point &gt; bigone):&#160;frame_extraction.cpp'],['../frame__extraction_8hpp.html#a4045b12a555baf914c7c11f9d92f3c3f',1,'tier_four(int cnt, Mat in_frame, Mat old_frame, vector&lt; Point &gt; bigone):&#160;frame_extraction.cpp']]],
   ['tier_5fone',['tier_one',['../frame__extraction_8cpp.html#a26d746fc8b9f07ddace0bc9eef68c1c1',1,'tier_one(int framecnt, Mat in_frame, vector&lt; Point &gt; bigone):&#160;frame_extraction.cpp'],['../frame__extraction_8hpp.html#aefb0c1bc7ceed8e1df9cb033fbc5b6a4',1,'tier_one(int cnt, Mat in_frame, vector&lt; Point &gt; bigone):&#160;frame_extraction.cpp']]],

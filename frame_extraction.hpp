@@ -227,6 +227,14 @@ int QHE_WIDTH = 10;
  */
 int BLACKOUT_THRESH = 51;
 
+/**
+ * If you convert a video from h264 to mp4 using this program, you must set the framerate here.
+ * Different versions of the hardware use different framerates.  The latest version (as of winter
+ * 2020) are 30 fps, while older versions may have 25 fps.  This ONLY supports integer inputs.
+ * User configurable from settings.cfg
+ */
+int CONVERT_FPS = 30;
+
 
 /**
  * Gaussian Blur X kernel size for QHE Bigone.

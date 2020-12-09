@@ -27,6 +27,7 @@ var searchData=
   ['t4_5fgb_5fsigma_5fy',['T4_GB_SIGMA_Y',['../frame__extraction_8hpp.html#acf6f7063280f25a04a975396f48d0910',1,'frame_extraction.hpp']]],
   ['t4_5fpower',['T4_POWER',['../frame__extraction_8hpp.html#abf615655f0218dcda240084c9962cbfd',1,'frame_extraction.hpp']]],
   ['t4_5fthinning',['T4_THINNING',['../frame__extraction_8hpp.html#a51c1de4947ef778b0fd580b7b7c1d3e9',1,'frame_extraction.hpp']]],
+  ['tail',['tail',['../frame__extraction_8cpp.html#a0053c162fe33c7a2536d9b87dc7f3260',1,'frame_extraction.cpp']]],
   ['tc_5fh',['TC_H',['../frame__extraction_8hpp.html#a1029100fd4afc96ef1203f673502a653',1,'frame_extraction.hpp']]],
   ['tc_5fw',['TC_W',['../frame__extraction_8hpp.html#ab49dcecdf57f9a30448512927af37149',1,'frame_extraction.hpp']]],
   ['test_5fedges',['test_edges',['../frame__extraction_8cpp.html#a5ef2b91877d44dada29b478b53744af6',1,'test_edges(Mat in_frame, vector&lt; Point &gt; contour, int te_ret):&#160;frame_extraction.cpp'],['../frame__extraction_8hpp.html#a5ef2b91877d44dada29b478b53744af6',1,'test_edges(Mat in_frame, vector&lt; Point &gt; contour, int te_ret):&#160;frame_extraction.hpp']]],
