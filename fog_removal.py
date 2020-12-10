@@ -172,6 +172,7 @@ def ascii_proc(in_frame, thresh):
 	if (roi.shape[0] > local_width):
 		roi = imutils.resize(roi, width=local_width)
 		rezzed = True
+		oldcols = roi.shape[0]
 	
 	# perform thresh
 	_, roi = cv2.threshold(roi, thresh, 255, cv2.THRESH_TOZERO)
@@ -185,7 +186,7 @@ def ascii_proc(in_frame, thresh):
 		picstring += '\n'
 	print(picstring)
 	if rezzed:
-		print("Your terminal is", local_width, " pixels wide, but the cropped raw image was", cols, "pixels wide.  Your output has been resized.")
+		print("Your terminal is", local_width, " pixels wide, but the cropped raw image was", oldcols, "pixels wide.  Your output has been resized.")
 	print("The above image threshold value was", thresh)
 	return
 
