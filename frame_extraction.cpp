@@ -1487,9 +1487,9 @@ int parse_checklist(std::string name, std::string value) {
 		} else if (name == "QHE_GB_SIGMA_Y") {
 			QHE_GB_SIGMA_Y = result;
 		}
-	} else
+	} else if (
 		// String cases
-		if (name == "OSFPROJECT"
+		name == "OSFPROJECT"
 		|| name == "OUTPUTDIR"
 		) {
 			// Store value as appropriate string
@@ -2128,30 +2128,24 @@ int main(int argc, char* argv[]) {
 		std::cerr << "You must give frame_extraction an input file or an OSF path" << std::endl;
 		return 1;
 	} else if (osf_file.length() > 0) {
-		if (!(osf_file.substr(0, 9) == "osfstorage" && osf_file.substr(osf_file.size() - 3) == "mp4")) {
-			std::cerr << "The path to the OSF video must look like \"osfstorage/path/to/file.mp4\"" << std::endl;
+		if (!(osf_file.substr(0, 10) == "osfstorage")) {
+			std::cerr
+			<< "The path to the OSF video must look like \"osfstorage/path/to/file.mp4\""
+			<< std::endl;
 			return 1;
 		}
-		int ret = system("osf --version");
-		if (WEXITSTATUS(ret) != 0x10) {
-			std::cerr << "OSFClient is not available on this system. Install using \"pip3 install osfclient --user\"" << std::endl;
+		if (!((osf_file.substr(osf_file.size() - 3) == "mp4") || (osf_file.substr(osf_file.size() - 4) == "h264"))) {
+			std::cerr
+			<< "Input OSF file must end with mp4 or h264"
+			<< std::endl;
+			return 1;
 		}
-		std::string osfcommand = "osf -p ";
-		osfcommand.append(OSFPROJECT);
-		osfcommand.append(" fetch ");
-		osfcommand.append(osf_file);
-		osfcommand.append(" ./local.mp4");
-		system(osfcommand.c_str());
-		input_file = "local.mp4";
+		if (system("osf --version > /dev/null 2>&1")) {
+			std::cerr << "OSFClient is not available on this system. Install using \"pip3 install osfclient --user\"" << std::endl;
+			return 1;
+		}
 	}
 
-	// Make sure file exists
-	if (!std::experimental::filesystem::exists(input_file)) {
-		std::cerr << "Input file (" << input_file << ") not found.  Aborting." << std::endl;
-		return 1;
-	}
-
-	
 	// Config Handler -----------------------------------------------------------------------------
 
 	std::ifstream config_stream (config_file);
@@ -2181,56 +2175,6 @@ int main(int argc, char* argv[]) {
 		<< "Using input file: " << input_file << std::endl;
 		LOGGING.close();
 	}
-
-	// H264 -> MP4 --------------------------------------------------------------------------------
-	// Note, this method only works with linux afaik
-	std::string file_ending;
-	
-	file_ending = tail(input_file, 3);
-	if (file_ending == "mp4") {
-		if (DEBUG_COUT) {
-			LOGGING.open(LOGOUT, std::ios_base::app);
-			LOGGING
-			<< "Input file has mp4 filetype ending, proceeding" << std::endl;
-			LOGGING.close();
-		}
-	} else if (file_ending == "264") {
-		if (DEBUG_COUT) {
-			LOGGING.open(LOGOUT, std::ios_base::app);
-			LOGGING
-			<< "Input file has h264 filetype ending, converting video" << std::endl;
-			LOGGING.close();
-		}
-		std::string convert_command = "ffmpeg -y -hide_banner -r ";
-		convert_command += std::to_string(CONVERT_FPS);
-		convert_command += " -i ";
-		convert_command += space_space(input_file);
-		convert_command += " -c copy ./converted.mp4";
-		input_file = "converted.mp4";
-		system(convert_command.c_str());
-		if (DEBUG_COUT) {
-			LOGGING.open(LOGOUT, std::ios_base::app);
-			LOGGING
-			<< "Video converted and stored at ./converted.mp4" << std::endl;
-			LOGGING.close();
-		}
-	} else {
-		std::cerr << "ERROR: Unrecognized input video filetype ending, mp4 or h264 required"
-		<< std::endl;
-		return 1;
-	}
-
-	// Hack method to kick out h264 files
-	auto delimiter_pos = input_file.find('.');
-	if (input_file.substr(delimiter_pos + 1) != "mp4") {
-		std::cerr
-		<< "Input file ("
-		<< input_file
-		<< ") does not end with \"mp4\".  Assuming the input file is incompatible"
-		<< std::endl;
-		return 1;
-	}
-
 
 	// Touch the output file ----------------------------------------------------------------------
 
@@ -2332,6 +2276,95 @@ int main(int argc, char* argv[]) {
 	<< "points on right edge"
 	<< std::endl;
 	outell.close();
+	
+	// Import OSF file ----------------------------------------------------------------------------
+	
+	if (!osf_file.empty()) {
+		std::string osfcommand = "osf -p ";
+		osfcommand.append(OSFPROJECT);
+		osfcommand.append(" fetch ");
+		osfcommand.append(osf_file);
+		if (osf_file.substr(osf_file.size() - 3) == "mp4") {
+			osfcommand.append(" ./local.mp4");
+			input_file = "local.mp4";
+		} else {
+			osfcommand.append(" ./local.h264");
+			input_file = "local.h264";
+		}
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Downloading OSF file: "
+			<< osf_file
+			<< " to local drive with name: "
+			<< input_file
+			<< " using the the command: "
+			<< osfcommand
+			<< std::endl;
+			LOGGING.close();
+		}
+		if (system(osfcommand.c_str())) {
+			std::cerr << "ERROR: There was a problem while downloading the OSF file." << std::endl;
+			return 1;
+		}
+	}
+		
+	// Make sure file exists
+	if (!std::experimental::filesystem::exists(input_file)) {
+		std::cerr << "Input file (" << input_file << ") not found.  Aborting." << std::endl;
+		return 1;
+	}
+
+	// H264 -> MP4 --------------------------------------------------------------------------------
+	// Note, this method only works with linux afaik
+	std::string file_ending;
+	
+	file_ending = tail(input_file, 3);
+	if (file_ending == "mp4") {
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Input file has mp4 filetype ending, proceeding" << std::endl;
+			LOGGING.close();
+		}
+	} else if (file_ending == "264") {
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Input file has h264 filetype ending, converting video" << std::endl;
+			LOGGING.close();
+		}
+		std::string convert_command = "ffmpeg -y -hide_banner -r ";
+		convert_command += std::to_string(CONVERT_FPS);
+		convert_command += " -i ";
+		convert_command += space_space(input_file);
+		convert_command += " -c copy ./converted.mp4";
+		input_file = "converted.mp4";
+		system(convert_command.c_str());
+		if (DEBUG_COUT) {
+			LOGGING.open(LOGOUT, std::ios_base::app);
+			LOGGING
+			<< "Video converted and stored at ./converted.mp4" << std::endl;
+			LOGGING.close();
+		}
+	} else {
+		std::cerr << "ERROR: Unrecognized input video filetype ending, mp4 or h264 required"
+		<< std::endl;
+		return 1;
+	}
+
+	// Hack method to kick out h264 files
+	auto delimiter_pos = input_file.find('.');
+	if (input_file.substr(delimiter_pos + 1) != "mp4") {
+		std::cerr
+		<< "Input file ("
+		<< input_file
+		<< ") does not end with \"mp4\".  Assuming the input file is incompatible"
+		<< std::endl;
+		return 1;
+	}
+
+	// Metafile handler ---------------------------------------------------------------------------
 
 	// Touch and create metafile
 	std::ofstream metafile;
