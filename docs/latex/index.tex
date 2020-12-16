@@ -97,7 +97,7 @@ cd Birdtracker\_CPP
 \end{DoxyCode}
 
 
-This script downloads the everything you need to compile the program from this {\ttfamily git} repository. Once you have the repository on your Raspberry Pi and have installed all of the relevant packages from the {\ttfamily apt} command above, enter the Lun\+Aero\+\_\+C folder, and issue the following command\+:
+This script downloads the everything you need to compile the program from this {\ttfamily git} repository. Once you have the repository on your device and have installed all of the relevant packages from the {\ttfamily apt} command above, enter the Lun\+Aero\+\_\+C folder, and issue the following command\+:
 
 
 \begin{DoxyCode}
@@ -335,8 +335,8 @@ While there are a few image processing functions peppered through the code, most
 
 
 \begin{DoxyItemize}
-\item Tier 1\+: Strict adaptive threshold. In perfect conditions, this finds the majority of the large silhouettes. As the video becomes less perfect, the regime breaks down.
-\item Tier 2\+: Loose adaptive threshold. In perfect conditions, this finds most of the smaller silhouettes which may be missed by Tier 1. However, it produces much more noise. As the video becomes less perfect, the regime breaks down.
+\item Tier 1\+: Strict adaptive threshold. In perfect conditions, this finds the majority of the large silhouettes. As the contours become less clear or obvious, the image processing done on this Tier will begin to miss some silhouettes.
+\item Tier 2\+: Loose adaptive threshold. In perfect conditions, this finds most of the smaller silhouettes which may be missed by Tier 1. However, it produces much more noise. Similar to Tier 1, as the silhouttes become harder to see, they are less likely to be picked up here.
 \item Tier 3\+: Isotropic Laplacian filter. This is a very noisy filter which compares differences in the Laplacian across two frames. The result is blurred prior to detection, but much of the noise remains.
 \item Tier 4\+: Un\+Canny filter. This experimental filter attempts to perform the steps used in the classic Canny filter backwards...across two frames. The Sobel and power steps of the Canny filter occur on each frame (n and n-\/1), then are added, rooted, and blurred. The result is passed through an edge thinner and the silhouettes are detected.
 \end{DoxyItemize}
