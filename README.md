@@ -108,8 +108,8 @@ cd Birdtracker_CPP
 ```
 
 This script downloads the everything you need to compile the program from
-this `git` repository.  Once you have the repository on your Raspberry
-Pi and have installed all of the relevant packages from the `apt` command
+this `git` repository.  Once you have the repository on your device
+and have installed all of the relevant packages from the `apt` command
 above, enter the LunAero_C folder, and issue the following command:
 
 ```sh
