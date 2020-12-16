@@ -374,12 +374,13 @@ frames, but some "Tiers" offer different capabilities.  Each have strengths
 and weaknesses.
 
 - Tier 1: Strict adaptive threshold. In perfect conditions, this finds
-the majority of the large silhouettes.  As the video becomes less perfect,
-the regime breaks down.
+the majority of the large silhouettes.  As the contours become less
+clear or obvious, the image processing done on this Tier will begin to
+miss some silhouettes.
 - Tier 2: Loose adaptive threshold.  In perfect conditions, this finds
 most of the smaller silhouettes which may be missed by Tier 1.  However,
-it produces much more noise.  As the video becomes less perfect, the regime
-breaks down.
+it produces much more noise.  Similar to Tier 1, as the silhouttes become
+harder to see, they are less likely to be picked up here.
 - Tier 3: Isotropic Laplacian filter.  This is a very noisy filter which
 compares differences in the Laplacian across two frames.  The result is
 blurred prior to detection, but much of the noise remains.
